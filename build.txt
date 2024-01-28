@@ -1,0 +1,3 @@
+displayName = Boss Forgiveness
+author = GabeHasWon
+version = 0.1
