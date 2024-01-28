@@ -12,6 +12,12 @@ internal class PacifiedGlobalNPC : GlobalNPC
     public override bool PreAI(NPC npc)
     {
         unhitTime++;
+
+        if (PacifiedNPCHandler.Handlers.TryGetValue(npc.type, out PacifiedNPCHandler handler) && handler.CanPacify(npc))
+        {
+            handler.OnPacify(npc);
+            return false;
+        }
         return true;
     }
 

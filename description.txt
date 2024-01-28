@@ -1,1 +1,5 @@
-Boss Forgiveness is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+--- Mercy ---
+by GabeHasWon
+commissioned by sivaexo
+
+This mod allows you to spare/mercy some bosses, letting them live alongside you.
