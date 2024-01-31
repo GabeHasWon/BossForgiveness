@@ -4,3 +4,10 @@ KingSlime: {
 	2: Blub.
 	3: Bloop!
 }
+
+EoC: {
+	0: *The eye stares at you intently*
+	1: *You feel observed*
+	2: *You see what eye did there?*
+	3: *It looks at you as if bored*
+}

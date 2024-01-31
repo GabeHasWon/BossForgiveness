@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using BossForgiveness.Content.NPCs.Vanilla;
+using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -19,4 +21,15 @@ internal abstract class PacifiedNPCHandler : ILoadable
 
     public abstract bool CanPacify(NPC npc);
     public abstract void OnPacify(NPC npc);
+
+    public static void TransformInto<T>(NPC npc, Vector2? offset = null) where T : ModNPC
+    {
+        offset ??= Vector2.Zero;
+
+        npc.playerInteraction[Main.myPlayer] = true;
+        npc.NPCLoot();
+        npc.Transform(ModContent.NPCType<T>());
+        npc.life = npc.lifeMax;
+        npc.Center -= offset.Value;
+    }
 }

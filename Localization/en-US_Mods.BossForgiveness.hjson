@@ -1,1 +1,4 @@
-NPCs.KingSlimePacified.DisplayName: King Slime
+NPCs: {
+	KingSlimePacified.DisplayName: King Slime
+	EyePacified.DisplayName: Eye Pacified
+}
