@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Items.ForVanilla;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -15,6 +17,16 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class EyePacified : ModNPC
 {
+    private ref float Timer => ref NPC.ai[0];
+
+    private bool IsLassoed
+    {
+        get => NPC.ai[1] == 1f;
+        set => NPC.ai[1] = value ? 1f : 0f;
+    }
+
+    private int RiderWhoAmI => (int)NPC.ai[2];
+
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 6;
@@ -44,8 +56,10 @@ public class EyePacified : ModNPC
 
     public override bool PreAI()
     {
-        NPC.rotation = NPC.velocity.ToRotation() - MathHelper.PiOver2;
-        NPC.ai[0]++;
+        NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() - MathHelper.PiOver2, 0.1f);
+
+        if (IsLassoed) // Stop all behaviour
+            return false;
 
         int y = (!NPC.homeless ? NPC.homeTileY : GetFloor()) * 16;
         float dist = y - NPC.Center.Y;
@@ -67,8 +81,9 @@ public class EyePacified : ModNPC
             else
             {
                 NPC.velocity.X *= 0.99f;
+                Timer++;
 
-                if (NPC.ai[0] % 120 == 0)
+                if (Timer % 120 == 0)
                 {
                     NPC.velocity.X = Main.rand.NextFloat(-5f, 5f);
                     NPC.netUpdate = true;
@@ -78,7 +93,6 @@ public class EyePacified : ModNPC
         else
         {
             float homeX = NPC.homeTileX * 16;
-            float homeXDist = homeX - NPC.Center.Y;
 
             NPC.velocity.X += (homeX - NPC.Center.X) / 1000f;
             NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -5, 5);
@@ -101,7 +115,6 @@ public class EyePacified : ModNPC
                 return true;
             }
         }
-
         return false;
     }
 
@@ -116,10 +129,45 @@ public class EyePacified : ModNPC
         return y;
     }
 
-    public override bool CheckConditions(int left, int right, int top, int bottom) => bottom < Main.worldSurface;
+    internal void Unmount() => IsLassoed = false;
 
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (IsLassoed) // Manually draw mounted player
+        {
+            Main.spriteBatch.End();
+
+            // Set values for player draw
+            EoCLeash.EoCLassoPlayer.OverrideDraw = true;
+            var plr = Main.player[RiderWhoAmI];
+            float originalRotation = plr.fullRotation;
+            plr.fullRotation = NPC.rotation + MathHelper.PiOver2;
+            Vector2 oldRotOrigin = plr.fullRotationOrigin;
+            plr.fullRotationOrigin = plr.Size / 2f;
+
+            // Draw player
+            Main.PlayerRenderer.DrawPlayers(Main.Camera, [plr]);
+
+            // Reset values
+            EoCLeash.EoCLassoPlayer.OverrideDraw = false;
+            plr.fullRotation = originalRotation;
+            plr.fullRotationOrigin = oldRotOrigin;
+
+            Main.spriteBatch.Begin();
+        }
+
+        // Manually draw to fix dumb vanilla origin
+        Texture2D tex = TextureAssets.Npc[Type].Value;
+        var col = Lighting.GetColor(NPC.Center.ToTileCoordinates(), drawColor);
+        Main.EntitySpriteDraw(tex, NPC.Center - screenPos, NPC.frame, col, NPC.rotation, new Vector2(55, 104), 1f, SpriteEffects.None, 0);
+        return false;
+    }
+
+    internal Vector2 GetPlayerCenter() => NPC.Center + NPC.rotation.ToRotationVector2() * 60;
+
+    public override bool CheckConditions(int left, int right, int top, int bottom) => bottom < Main.worldSurface;
     public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.EyeofCthulhu).Value];
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + Main.rand.Next(4));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + (IsLassoed ? "Idle" : "Riding") + "." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new EoCProfile();
 
     public class EoCProfile : ITownNPCProfile

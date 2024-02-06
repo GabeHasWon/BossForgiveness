@@ -6,8 +6,17 @@ KingSlime: {
 }
 
 EoC: {
-	0: *The eye stares at you intently*
-	1: *You feel observed*
-	2: *You see what eye did there?*
-	3: *It looks at you as if bored*
+	Idle: {
+		0: *The eye stares at you intently*
+		1: *You feel observed.*
+		2: *You see what eye did there?*
+		3: *It looks at you as if bored*
+	}
+
+	Riding: {
+		0: *The eye looks at you happily.*
+		1: *You feel appreciated.*
+		2: *You did see what eye did there!*
+		3: *It looks to you with as much of a smile as a giant disembodied eye can have.*
+	}
 }

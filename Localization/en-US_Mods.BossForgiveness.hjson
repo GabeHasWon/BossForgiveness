@@ -2,3 +2,12 @@ NPCs: {
 	KingSlimePacified.DisplayName: King Slime
 	EyePacified.DisplayName: Eye Pacified
 }
+
+Items: {
+	EoCLeash: {
+		DisplayName: Eo C Leash
+		Tooltip: ""
+	}
+}
+
+Projectiles.EoCLeashProj.DisplayName: Eo C Leash Proj
