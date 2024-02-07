@@ -1,6 +1,7 @@
 NPCs: {
 	KingSlimePacified.DisplayName: King Slime
 	EyePacified.DisplayName: Eye Pacified
+	BoCPacified.DisplayName: Bo C Pacified
 }
 
 Items: {

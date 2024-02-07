@@ -61,7 +61,7 @@ public class EyePacified : ModNPC
         if (IsLassoed) // Stop all behaviour
             return false;
 
-        int y = (!NPC.homeless ? NPC.homeTileY : GetFloor()) * 16;
+        int y = (!NPC.homeless ? NPC.homeTileY : NPCUtils.GetFloor(NPC)) * 16;
         float dist = y - NPC.Center.Y;
 
         if (dist < 16 * 15)
@@ -116,17 +116,6 @@ public class EyePacified : ModNPC
             }
         }
         return false;
-    }
-
-    private int GetFloor()
-    {
-        int x = (int)((NPC.Center.X + NPC.velocity.X) / 16f);
-        int y = (int)(NPC.Center.Y / 16f);
-
-        while (!WorldGen.SolidTile(x, y))
-            y++;
-
-        return y;
     }
 
     internal void Unmount() => IsLassoed = false;
