@@ -8,6 +8,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Vanilla;
 
@@ -80,26 +81,25 @@ public class BoCPacified : ModNPC
         foreach (var item in _creepers)
             item.Update(NPC.whoAmI);
 
+        NPC.rotation = NPC.velocity.X / 16f;
+
         if (NPC.homeless)
         {
-            for (int j = 0; j < 255; j++)
-            {
-                if (Main.player[j].active && Main.player[j].talkNPC == NPC.whoAmI)
-                {
-                    NPC.velocity *= 0.9f;
-                    NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.8f, 0.05f);
-                    return true;
-                }
-            }
-
             if (IdleRotDir == 0)
                 IdleRotDir = 1f;
 
-            NPC.rotation = 0;
-            NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.2f, 0.05f);
-            IdleRotation += MathF.Tau / 200f;
-            float yVel = (((NPCUtils.GetFloor(NPC) - 10) * 16) - NPC.Center.Y) / 300f;
-            NPC.velocity = new Vector2(0, 2).RotatedBy(IdleRotation * IdleRotDir) + new Vector2(0, yVel);
+            if (NPC.IsBeingTalkedTo())
+            {
+                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.8f, 0.05f);
+                NPC.velocity *= 0.96f;
+            }
+            else
+            {
+                IdleRotation += MathF.Tau / 200f;
+                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.2f, 0.05f);
+                float yVel = (((NPCUtils.GetFloor(NPC) - 10) * 16) - NPC.Center.Y) / 300f;
+                NPC.velocity = new Vector2(0, 2).RotatedBy(IdleRotation * IdleRotDir) + new Vector2(0, yVel);
+            }
 
             if (Math.Abs(IdleRotation) > MathF.Tau)
             {
@@ -109,12 +109,19 @@ public class BoCPacified : ModNPC
         }
         else
         {
-            var spinLoc = new Vector2(NPC.homeTileX, NPC.homeTileY) * 16 + new Vector2(500, 0).RotatedBy(IdleRotation);
-            NPC.velocity = NPC.DirectionTo(spinLoc) * Math.Max((NPC.Distance(spinLoc) - 60) / 240f, 2f);
-            IdleRotation += 0.005f;
+            if (NPC.IsBeingTalkedTo())
+            {
+                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.8f, 0.05f);
+                NPC.velocity *= 0.96f;
+            }
+            else
+            {
+                IdleRotation += 0.005f;
+                var spinLoc = new Vector2(NPC.homeTileX, NPC.homeTileY) * 16 + new Vector2(500, 0).RotatedBy(IdleRotation);
+                NPC.velocity = NPC.DirectionTo(spinLoc) * Math.Max((NPC.Distance(spinLoc) - 60) / 240f, 2f);
+            }
         }
 
-        NPC.rotation = NPC.velocity.X / 16f;
 
         return false;
     }
@@ -135,6 +142,20 @@ public class BoCPacified : ModNPC
                 npc.active = false;
                 npc.netUpdate = true;
             }
+        }
+    }
+
+    public override void SaveData(TagCompound tag) => tag.Add(nameof(_creepers), _creepers.Count);
+
+    public override void LoadData(TagCompound tag)
+    {
+        int count = tag.GetInt(nameof(_creepers));
+
+        for (int i = 0; i < count; ++i)
+        {
+            NPC newNPC = new() { position = NPC.position, velocity = new Vector2(0, Main.rand.NextFloat(1, 4)).RotatedByRandom(MathF.Tau) };
+            newNPC.SetDefaults(NPCID.Creeper);
+            _creepers.Add(new Creeper(newNPC));
         }
     }
 
