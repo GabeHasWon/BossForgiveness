@@ -37,3 +37,15 @@ EoW: {
 	2: *The familiar rush of digging surrounds you*
 	3: *It looks content*
 }
+
+QueenBee: {
+	0: BzzZZZzzZz
+	1: BuuZZzzzZzzzzZ
+}
+
+Skeletron: {
+	0: Many apologies for the lass, I don't know my own curse's strength sometimes!
+	1: I'm afraid tea is no longer a passion. It flows much more than it used to, and that's an issue.
+	2: Often I see some of my friends down in the dungeon. Have you met Willy the One-Eyed Skull yet? He's fantastic!
+	3: Two hands are all you need to be a proper gentleman.
+}

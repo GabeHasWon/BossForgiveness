@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.Handlers;
 
@@ -38,7 +39,7 @@ internal class EoWHandler : PacifiedNPCHandler
                 break;
         }
 
-        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1f * 1 * 60 && selfLength < 8 && selfLength > 1;
+        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
     }
 
     public override void OnPacify(NPC npc)

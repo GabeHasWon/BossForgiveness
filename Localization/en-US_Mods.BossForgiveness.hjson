@@ -3,6 +3,8 @@ NPCs: {
 	EyePacified.DisplayName: Eye Pacified
 	BoCPacified.DisplayName: Bo C Pacified
 	PacifiedEoW.DisplayName: Pacified Eo W
+	PacifiedQueenBee.DisplayName: Pacified Queen Bee
+	SkeletronPacified.DisplayName: Skeletron Pacified
 }
 
 Items: {
