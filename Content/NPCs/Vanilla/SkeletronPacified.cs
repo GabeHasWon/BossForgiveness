@@ -24,7 +24,6 @@ public class SkeletronPacified : ModNPC
     {
         Main.npcFrameCount[Type] = Main.npcFrameCount[NPCID.SkeletronHead];
 
-        NPCID.Sets.IsTownSlime[Type] = true;
         NPCID.Sets.IsTownPet[Type] = true;
         NPCID.Sets.SpawnsWithCustomName[Type] = true;
     }
