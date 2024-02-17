@@ -5,6 +5,7 @@ NPCs: {
 	PacifiedEoW.DisplayName: Pacified Eo W
 	PacifiedQueenBee.DisplayName: Pacified Queen Bee
 	SkeletronPacified.DisplayName: Skeletron Pacified
+	PacifiedDeerclops.DisplayName: Pacified Deerclops
 }
 
 Items: {
