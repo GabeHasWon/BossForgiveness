@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,6 +17,7 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 public class PacifiedEoW : ModNPC
 {
     private ref float Timer => ref NPC.ai[0];
+    private ref float NetTimer => ref NPC.ai[1];
 
     private readonly List<Segment> segments = new();
 
@@ -44,6 +46,12 @@ public class PacifiedEoW : ModNPC
     public override bool PreAI()
     {
         Timer++;
+
+        if (NetTimer >= 600)
+        {
+            NPC.netUpdate = true;
+            NetTimer = 0;
+        }
 
         if (!NPC.IsBeingTalkedTo())
         {
@@ -108,6 +116,24 @@ public class PacifiedEoW : ModNPC
     public override void LoadData(TagCompound tag)
     {
         int count = tag.GetInt(nameof(segments));
+        Span<Vector2> positions = stackalloc Vector2[count];
+
+        for (int i = 0; i < count; ++i)
+            positions[i] = NPC.Center;
+
+        segments.Clear();
+        SpawnBody(positions);
+    }
+
+    public override void SendExtraAI(BinaryWriter writer) => writer.Write((byte)segments.Count);
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        int count = reader.ReadByte();
+
+        if (segments.Count == count)
+            return;
+
         Span<Vector2> positions = stackalloc Vector2[count];
 
         for (int i = 0; i < count; ++i)

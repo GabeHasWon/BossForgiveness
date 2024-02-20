@@ -78,12 +78,27 @@ public class PacifiedDeerclops : ModNPC
             NPC.netUpdate = true;
         }
 
-        if (!Main.dayTime && NPC.Distance(new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates()) > 16000) // Teleport code
-        {
-            NPC.Center = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates();
+        Vector2 home = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates();
 
-            while (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                NPC.position.Y -= 16;
+        if (!Main.dayTime && NPC.DistanceSQ(home) > 3000 * 3000) // Teleport code
+        {
+            int closest = Player.FindClosest(NPC.position, NPC.width, NPC.height);
+            Player closestPlayer = Main.player[closest];
+            bool notNearMeRightNow = !closestPlayer.active || closestPlayer.DistanceSQ(NPC.Center) >= 2000 * 2000;
+
+            closest = Player.FindClosest(home, NPC.width, NPC.height);
+            closestPlayer = Main.player[closest];
+            bool notNearMeThen = !closestPlayer.active || closestPlayer.DistanceSQ(home) >= 2000 * 2000;
+
+            if (notNearMeRightNow && notNearMeThen)
+            {
+                NPC.Center = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates();
+
+                while (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                    NPC.position.Y -= 16;
+
+                NPC.netUpdate = true;
+            }
         }
 
         if (Math.Abs(Target - NPC.Center.X) > 16 && !discussing)

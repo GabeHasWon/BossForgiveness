@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -29,7 +30,7 @@ public class BoCPacified : ModNPC
             int oldBoss = NPC.crimsonBoss;
             NPC.crimsonBoss = brain; // Needed for the creeper AI to work properly
             int oldNetmode = Main.netMode;
-            Main.netMode = NetmodeID.MultiplayerClient; // Workaround for their "attack"
+            Main.netMode = NetmodeID.SinglePlayer; // Workaround for net issues
 
             _controlledNPC.ai[0] = 0;
             _controlledNPC.ai[1] = 0;
@@ -47,8 +48,10 @@ public class BoCPacified : ModNPC
     private ref float Timer => ref NPC.ai[0];
     private ref float IdleRotation => ref NPC.ai[1];
     private ref float IdleRotDir => ref NPC.ai[2];
+    private ref float NetTimer => ref NPC.ai[3];
 
-    private readonly List<Creeper> _creepers = [];
+    private int _netDesiredCreepers = -1;
+    private List<Creeper> _creepers = [];
 
     public override void SetStaticDefaults()
     {
@@ -78,6 +81,12 @@ public class BoCPacified : ModNPC
 
     public override bool PreAI()
     {
+        if (NetTimer++ > 600) // Sync occasionally to be sure
+        {
+            NPC.netUpdate = true;
+            NetTimer = 0;
+        }
+
         foreach (var item in _creepers)
             item.Update(NPC.whoAmI);
 
@@ -150,13 +159,39 @@ public class BoCPacified : ModNPC
     public override void LoadData(TagCompound tag)
     {
         int count = tag.GetInt(nameof(_creepers));
+        AddCreepers(count);
+    }
 
+    private void AddCreepers(int count)
+    {
         for (int i = 0; i < count; ++i)
         {
             NPC newNPC = new() { position = NPC.position, velocity = new Vector2(0, Main.rand.NextFloat(1, 4)).RotatedByRandom(MathF.Tau) };
             newNPC.SetDefaults(NPCID.Creeper);
             _creepers.Add(new Creeper(newNPC));
         }
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(_creepers is null);
+
+        if (_creepers is not null)
+            writer.Write((byte)_creepers.Count);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        if (reader.ReadBoolean())
+            return;
+
+        int count = reader.ReadByte();
+
+        if (_creepers.Count == count)
+            return;
+
+        _creepers = new(count);
+        AddCreepers(count);
     }
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

@@ -1,5 +1,4 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,7 +11,7 @@ internal abstract class PacifiedNPCHandler : ILoadable
 
     public abstract int Type { get; }
 
-    public void Load(Mod mod)
+    public virtual void Load(Mod mod)
     {
         Handlers.Add(Type, this);
     }

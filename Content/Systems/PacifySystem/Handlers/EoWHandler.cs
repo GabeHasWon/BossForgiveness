@@ -44,17 +44,22 @@ internal class EoWHandler : PacifiedNPCHandler
 
     public override void OnPacify(NPC npc)
     {
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
         int count = _worm.Count;
         Span<Vector2> positions = stackalloc Vector2[count];
 
         for (int i = 0; i < count; ++i)
         {
             var worm = Main.npc[_worm.ElementAt(i)];
-            worm.active = false;
             positions[i] = worm.position;
+            worm.active = false;
+            worm.netUpdate = true;
         }
 
         TransformInto<PacifiedEoW>(npc);
         (npc.ModNPC as PacifiedEoW).SpawnBody(positions);
+        npc.netUpdate = true;
     }
 }

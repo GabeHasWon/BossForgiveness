@@ -3,19 +3,38 @@ using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.Handlers;
 
 internal class WoFHandler : PacifiedNPCHandler
 {
+    private static bool Pacifying = false;
+
     public override int Type => NPCID.WallofFlesh;
 
     public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 3 && Main.hardMode;
 
+    public override void Load(Mod mod)
+    {
+        base.Load(mod);
+
+        On_NPC.CreateBrickBoxForWallOfFlesh += StopBrickBoxForMercy;
+    }
+
+    private void StopBrickBoxForMercy(On_NPC.orig_CreateBrickBoxForWallOfFlesh orig, NPC self)
+    {
+        if (!Pacifying)
+            orig(self);
+    }
+
     public override void OnPacify(NPC npc)
     {
         npc.playerInteraction[Main.myPlayer] = true;
+
+        Pacifying = true;
         npc.NPCLoot();
+        Pacifying = false;
 
         for (int i = 0; i < Main.maxNPCs; ++i)
         {
@@ -28,18 +47,6 @@ internal class WoFHandler : PacifiedNPCHandler
         OreifyNPC(npc);
         int orePosX = (int)(npc.position.X / 16f) - (6 * Math.Sign(npc.velocity.X));
         OreifyArea(orePosX, Main.maxTilesY - 210, new(orePosX, Main.maxTilesY - 105), 10, 200, true, byte.MaxValue);
-
-        for (int i = -20; i < 20; ++i) // Clear collection box
-        {
-            for (int j = -20; j < 20; ++j)
-            {
-                int x = i + (int)npc.position.X / 16;
-                int y = j + (int)npc.position.Y / 16;
-
-                if (Main.tile[x, y].TileType == TileID.DemoniteBrick || Main.tile[x, y].TileType == TileID.CrimtaneBrick)
-                    WorldGen.KillTile(x, y, false, false, true);
-            }
-        }
 
         SoundEngine.PlaySound(SoundID.NPCDeath10, npc.Center);
         SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);

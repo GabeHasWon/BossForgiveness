@@ -13,6 +13,9 @@ internal class BoCHandler : PacifiedNPCHandler
 
     public override void OnPacify(NPC npc)
     {
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
         TransformInto<BoCPacified>(npc);
         (npc.ModNPC as BoCPacified).BuildCreepers();
     }
