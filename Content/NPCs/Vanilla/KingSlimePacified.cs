@@ -29,6 +29,7 @@ public class KingSlimePacified : ModNPC
         NPC.boss = false;
         NPC.townNPC = true;
         NPC.friendly = true;
+        NPC.netAlways = true;
 
         Music = -1;
         AnimationType = -1;

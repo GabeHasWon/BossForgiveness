@@ -19,6 +19,7 @@ public class SkeletronPacified : ModNPC
 
     private ref float MoveSpeed => ref NPC.ai[0];
     private ref float Timer => ref NPC.ai[1];
+    private ref float NetTimer => ref NPC.ai[2];
 
     public override void SetStaticDefaults()
     {
@@ -46,11 +47,15 @@ public class SkeletronPacified : ModNPC
 
     public override bool PreAI()
     {
+        if (++NetTimer % 360 == 0)
+            NPC.netUpdate = true;
+
         leftHand.Update();
         rightHand.Update();
 
         bool discussing = NPC.IsBeingTalkedTo();
-        Vector2 home = (NPC.homeless ? new Vector2(Main.dungeonX, Main.dungeonY) : new Vector2(NPC.homeTileX, NPC.homeTileY)).ToWorldCoordinates();
+        var dungeon = Main.remixWorld ? new Vector2(Main.spawnTileX, Main.spawnTileY) : new Vector2(Main.dungeonX, Main.dungeonY);
+        Vector2 home = (NPC.homeless ? dungeon : new Vector2(NPC.homeTileX, NPC.homeTileY)).ToWorldCoordinates();
 
         if (!discussing)
         {
@@ -61,7 +66,12 @@ public class SkeletronPacified : ModNPC
             if (dist > MaxDist)
                 NPC.velocity += NPC.DirectionTo(home) * 0.5f;
             else if (NPC.velocity.LengthSquared() < MoveSpeed * MoveSpeed)
+            {
+                if (NPC.velocity.Length() < 1)
+                    NPC.velocity.Normalize();
+
                 NPC.velocity *= 1.02f;
+            }
 
             if (dist < MaxDist * 4 && !NPC.homeless)
                 MoveSpeed = MathHelper.Lerp(MoveSpeed, 5, 0.05f);
@@ -97,7 +107,6 @@ public class SkeletronPacified : ModNPC
     {
         public int RollVariation() => 0;
         public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-
         public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.SkeletronHead];
         public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/SkeletronPacified_Head");
     }

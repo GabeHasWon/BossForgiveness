@@ -39,7 +39,7 @@ internal class EoWHandler : PacifiedNPCHandler
                 break;
         }
 
-        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
+        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 2 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
     }
 
     public override void OnPacify(NPC npc)

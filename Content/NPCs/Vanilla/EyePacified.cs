@@ -43,6 +43,7 @@ public class EyePacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.noTileCollide = false;
+        NPC.netAlways = true;
 
         Music = -1;
         AnimationType = -1;

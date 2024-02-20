@@ -30,6 +30,7 @@ public class PacifiedDeerclops : ModNPC
         NPC.friendly = true;
         NPC.noTileCollide = false;
         NPC.noGravity = false;
+        NPC.netAlways = true;
 
         Music = -1;
         AnimationType = -1;
@@ -77,7 +78,7 @@ public class PacifiedDeerclops : ModNPC
             NPC.netUpdate = true;
         }
 
-        if (!Main.dayTime && NPC.Distance(new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates()) > 16000)
+        if (!Main.dayTime && NPC.Distance(new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates()) > 16000) // Teleport code
         {
             NPC.Center = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates();
 

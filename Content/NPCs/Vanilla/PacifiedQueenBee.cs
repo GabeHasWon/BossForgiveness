@@ -32,6 +32,7 @@ public class PacifiedQueenBee : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.noTileCollide = true;
+        NPC.netAlways = true;
 
         Music = -1;
         AnimationType = -1;
