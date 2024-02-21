@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,7 +40,9 @@ internal class EoWHandler : PacifiedNPCHandler
                 break;
         }
 
-        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 2 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
+        bool valid = npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 2 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
+
+        return valid;
     }
 
     public override void OnPacify(NPC npc)
@@ -53,13 +56,18 @@ internal class EoWHandler : PacifiedNPCHandler
         for (int i = 0; i < count; ++i)
         {
             var worm = Main.npc[_worm.ElementAt(i)];
-            positions[i] = worm.position;
             worm.active = false;
-            worm.netUpdate = true;
+
+            positions[i] = worm.position;
+
+            if (Main.netMode == NetmodeID.Server)
+                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, worm.whoAmI);
         }
 
         TransformInto<PacifiedEoW>(npc);
         (npc.ModNPC as PacifiedEoW).SpawnBody(positions);
-        npc.netUpdate = true;
+        
+        if (Main.netMode == NetmodeID.Server)
+            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
     }
 }

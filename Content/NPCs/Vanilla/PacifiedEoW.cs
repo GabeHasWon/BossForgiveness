@@ -37,7 +37,6 @@ public class PacifiedEoW : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.hide = false;
-        NPC.netAlways = true;
 
         Music = -1;
         AnimationType = -1;

@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics;
@@ -56,16 +57,20 @@ internal class EoCLeash : ModItem
 
                     if (npc.active && npc.type == ModContent.NPCType<EyePacified>() && npc.Hitbox.Intersects(Projectile.Hitbox))
                     {
-                        npc.ai[1] = 1;
-                        npc.ai[2] = Projectile.owner;
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                            new SyncEoCLassoModule(Projectile.owner, i).Send(-1, -1, false);
+                        else
+                        {
+                            npc.ai[1] = 1;
+                            npc.ai[2] = Projectile.owner;
+                            npc.netUpdate = true;
 
-                        owner.GetModPlayer<EoCLassoPlayer>().ridingEoC = i;
-                        owner.GetModPlayer<EoCLassoPlayer>().eoCVelocity = npc.velocity;
-
-                        if (owner.mount.Active)
-                            owner.QuickMount();
+                            owner.GetModPlayer<EoCLassoPlayer>().ridingEoC = i;
+                            owner.GetModPlayer<EoCLassoPlayer>().eoCVelocity = npc.velocity;
+                        }
 
                         Projectile.Kill();
+
                         return;
                     }
                 }
@@ -148,6 +153,9 @@ internal class EoCLeash : ModItem
                 Player.velocity = Vector2.Zero;
                 Player.Center = (Steed.ModNPC as EyePacified).GetPlayerCenter() + Steed.velocity;
                 Player.direction = 1;
+
+                if (Player.whoAmI == Main.myPlayer)
+                    NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
             }
         }
     }

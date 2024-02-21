@@ -50,7 +50,6 @@ public class BoCPacified : ModNPC
     private ref float IdleRotDir => ref NPC.ai[2];
     private ref float NetTimer => ref NPC.ai[3];
 
-    private int _netDesiredCreepers = -1;
     private List<Creeper> _creepers = [];
 
     public override void SetStaticDefaults()

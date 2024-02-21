@@ -2,12 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -26,6 +23,8 @@ public class EyePacified : ModNPC
     }
 
     private int RiderWhoAmI => (int)NPC.ai[2];
+
+    private ref float NetTimer => ref NPC.ai[3];
 
     public override void SetStaticDefaults()
     {
@@ -57,6 +56,12 @@ public class EyePacified : ModNPC
 
     public override bool PreAI()
     {
+        if (NetTimer++ > 600)
+        {
+            NPC.netUpdate = true;
+            NetTimer = 0;
+        }
+
         NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() - MathHelper.PiOver2, 0.1f);
 
         if (IsLassoed) // Stop all behaviour
