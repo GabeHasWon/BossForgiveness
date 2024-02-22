@@ -1,4 +1,4 @@
-displayName = Mercy
+displayName = Pacifist Route
 author = GabeHasWon
 version = 0.1
 dllReferences = NetEasy_v0.1.8, NetSerializer

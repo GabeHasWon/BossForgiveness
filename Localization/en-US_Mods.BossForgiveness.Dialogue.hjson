@@ -27,7 +27,7 @@ BoC: {
 	2: ICE CREAM IS THE WORST DESSERT. YOU EVER HEAR OF BRAIN FREEZE, HUMAN?
 	3: SOME PEOPLE THINK I'M SMART. THEY'RE REALLY CORRECT.
 	4: HAVE YOU SEEN MY BUD, EYE? THAT'S HIS FULL LEGAL NAME.
-	5: I NEED TO STRIVE FOR ONLY INTELLECTUL PERSUITS: MY FLOATING STYLE IS UNMATCHED.
+	5: I STRIVE FOR ONLY INTELLECTUL PERSUITS; MY BODY IS AT OPTIMAL PERFORMANCE.
 	6: SLEEP IS IMPORTANT FOR THE MIND. I DO IT ALL THE TIME. YOU JUST CAN'T TELL.
 }
 
@@ -35,17 +35,28 @@ EoW: {
 	0: *Various teeth gnashing sounds*
 	1: *You feel REALLY observed*
 	2: *The familiar rush of digging surrounds you*
-	3: *It looks content*
+	3: *It looks surprisingly content*
 }
 
 QueenBee: {
 	0: BzzZZZzzZz
 	1: BuuZZzzzZzzzzZ
+	2: BuZzZzZzZz BUZZzZzzZ
+	3: BzzUZbZBuuuuZZZ
+	4: Seriously, though. Would you like some tea sometime?
 }
 
 Skeletron: {
 	0: Many apologies for the lass, I don't know my own curse's strength sometimes!
-	1: I'm afraid tea is no longer a passion. It flows much more than it used to, and that's an issue.
-	2: Often I see some of my friends down in the dungeon. Have you met Willy the One-Eyed Skull yet? He's fantastic!
-	3: Two hands are all you need to be a proper gentleman.
+	1: I'm afraid tea is no longer a passion. It flows much more than it used to, and that's quite an issue!
+	2: Often I see some of my friends down in the dungeon. Have you seen Willy the One-Eyed Skull's One-Man-One-Eye show yet? He's fantastic!
+	3: Two hands are all you need to be a proper gentleman. Three is pushing it. Four is absurd.
+}
+
+Deerclops: {
+	0: WHERE IS THE SCRAGGLY HAIRED GUY?
+	1: I GO WHERE WINTER GOES.
+	2: EYE HEALTH IS IMPORTANT. ESPECIALLY WHEN YOU ONLY HAVE ONE!
+	3: NOT EVERYONE HAS THE POWER IN THEIR STEP I DO.
+	4: HAVE YOU SEEN A ROBOT AROUND HERE?
 }

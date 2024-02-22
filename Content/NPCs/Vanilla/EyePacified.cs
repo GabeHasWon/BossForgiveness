@@ -62,6 +62,9 @@ public class EyePacified : ModNPC
             NetTimer = 0;
         }
 
+        if (NPC.homeTileX == -1 || NPC.homeTileY == -1)
+            NPC.homeless = true;
+
         NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() - MathHelper.PiOver2, 0.1f);
 
         if (IsLassoed) // Stop all behaviour
@@ -126,6 +129,8 @@ public class EyePacified : ModNPC
 
     internal void Unmount() => IsLassoed = false;
 
+    public override void SetChatButtons(ref string button, ref string button2) => button = "";
+
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
         if (IsLassoed) // Manually draw mounted player
@@ -153,8 +158,7 @@ public class EyePacified : ModNPC
 
         // Manually draw to fix dumb vanilla origin
         Texture2D tex = TextureAssets.Npc[Type].Value;
-        var col = Lighting.GetColor(NPC.Center.ToTileCoordinates(), drawColor);
-        Main.EntitySpriteDraw(tex, NPC.Center - screenPos, NPC.frame, col, NPC.rotation, new Vector2(55, 104), 1f, SpriteEffects.None, 0);
+        Main.EntitySpriteDraw(tex, NPC.Center - screenPos, NPC.frame, drawColor, NPC.rotation, new Vector2(55, 104), 1f, SpriteEffects.None, 0);
         return false;
     }
 
@@ -162,7 +166,7 @@ public class EyePacified : ModNPC
 
     public override bool CheckConditions(int left, int right, int top, int bottom) => bottom < Main.worldSurface;
     public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.EyeofCthulhu).Value];
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + (IsLassoed ? "Idle" : "Riding") + "." + Main.rand.Next(4));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + (!IsLassoed ? "Idle" : "Riding") + "." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new EoCProfile();
 
     public class EoCProfile : ITownNPCProfile

@@ -1,18 +1,23 @@
 NPCs: {
 	KingSlimePacified.DisplayName: King Slime
-	EyePacified.DisplayName: Eye Pacified
-	BoCPacified.DisplayName: Bo C Pacified
-	PacifiedEoW.DisplayName: Pacified Eo W
-	PacifiedQueenBee.DisplayName: Pacified Queen Bee
-	SkeletronPacified.DisplayName: Skeletron Pacified
-	PacifiedDeerclops.DisplayName: Pacified Deerclops
+	EyePacified.DisplayName: Eye of Cthulhu
+	BoCPacified.DisplayName: Brain of Cthulhu
+	PacifiedEoW.DisplayName: Eater of Worlds
+	PacifiedQueenBee.DisplayName: Queen Bee
+	SkeletronPacified.DisplayName: Skeletron
+	PacifiedDeerclops.DisplayName: Deerclops
 }
 
 Items: {
 	EoCLeash: {
-		DisplayName: Eo C Leash
-		Tooltip: ""
+		DisplayName: Leash of the Eye
+		Tooltip:
+			'''
+			Throw towards a Pacified Eye to ride it
+			Jump off whenever you want to
+			'Don't ask how this works.'
+			'''
 	}
 }
 
-Projectiles.EoCLeashProj.DisplayName: Eo C Leash Proj
+Projectiles.EoCLeashProj.DisplayName: Leash

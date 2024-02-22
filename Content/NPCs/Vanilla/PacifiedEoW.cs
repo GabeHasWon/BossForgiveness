@@ -110,6 +110,8 @@ public class PacifiedEoW : ModNPC
         }
     }
 
+    public override void SetChatButtons(ref string button, ref string button2) => button = "";
+
     public override void SaveData(TagCompound tag) => tag.Add(nameof(segments), segments.Count);
 
     public override void LoadData(TagCompound tag)

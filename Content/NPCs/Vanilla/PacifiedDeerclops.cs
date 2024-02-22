@@ -128,7 +128,7 @@ public class PacifiedDeerclops : ModNPC
     }
 
     public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.Deerclops).Value];
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Deerclops." + Main.rand.Next(2));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Deerclops." + Main.rand.Next(5));
     public override ITownNPCProfile TownNPCProfile() => new QueenBeeProfile();
 
     public class QueenBeeProfile : ITownNPCProfile

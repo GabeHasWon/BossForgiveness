@@ -9,7 +9,7 @@ internal class BoCHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.BrainofCthulhu;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 2f * 2 * 60 && !NPC.AnyNPCs(ModContent.NPCType<BoCPacified>());
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 2f * 60 * 60 && !NPC.AnyNPCs(ModContent.NPCType<BoCPacified>());
 
     public override void OnPacify(NPC npc)
     {

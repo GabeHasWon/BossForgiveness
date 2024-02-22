@@ -9,6 +9,6 @@ internal class DeerclopsHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.Deerclops;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 2 * 2 * 60 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedDeerclops>());
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 2 * 60 * 60 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedDeerclops>());
     public override void OnPacify(NPC npc) => TransformInto<PacifiedDeerclops>(npc);
 }

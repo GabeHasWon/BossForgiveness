@@ -81,7 +81,7 @@ public class PacifiedQueenBee : ModNPC
     }
 
     public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.QueenBee).Value];
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.QueenBee." + Main.rand.Next(2));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.QueenBee." + Main.rand.Next(5));
     public override ITownNPCProfile TownNPCProfile() => new QueenBeeProfile();
 
     public class QueenBeeProfile : ITownNPCProfile

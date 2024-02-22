@@ -13,7 +13,7 @@ internal class WoFHandler : PacifiedNPCHandler
 
     public override int Type => NPCID.WallofFlesh;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 3 && Main.hardMode;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 3 * 60 * 60 && !Main.hardMode;
 
     public override void Load(Mod mod)
     {

@@ -28,6 +28,7 @@ internal abstract class PacifiedNPCHandler : ILoadable
         npc.playerInteraction[Main.myPlayer] = true;
         npc.NPCLoot();
         npc.Transform(ModContent.NPCType<T>());
+        npc.GivenName = string.Empty;
         npc.life = npc.lifeMax;
         npc.Center -= offset.Value;
     }

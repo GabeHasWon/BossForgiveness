@@ -92,6 +92,7 @@ public class SkeletronPacified : ModNPC
         return false;
     }
 
+    public override void SetChatButtons(ref string button, ref string button2) => button = "";
     public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.SkeletronHead).Value];
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Skeletron." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new SkeletronProfile();
