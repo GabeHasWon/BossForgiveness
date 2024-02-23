@@ -86,6 +86,9 @@ public class BoCPacified : ModNPC
             NetTimer = 0;
         }
 
+        if (NPC.homeTileX == -1 || NPC.homeTileY == -1)
+            NPC.homeless = true;
+
         foreach (var item in _creepers)
             item.Update(NPC.whoAmI);
 

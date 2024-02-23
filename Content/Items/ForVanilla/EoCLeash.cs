@@ -67,6 +67,9 @@ internal class EoCLeash : ModItem
 
                             owner.GetModPlayer<EoCLassoPlayer>().ridingEoC = i;
                             owner.GetModPlayer<EoCLassoPlayer>().eoCVelocity = npc.velocity;
+
+                            if (owner.mount.Active)
+                                owner.QuickMount();
                         }
 
                         Projectile.Kill();
@@ -126,6 +129,18 @@ internal class EoCLeash : ModItem
                     return;
                 }
 
+                if (Steed.Right.Y > (Main.maxTilesY - Main.offLimitBorderTiles - 8) * 16)
+                    eoCVelocity.Y -= 1.2f;
+
+                if (Steed.position.Y < (Main.offLimitBorderTiles + 8) * 16)
+                    eoCVelocity.Y += 1.2f;
+
+                if (Steed.Right.X > (Main.maxTilesX - Main.offLimitBorderTiles - 8) * 16)
+                    eoCVelocity.X -= 1.2f;
+
+                if (Steed.position.X < (Main.offLimitBorderTiles + 8) * 16)
+                    eoCVelocity.X += 1.2f;
+
                 if (Steed.collideX)
                     eoCVelocity.X = 0;
 
@@ -149,6 +164,7 @@ internal class EoCLeash : ModItem
                 eoCVelocity = Vector2.Clamp(eoCVelocity, new Vector2(-12), new Vector2(12));
 
                 Steed.velocity = eoCVelocity;
+                Steed.ai[1] = 1;
                 Player.gravity = 0;
                 Player.velocity = Vector2.Zero;
                 Player.Center = (Steed.ModNPC as EyePacified).GetPlayerCenter() + Steed.velocity;

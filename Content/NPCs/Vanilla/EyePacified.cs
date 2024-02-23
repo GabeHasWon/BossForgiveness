@@ -22,7 +22,7 @@ public class EyePacified : ModNPC
         set => NPC.ai[1] = value ? 1f : 0f;
     }
 
-    private int RiderWhoAmI => (int)NPC.ai[2];
+    private int RiderWhoAmI { get => (int)NPC.ai[2]; set => NPC.ai[2] = value; }
 
     private ref float NetTimer => ref NPC.ai[3];
 
@@ -127,13 +127,17 @@ public class EyePacified : ModNPC
         return false;
     }
 
-    internal void Unmount() => IsLassoed = false;
+    internal void Unmount()
+    {
+        IsLassoed = false;
+        RiderWhoAmI = -1;
+    }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        if (IsLassoed) // Manually draw mounted player
+        if (RiderWhoAmI != -1 && !NPC.IsABestiaryIconDummy) // Manually draw mounted player
         {
             Main.spriteBatch.End();
 
