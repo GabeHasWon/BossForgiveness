@@ -154,7 +154,6 @@ public class PacifiedEoW : ModNPC
         return false;
     }
 
-    public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.EaterofWorldsHead).Value];
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoW." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new EoWProfile();
 

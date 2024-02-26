@@ -44,7 +44,6 @@ public class KingSlimePacified : ModNPC
             NPC.frame.Y = 120 * 5;
     }
 
-    public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.KingSlime).Value];
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.KingSlime." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new KingSlimeProfile();
 

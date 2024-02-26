@@ -169,7 +169,6 @@ public class EyePacified : ModNPC
     internal Vector2 GetPlayerCenter() => NPC.Center + NPC.rotation.ToRotationVector2() * 60;
 
     public override bool CheckConditions(int left, int right, int top, int bottom) => bottom < Main.worldSurface;
-    public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.EyeofCthulhu).Value];
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + (!IsLassoed ? "Idle" : "Riding") + "." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => new EoCProfile();
 

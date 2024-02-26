@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs;
 
-internal class Loot : GlobalNPC
+internal class NewLootNPC : GlobalNPC
 {
     public override void ModifyNPCLoot(NPC npc, NPCLoot npcLoot)
     {

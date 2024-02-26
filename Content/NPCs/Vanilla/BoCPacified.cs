@@ -206,7 +206,6 @@ public class BoCPacified : ModNPC
         return true;
     }
 
-    public override List<string> SetNPCNameList() => [Lang.GetNPCName(NPCID.BrainofCthulhu).Value];
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.BoC." + Main.rand.Next(7));
     public override ITownNPCProfile TownNPCProfile() => new BoCProfile();
 
