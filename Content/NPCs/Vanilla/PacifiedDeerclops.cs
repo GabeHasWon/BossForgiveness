@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,6 +12,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class PacifiedDeerclops : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.Deerclops}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_39";
+
     private ref float Timer => ref NPC.ai[0];
     private ref float WaitTime => ref NPC.ai[1];
     private ref float Target => ref NPC.ai[2];
@@ -128,13 +129,5 @@ public class PacifiedDeerclops : ModNPC
     }
 
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Deerclops." + Main.rand.Next(5));
-    public override ITownNPCProfile TownNPCProfile() => new QueenBeeProfile();
-
-    public class QueenBeeProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.Deerclops];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/PacifiedDeerclops_Head");
-    }
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }

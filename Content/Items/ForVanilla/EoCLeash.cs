@@ -21,6 +21,9 @@ internal class EoCLeash : ModItem
         Item.channel = true;
     }
 
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<EoCLeashProj>()] < 1 
+        && player.GetModPlayer<EoCLassoPlayer>().ridingEoC == -1;
+
     private class EoCLeashProj : ModProjectile
     {
         public override string Texture => base.Texture.Replace("Proj", "");

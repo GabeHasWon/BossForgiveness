@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
+using Terraria.GameContent;
+using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs;
 
@@ -30,4 +31,6 @@ public static class NPCUtils
 
         return false;
     }
+
+    public static ITownNPCProfile DefaultProfile(this ModNPC npc) => new Profiles.DefaultNPCProfile(npc.Texture, ModContent.GetModHeadSlot(npc.HeadTexture));
 }

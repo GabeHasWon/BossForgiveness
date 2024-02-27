@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,6 +12,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class SkeletronPacified : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.SkeletronHead}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_19";
+
     private SkeletronHand leftHand;
     private SkeletronHand rightHand;
 
@@ -94,21 +95,13 @@ public class SkeletronPacified : ModNPC
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Skeletron." + Main.rand.Next(4));
-    public override ITownNPCProfile TownNPCProfile() => new SkeletronProfile();
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
         leftHand.Draw(screenPos);
         rightHand.Draw(screenPos);
         return true;
-    }
-
-    public class SkeletronProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.SkeletronHead];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/SkeletronPacified_Head");
     }
 
     private class SkeletronHand : Entity

@@ -8,7 +8,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Content\NPCs\Vanilla\KingSlimePacified.png" />
     <None Remove="Localization\en-US_Mods.BossForgiveness.Dialogue.hjson" />
   </ItemGroup>
   <ItemGroup>

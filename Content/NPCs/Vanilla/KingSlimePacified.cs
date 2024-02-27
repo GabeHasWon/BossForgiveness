@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -13,6 +11,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class KingSlimePacified : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.KingSlime}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_7";
+
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 6;
@@ -45,7 +46,7 @@ public class KingSlimePacified : ModNPC
     }
 
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.KingSlime." + Main.rand.Next(4));
-    public override ITownNPCProfile TownNPCProfile() => new KingSlimeProfile();
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 
     public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
@@ -66,14 +67,5 @@ public class KingSlimePacified : ModNPC
 
         drawPos.Y += NPC.gfxOffY - (60 - offset) * NPC.scale;
         spriteBatch.Draw(crown, drawPos - screenPos, null, drawColor, 0f, crown.Size() / 2f, 1f, SpriteEffects.None, 0f);
-    }
-
-    public class KingSlimeProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.KingSlime];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/KingSlimePacified_Head");
     }
 }

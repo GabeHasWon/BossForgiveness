@@ -1,8 +1,6 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,6 +12,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class EyePacified : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.EyeofCthulhu}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_0";
+
     private ref float Timer => ref NPC.ai[0];
 
     private bool IsLassoed
@@ -44,6 +45,9 @@ public class EyePacified : ModNPC
         NPC.noTileCollide = false;
         NPC.netAlways = true;
 
+        IsLassoed = false;
+        RiderWhoAmI = -1;
+
         Music = -1;
         AnimationType = -1;
     }
@@ -56,6 +60,9 @@ public class EyePacified : ModNPC
 
     public override bool PreAI()
     {
+        if (!IsLassoed && RiderWhoAmI != -1)
+            RiderWhoAmI = -1;
+
         if (NetTimer++ > 600)
         {
             NPC.netUpdate = true;
@@ -170,14 +177,5 @@ public class EyePacified : ModNPC
 
     public override bool CheckConditions(int left, int right, int top, int bottom) => bottom < Main.worldSurface;
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoC." + (!IsLassoed ? "Idle" : "Riding") + "." + Main.rand.Next(4));
-    public override ITownNPCProfile TownNPCProfile() => new EoCProfile();
-
-    public class EoCProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.EyeofCthulhu];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/EyePacified_Head");
-    }
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -16,6 +16,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class PacifiedEoW : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.EaterofWorldsHead}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_2";
+
     private ref float Timer => ref NPC.ai[0];
     private ref float NetTimer => ref NPC.ai[1];
 
@@ -46,6 +49,9 @@ public class PacifiedEoW : ModNPC
     {
         Timer++;
 
+        if (NetTimer % 300 == 0 && CanDig())
+            SoundEngine.PlaySound(SoundID.WormDigQuiet with { Volume = 0.1f, Pitch = -0.05f }, NPC.Center);
+
         if (NetTimer >= 600)
         {
             NPC.netUpdate = true;
@@ -58,7 +64,7 @@ public class PacifiedEoW : ModNPC
             {
                 NPC.velocity.X += MathF.Sin(Timer * 0.03f) * 0.15f;
 
-                if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                if (CanDig())
                     NPC.velocity.Y -= 0.2f;
                 else
                     NPC.velocity.Y += 0.2f;
@@ -70,7 +76,7 @@ public class PacifiedEoW : ModNPC
                 else
                     NPC.velocity.X -= 0.2f;
 
-                if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height) && NPC.homeTileY * 16 < NPC.Center.Y)
+                if (CanDig() && NPC.homeTileY * 16 < NPC.Center.Y)
                     NPC.velocity.Y -= 0.2f;
                 else
                     NPC.velocity.Y += 0.2f;
@@ -80,7 +86,7 @@ public class PacifiedEoW : ModNPC
         {
             NPC.velocity.X *= 0.94f;
 
-            if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+            if (CanDig())
                 NPC.velocity.Y *= 0.94f;
             else
                 NPC.velocity.Y += 0.2f;
@@ -94,6 +100,8 @@ public class PacifiedEoW : ModNPC
             segment.Update();
         return false;
     }
+
+    private bool CanDig() => Collision.SolidCollision(NPC.position, NPC.width, NPC.height) || Collision.WetCollision(NPC.position, NPC.width, NPC.height);
 
     public override void FindFrame(int frameHeight) => NPC.frame.Y = 0;
 
@@ -155,15 +163,7 @@ public class PacifiedEoW : ModNPC
     }
 
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoW." + Main.rand.Next(4));
-    public override ITownNPCProfile TownNPCProfile() => new EoWProfile();
-
-    public class EoWProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.EaterofWorldsHead];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/PacifiedEoW_Head");
-    }
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 
     public class Segment : Entity
     {

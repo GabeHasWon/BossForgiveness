@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,6 +44,9 @@ public class BoCPacified : ModNPC
         internal void Draw() => Main.instance.DrawNPCDirect(Main.spriteBatch, _controlledNPC, false, Main.screenPosition);
     }
 
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.BrainofCthulhu}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_23";
+
     private ref float Timer => ref NPC.ai[0];
     private ref float IdleRotation => ref NPC.ai[1];
     private ref float IdleRotDir => ref NPC.ai[2];
@@ -55,7 +57,6 @@ public class BoCPacified : ModNPC
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 8;
-
         NPCID.Sets.IsTownPet[Type] = true;
     }
 
@@ -207,13 +208,5 @@ public class BoCPacified : ModNPC
     }
 
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.BoC." + Main.rand.Next(7));
-    public override ITownNPCProfile TownNPCProfile() => new BoCProfile();
-
-    public class BoCProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.BrainofCthulhu];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/BoCPacified_Head");
-    }
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }

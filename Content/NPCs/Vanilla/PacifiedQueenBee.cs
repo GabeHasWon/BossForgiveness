@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -14,6 +11,9 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class PacifiedQueenBee : ModNPC
 {
+    public override string Texture => $"Terraria/Images/NPC_{NPCID.QueenBee}";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_14";
+
     private ref float Timer => ref NPC.ai[0];
 
     public override void SetStaticDefaults()
@@ -81,13 +81,5 @@ public class PacifiedQueenBee : ModNPC
     }
 
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.QueenBee." + Main.rand.Next(5));
-    public override ITownNPCProfile TownNPCProfile() => new QueenBeeProfile();
-
-    public class QueenBeeProfile : ITownNPCProfile
-    {
-        public int RollVariation() => 0;
-        public string GetNameForVariant(NPC npc) => npc.getNewNPCName();
-        public Asset<Texture2D> GetTextureNPCShouldUse(NPC npc) => TextureAssets.Npc[NPCID.QueenBee];
-        public int GetHeadTextureIndex(NPC npc) => ModContent.GetModHeadSlot("BossForgiveness/Content/NPCs/Vanilla/PacifiedQueenBee_Head");
-    }
+    public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }
