@@ -9,6 +9,8 @@ internal abstract class PacifiedNPCHandler : ILoadable
 {
     public static Dictionary<int, PacifiedNPCHandler> Handlers = [];
 
+    public static bool TransformingNPC = false;
+
     public abstract int Type { get; }
 
     public virtual void Load(Mod mod)
@@ -25,11 +27,15 @@ internal abstract class PacifiedNPCHandler : ILoadable
     {
         offset ??= Vector2.Zero;
 
+        TransformingNPC = true;
+
         npc.playerInteraction[Main.myPlayer] = true;
         npc.NPCLoot();
         npc.Transform(ModContent.NPCType<T>());
         npc.GivenName = string.Empty;
         npc.life = npc.lifeMax;
         npc.Center -= offset.Value;
+
+        TransformingNPC = false;
     }
 }
