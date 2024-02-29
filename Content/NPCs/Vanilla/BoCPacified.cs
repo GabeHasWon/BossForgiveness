@@ -68,6 +68,7 @@ public class BoCPacified : ModNPC
         NPC.boss = false;
         NPC.townNPC = true;
         NPC.friendly = true;
+        NPC.homeless = true;
 
         Music = -1;
         AnimationType = -1;
@@ -86,9 +87,6 @@ public class BoCPacified : ModNPC
             NPC.netUpdate = true;
             NetTimer = 0;
         }
-
-        if (NPC.homeTileX == -1 || NPC.homeTileY == -1)
-            NPC.homeless = true;
 
         foreach (var item in _creepers)
             item.Update(NPC.whoAmI);

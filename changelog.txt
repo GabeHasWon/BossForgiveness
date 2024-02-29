@@ -1,3 +1,5 @@
-v1.0.0.2
-- Fixed issue where bosses killed normally will drop pacified items
-- Made pacified boss names respect resource packs changing the name & translations
+v1.0.0.3
+- Fixed issue where pacified Skeletron would render arms in Bestiary and using certain cheat tools
+- Fixed issue where spawning pacified bosses with cheat tools would make them have a "home" at -1, -1 (top left of the world)
+- Made Skeletron go to his house or the Dungeon way faster if far away
+- Added idle animation for his hands when talking to Skeletron

@@ -44,6 +44,7 @@ public class EyePacified : ModNPC
         NPC.friendly = true;
         NPC.noTileCollide = false;
         NPC.netAlways = true;
+        NPC.homeless = true;
 
         IsLassoed = false;
         RiderWhoAmI = -1;
@@ -68,9 +69,6 @@ public class EyePacified : ModNPC
             NPC.netUpdate = true;
             NetTimer = 0;
         }
-
-        if (NPC.homeTileX == -1 || NPC.homeTileY == -1)
-            NPC.homeless = true;
 
         NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() - MathHelper.PiOver2, 0.1f);
 

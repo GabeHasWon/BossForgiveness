@@ -38,6 +38,7 @@ public class SkeletronPacified : ModNPC
         NPC.boss = false;
         NPC.townNPC = true;
         NPC.friendly = true;
+        NPC.homeless = true;
 
         Music = -1;
         AnimationType = -1;
@@ -76,8 +77,10 @@ public class SkeletronPacified : ModNPC
 
             if (dist < MaxDist * 4 && !NPC.homeless)
                 MoveSpeed = MathHelper.Lerp(MoveSpeed, 5, 0.05f);
-            else
+            else if (dist < MaxDist * 40)
                 MoveSpeed = MathHelper.Lerp(MoveSpeed, 9, 0.05f);
+            else
+                MoveSpeed = MathHelper.Lerp(MoveSpeed, 20, 0.05f);
 
             NPC.velocity = Vector2.Clamp(NPC.velocity, new Vector2(-MoveSpeed), new Vector2(MoveSpeed));
             Timer++;
@@ -99,6 +102,9 @@ public class SkeletronPacified : ModNPC
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        if (NPC.IsABestiaryIconDummy)
+            return true;
+
         leftHand.Draw(screenPos);
         rightHand.Draw(screenPos);
         return true;
@@ -123,7 +129,9 @@ public class SkeletronPacified : ModNPC
 
         public void Update()
         {
-            var target = parent.Center + new Vector2(leftHand ? -160 : 160, 100);
+            float xOff = (leftHand ? -160 : 160) * (parent.IsBeingTalkedTo() ? 0.6f : 1);
+            float yOff = 100 + (MathF.Sin(parent.ai[2] * 0.02f) * 50 * (parent.IsBeingTalkedTo() ? 1 : 0));
+            var target = parent.Center + new Vector2(xOff, yOff);
             float dist = MathHelper.Clamp(Distance(target) / 40f, 0, 12);
             velocity = DirectionTo(target) * dist;
             Center += velocity;
