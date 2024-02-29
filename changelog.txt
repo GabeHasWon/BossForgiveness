@@ -1,5 +1,2 @@
-v1.0.0.3
-- Fixed issue where pacified Skeletron would render arms in Bestiary and using certain cheat tools
-- Fixed issue where spawning pacified bosses with cheat tools would make them have a "home" at -1, -1 (top left of the world)
-- Made Skeletron go to his house or the Dungeon way faster if far away
-- Added idle animation for his hands when talking to Skeletron
+v1.0.0.4
+- Fixed normalization NaN issue on Skeletron and all other bosses that may or may not have had it

@@ -66,11 +66,11 @@ public class SkeletronPacified : ModNPC
             float dist = NPC.DistanceSQ(home);
 
             if (dist > MaxDist)
-                NPC.velocity += NPC.DirectionTo(home) * 0.5f;
+                NPC.velocity += NPC.SafeDirectionTo(home) * 0.5f;
             else if (NPC.velocity.LengthSquared() < MoveSpeed * MoveSpeed)
             {
-                if (NPC.velocity.Length() < 1)
-                    NPC.velocity.Normalize();
+                if (NPC.velocity.LengthSquared() < 1)
+                    NPC.velocity.SafeNormalize(Vector2.One);
 
                 NPC.velocity *= 1.02f;
             }
@@ -132,8 +132,8 @@ public class SkeletronPacified : ModNPC
             float xOff = (leftHand ? -160 : 160) * (parent.IsBeingTalkedTo() ? 0.6f : 1);
             float yOff = 100 + (MathF.Sin(parent.ai[2] * 0.02f) * 50 * (parent.IsBeingTalkedTo() ? 1 : 0));
             var target = parent.Center + new Vector2(xOff, yOff);
-            float dist = MathHelper.Clamp(Distance(target) / 40f, 0, 12);
-            velocity = DirectionTo(target) * dist;
+            float dist = MathHelper.Clamp(Distance(target) / 40f, 0, parent.ai[0]);
+            velocity = this.SafeDirectionTo(target) * dist;
             Center += velocity;
 
             if (DistanceSQ(parent.Center) > 12000 * 12000)

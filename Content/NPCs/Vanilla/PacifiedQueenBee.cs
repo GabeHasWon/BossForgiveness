@@ -70,7 +70,7 @@ public class PacifiedQueenBee : ModNPC
             {
                 var rot = new Vector2(0, 300).RotatedBy(Timer * 0.05f) * new Vector2(1.5f, 0.35f);
                 var home = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates() - new Vector2(0, 400) + rot;
-                NPC.velocity += NPC.DirectionTo(home) * 0.7f;
+                NPC.velocity += NPC.SafeDirectionTo(home) * 0.7f;
                 NPC.velocity = Vector2.Clamp(NPC.velocity, new(-12), new(12));
             }
             else

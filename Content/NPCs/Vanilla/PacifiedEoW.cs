@@ -185,7 +185,7 @@ public class PacifiedEoW : ModNPC
             const float EoWLength = 22.5f;
 
             if (DistanceSQ(_parent.Center) > EoWLength * EoWLength)
-                Center += DirectionTo(_parent.Center) * (Distance(_parent.Center) - EoWLength);
+                Center += this.SafeDirectionTo(_parent.Center) * (Distance(_parent.Center) - EoWLength);
 
             if (_parent.Center != Center)
                 _rot = AngleTo(_parent.Center) + MathHelper.PiOver2;

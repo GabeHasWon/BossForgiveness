@@ -128,7 +128,7 @@ public class BoCPacified : ModNPC
             {
                 IdleRotation += 0.005f;
                 var spinLoc = new Vector2(NPC.homeTileX, NPC.homeTileY) * 16 + new Vector2(500, 0).RotatedBy(IdleRotation);
-                NPC.velocity = NPC.DirectionTo(spinLoc) * Math.Max((NPC.Distance(spinLoc) - 60) / 240f, 2f);
+                NPC.velocity = NPC.SafeDirectionTo(spinLoc) * Math.Max((NPC.Distance(spinLoc) - 60) / 240f, 2f);
             }
         }
 
