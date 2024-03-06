@@ -119,6 +119,12 @@ internal class EoCLeash : ModItem
                 Main.screenPosition = Steed.Center - Main.ScreenSize.ToVector2() / 2f;
         }
 
+        public override void UpdateDead()
+        {
+            if (OnEoC)
+                Unmount();
+        }
+
         public override void PreUpdateMovement()
         {
             if (OnEoC)
@@ -129,8 +135,7 @@ internal class EoCLeash : ModItem
 
                 if (steedInvalid || Player.controlMount || Player.grappling[0] >= 0 || Player.controlJump)
                 {
-                    (Steed.ModNPC as EyePacified).Unmount();
-                    ridingEoC = -1;
+                    Unmount();
                     return;
                 }
 
@@ -179,6 +184,13 @@ internal class EoCLeash : ModItem
                 if (Player.whoAmI == Main.myPlayer)
                     NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);
             }
+        }
+
+        private void Unmount()
+        {
+            if (Steed.ModNPC is EyePacified pacified)
+                pacified.Unmount();
+            ridingEoC = -1;
         }
     }
 }

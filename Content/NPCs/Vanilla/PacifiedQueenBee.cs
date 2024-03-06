@@ -21,6 +21,8 @@ public class PacifiedQueenBee : ModNPC
         Main.npcFrameCount[Type] = Main.npcFrameCount[NPCID.QueenBee];
 
         NPCID.Sets.IsTownPet[Type] = true;
+
+        this.HideFromBestiary();
     }
 
     public override void SetDefaults()

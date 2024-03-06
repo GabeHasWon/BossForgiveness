@@ -1,4 +1,3 @@
-v1.0.0.5
-- Fixed pacified Eye of Cthulhu being unable to pass through platforms
-- Nerfed Eye of Cthulhu flight speed
-- Slightly changed how EoC flight moves, now it's normalized instead of clamped (diagonal movement is no longer faster)
+v1.0.1
+- Added pacified Queen Slime, Skeletron Prime
+- Hid all pacified bosses from the bestiary

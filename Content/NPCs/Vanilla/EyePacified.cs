@@ -32,6 +32,8 @@ public class EyePacified : ModNPC
         Main.npcFrameCount[Type] = 6;
 
         NPCID.Sets.IsTownPet[Type] = true;
+
+        this.HideFromBestiary();
     }
 
     public override void SetDefaults()

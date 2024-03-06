@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs;
@@ -12,8 +13,14 @@ public static class NPCUtils
         int y = (int)(npc.Center.Y / 16f);
         int startY = y;
 
+        if (y < 0)
+            return 1;
+
         while (!WorldGen.SolidTile(x, y))
         {
+            if (y <= 0)
+                return 1;
+
             y++;
 
             if (y - startY > maxDist)
@@ -33,4 +40,10 @@ public static class NPCUtils
     }
 
     public static ITownNPCProfile DefaultProfile(this ModNPC npc) => new Profiles.DefaultNPCProfile(npc.Texture, ModContent.GetModHeadSlot(npc.HeadTexture));
+
+    public static void HideFromBestiary(this ModNPC npc)
+    {
+        NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new() { Hide = true };
+        NPCID.Sets.NPCBestiaryDrawOffset.Add(npc.Type, drawModifiers);
+    }
 }

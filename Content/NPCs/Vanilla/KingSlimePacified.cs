@@ -20,6 +20,8 @@ public class KingSlimePacified : ModNPC
 
         NPCID.Sets.IsTownSlime[Type] = true;
         NPCID.Sets.IsTownPet[Type] = true;
+
+        this.HideFromBestiary();
     }
 
     public override void SetDefaults()

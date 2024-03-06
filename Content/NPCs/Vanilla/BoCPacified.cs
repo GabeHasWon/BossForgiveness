@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -53,6 +54,18 @@ public class BoCPacified : ModNPC
     private ref float NetTimer => ref NPC.ai[3];
 
     private List<Creeper> _creepers = [];
+
+    public override void Load() => On_BrainOfCthuluBigProgressBar.ValidateAndCollectNecessaryInfo += StopPacifiedBar;
+
+    private bool StopPacifiedBar(On_BrainOfCthuluBigProgressBar.orig_ValidateAndCollectNecessaryInfo orig, BrainOfCthuluBigProgressBar self, ref BigProgressBarInfo info)
+    {
+        bool valid = orig(self, ref info);
+
+        if (valid && Main.npc[info.npcIndexToAimAt].type == ModContent.NPCType<BoCPacified>())
+            return false; // Force bar to hide if I'm not an actual Brain of Cthulhu
+
+        return valid;
+    }
 
     public override void SetStaticDefaults()
     {

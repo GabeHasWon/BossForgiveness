@@ -6,6 +6,8 @@ NPCs: {
 	PacifiedQueenBee.DisplayName: "{$NPCName.QueenBee}"
 	SkeletronPacified.DisplayName: "{$NPCName.SkeletronHead}"
 	PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
+	QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
+	SkelePrimePacified.DisplayName: Skele Prime Pacified
 }
 
 Items: {

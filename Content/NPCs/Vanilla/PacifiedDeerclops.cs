@@ -19,8 +19,11 @@ public class PacifiedDeerclops : ModNPC
     private ref float WaitTime => ref NPC.ai[1];
     private ref float Target => ref NPC.ai[2];
 
-    public override void SetStaticDefaults() => NPCID.Sets.IsTownPet[Type] = true;
-
+    public override void SetStaticDefaults()
+    {
+        NPCID.Sets.IsTownPet[Type] = true;
+        this.HideFromBestiary();
+    }
     public override void SetDefaults()
     {
         NPC.CloneDefaults(NPCID.Deerclops);

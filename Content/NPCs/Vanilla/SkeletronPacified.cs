@@ -28,6 +28,8 @@ public class SkeletronPacified : ModNPC
 
         NPCID.Sets.IsTownPet[Type] = true;
         NPCID.Sets.SpawnsWithCustomName[Type] = true;
+        
+        this.HideFromBestiary();
     }
 
     public override void SetDefaults()

@@ -29,6 +29,8 @@ public class PacifiedEoW : ModNPC
         Main.npcFrameCount[Type] = 1;
 
         NPCID.Sets.IsTownPet[Type] = true;
+
+        this.HideFromBestiary();
     }
 
     public override void SetDefaults()
