@@ -123,6 +123,8 @@ internal class EoCLeash : ModItem
         {
             if (OnEoC)
             {
+                const int MaxSpeed = 10;
+
                 bool steedInvalid = !Steed.active || Steed.type != ModContent.NPCType<EyePacified>() || Steed.life <= 0;
 
                 if (steedInvalid || Player.controlMount || Player.grappling[0] >= 0 || Player.controlJump)
@@ -164,7 +166,8 @@ internal class EoCLeash : ModItem
                 if (!Player.controlDown && !Player.controlLeft && !Player.controlRight && !Player.controlUp)
                     eoCVelocity *= 0.99f;
 
-                eoCVelocity = Vector2.Clamp(eoCVelocity, new Vector2(-12), new Vector2(12));
+                if (eoCVelocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    eoCVelocity = Vector2.Normalize(eoCVelocity) * MaxSpeed;
 
                 Steed.velocity = eoCVelocity;
                 Steed.ai[1] = 1;

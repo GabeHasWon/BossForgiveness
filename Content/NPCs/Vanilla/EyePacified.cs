@@ -132,6 +132,8 @@ public class EyePacified : ModNPC
         return false;
     }
 
+    public override bool? CanFallThroughPlatforms() => true;
+
     internal void Unmount()
     {
         IsLassoed = false;

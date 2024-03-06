@@ -1,2 +1,4 @@
-v1.0.0.4
-- Fixed normalization NaN issue on Skeletron and all other bosses that may or may not have had it
+v1.0.0.5
+- Fixed pacified Eye of Cthulhu being unable to pass through platforms
+- Nerfed Eye of Cthulhu flight speed
+- Slightly changed how EoC flight moves, now it's normalized instead of clamped (diagonal movement is no longer faster)
