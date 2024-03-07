@@ -1,3 +1,4 @@
 v1.0.1
 - Added pacified Queen Slime, Skeletron Prime
 - Hid all pacified bosses from the bestiary
+- Updated Deerclops dialogue

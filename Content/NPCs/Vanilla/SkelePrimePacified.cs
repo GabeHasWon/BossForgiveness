@@ -16,7 +16,7 @@ public class SkelePrimePacified : ModNPC
     private const int ArmCount = 4;
 
     public override string Texture => $"Terraria/Images/NPC_{NPCID.SkeletronPrime}";
-    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_23";
+    public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_18";
 
     private ref float Timer => ref NPC.ai[0];
 
@@ -94,7 +94,7 @@ public class SkelePrimePacified : ModNPC
         return false;
     }
 
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.SkeletronPrime." + Main.rand.Next(6));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.SkeletronPrime." + Main.rand.Next(5));
     public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 
     public class SkelePrimeArm : Entity

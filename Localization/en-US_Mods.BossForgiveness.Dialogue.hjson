@@ -57,7 +57,7 @@ Deerclops: {
 	0: WHERE IS THE SCRAGGLY HAIRED GUY?
 	1: I GO WHERE WINTER GOES.
 	2: EYE HEALTH IS IMPORTANT. ESPECIALLY WHEN YOU ONLY HAVE ONE!
-	3: NOT EVERYONE HAS THE POWER IN THEIR STEP I DO.
+	3: NO ONE HAS THE POWER IN THEIR STEP I DO.
 	4: HAVE YOU SEEN A ROBOT AROUND HERE?
 }
 
@@ -69,9 +69,20 @@ QueenSlime: {
 }
 
 SkeletronPrime: {
-	0: YOU WANT TO HIGH FIVE? MIND THE BLADES.
-	1: I FIND MYSELF OFTEN LOOKING AT THE GREENERY.
-	2: I'VE THOUGHT OF TAKING UP SEWING - WHAT DO YOU THINK?
-	3: SOMETIMES I WONDER WHAT WARMTH IS LIKE.
-	4: THE DEMOLITIONIST IS AWESOME. SAY HI TO HIM FOR ME.
+	0: I Look At Falling Leaves, And Cry. Well, If I Could.
+	1: I Find Myself Often Looking At The Greenery.
+	2: I've Thought Of Taking Up Sewing - What Do You Think?
+	3: Sometimes I Wonder What Warmth Is Like.
+	4: The Demolitionist Is Wonderful. Say Hello To Him For Me.
+}
+
+Destroyer: {
+	0: that mechanic chick is pretty awesome man
+	1: really, if you think about it, i'm just riding the waves
+	2: are my probes alright? yah, they're cool now, don't worry about it
+	3: dude, you see these lights? yeah, they're my favorite color
+	4: good thing i have an onboard cpu, no way i could talk with my mandibles
+	5: my guy, that armor looks great on you
+	6: nothing quite like riding a good dirt dude, none of that ore stuff
+	7: you think i could go pro? i've got a lot of time on my hands
 }

@@ -14,7 +14,7 @@ using Terraria.ModLoader.IO;
 namespace BossForgiveness.Content.NPCs.Vanilla;
 
 [AutoloadHead]
-public class PacifiedEoW : ModNPC
+public class PacifiedEoW : ModNPC, INeedsHovering
 {
     public override string Texture => $"Terraria/Images/NPC_{NPCID.EaterofWorldsHead}";
     public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_2";
@@ -119,6 +119,16 @@ public class PacifiedEoW : ModNPC
             segments.Add(segment);
             lastSegment = segment;
         }
+    }
+
+    public List<Hover> Hovers()
+    {
+        List<Hover> list = new(segments.Count);
+
+        foreach (var item in segments)
+            list.Add(new(NPC.whoAmI, item.Hitbox));
+
+        return list;
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";

@@ -8,6 +8,7 @@ NPCs: {
 	PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
 	QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
 	SkelePrimePacified.DisplayName: Skele Prime Pacified
+	DestroyerPacified.DisplayName: Destroyer Pacified
 }
 
 Items: {
@@ -19,6 +20,11 @@ Items: {
 			Jump off whenever you want to
 			'Don't ask how this works.'
 			'''
+	}
+
+	ChatItemIcon: {
+		DisplayName: Chat Item Icon
+		Tooltip: ""
 	}
 }
 
