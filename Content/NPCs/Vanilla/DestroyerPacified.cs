@@ -12,7 +12,7 @@ using Terraria.ModLoader;
 namespace BossForgiveness.Content.NPCs.Vanilla;
 
 [AutoloadHead]
-public class DestroyerPacified : ModNPC, INeedsHovering
+public class DestroyerPacified : ModNPC, IAdditionalHoverboxes
 {
     public override string Texture => $"Terraria/Images/NPC_{NPCID.TheDestroyer}";
     public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_25";
@@ -135,12 +135,12 @@ public class DestroyerPacified : ModNPC, INeedsHovering
         }
     }
 
-    public List<Hover> Hovers()
+    public List<Hoverbox> GetAdditionalHoverboxes()
     {
-        List<Hover> list = new(segments.Count);
+        List<Hoverbox> list = new(segments.Count);
 
         foreach (var item in segments)
-            list.Add(new(NPC.whoAmI, item.Hitbox));
+            list.Add(new(NPC.whoAmI, item.Hitbox, null));
 
         return list;
     }

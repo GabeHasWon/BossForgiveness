@@ -86,3 +86,9 @@ Destroyer: {
 	6: nothing quite like riding a good dirt dude, none of that ore stuff
 	7: you think i could go pro? i've got a lot of time on my hands
 }
+
+Twins: {
+	0: "[c/d9fad8:Hi there,] [c/ffbcbc:pal.]"
+	1: "[c/ffbcbc:We've seen you around] [c/d9fad8:these parts a bunch.] [c/ffbcbc:You doin anything cool?]"
+	2: "[c/ffbcbc:Sometimes we wonder -] [c/d9fad8:could we ever even have glasses?]"
+}

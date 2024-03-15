@@ -7,8 +7,10 @@ NPCs: {
 	SkeletronPacified.DisplayName: "{$NPCName.SkeletronHead}"
 	PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
 	QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
-	SkelePrimePacified.DisplayName: Skele Prime Pacified
-	DestroyerPacified.DisplayName: Destroyer Pacified
+	SkelePrimePacified.DisplayName: "{$NPCName.SkeletronPrime}"
+	DestroyerPacified.DisplayName: "{$NPCName.TheDestroyer}"
+	SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
+	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
 }
 
 Items: {

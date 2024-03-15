@@ -85,10 +85,10 @@ public class EyePacified : ModNPC
         else if (dist > 16 * 5)
             NPC.velocity.Y += 0.05f;
 
+        NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y, -6, 6);
+
         if (NPC.homeless)
         {
-            NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y, -6, 6);
-
             if (AnyNearbyPlayer(500, out var plrPos))
             {
                 NPC.velocity.X += (plrPos.X - NPC.Center.X) / 1000f;
@@ -109,6 +109,11 @@ public class EyePacified : ModNPC
         else
         {
             float homeX = NPC.homeTileX * 16;
+
+            if (NPC.DistanceSQ(new Vector2(homeX, NPC.homeTileY * 16)) > 2400 || Collision.SolidCollision(NPC.position + new Vector2(8), NPC.width - 16, NPC.height - 16))
+                NPC.noTileCollide = true;
+            else
+                NPC.noTileCollide = false;
 
             NPC.velocity.X += (homeX - NPC.Center.X) / 1000f;
             NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -5, 5);
