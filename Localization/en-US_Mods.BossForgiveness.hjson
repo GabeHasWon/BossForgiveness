@@ -11,6 +11,7 @@ NPCs: {
 	DestroyerPacified.DisplayName: "{$NPCName.TheDestroyer}"
 	SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
 	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
+	PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
 }
 
 Items: {

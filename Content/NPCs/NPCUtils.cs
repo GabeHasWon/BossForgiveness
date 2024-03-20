@@ -7,7 +7,7 @@ namespace BossForgiveness.Content.NPCs;
 
 public static class NPCUtils
 {
-    public static int GetFloor(this NPC npc, int maxDist = 40)
+    public static int GetFloor(this NPC npc, int maxDist = 40, bool checkWater = false)
     {
         int x = (int)((npc.Center.X + npc.velocity.X) / 16f);
         int y = (int)(npc.Center.Y / 16f);
@@ -16,7 +16,7 @@ public static class NPCUtils
         if (y < 0)
             return 1;
 
-        while (!WorldGen.SolidTile(x, y))
+        while (!WorldGen.SolidTile(x, y) && (!checkWater || Main.tile[x, y].LiquidAmount < 20))
         {
             if (y <= 0)
                 return 1;

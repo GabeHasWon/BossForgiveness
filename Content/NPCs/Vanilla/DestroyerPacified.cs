@@ -50,6 +50,7 @@ public class DestroyerPacified : ModNPC, IAdditionalHoverboxes
             PopulateSegments();
 
         NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
+        NPC.breath = NPC.breathMax;
 
         foreach (var segment in segments)
             segment.Update();

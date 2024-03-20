@@ -77,7 +77,7 @@ public class EyePacified : ModNPC
         if (IsLassoed) // Stop all behaviour
             return false;
 
-        int y = (!NPC.homeless ? NPC.homeTileY : NPC.GetFloor()) * 16;
+        int y = (!NPC.homeless ? NPC.homeTileY : NPC.GetFloor(40, true)) * 16;
         float dist = y - NPC.Center.Y;
 
         if (dist < 16 * 15)

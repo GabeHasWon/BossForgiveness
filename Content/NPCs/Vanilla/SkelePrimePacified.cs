@@ -47,6 +47,7 @@ public class SkelePrimePacified : ModNPC
     {
         Timer++;
         NPC.rotation = NPC.velocity.X / 16f;
+        NPC.breath = NPC.breathMax;
 
         foreach (var item in _arms)
             item.Update();
@@ -54,22 +55,32 @@ public class SkelePrimePacified : ModNPC
         if (NPC.homeless)
         {
             int floor = NPC.GetFloor(40) * 16;
-            NPC.velocity.Y += (floor - NPC.Center.Y - 420) / 200f;
-            NPC.velocity.Y *= 0.99f;
-            NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y, -6, 6);
-            NPC.velocity.X = MathF.Sin(Timer * 0.03f) * 6;
-            NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -6, 6);
+
+            if (!NPC.IsBeingTalkedTo())
+            {
+                NPC.velocity.Y += (floor - NPC.Center.Y - 420) / 200f;
+                NPC.velocity.Y *= 0.99f;
+                NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y, -6, 6);
+                NPC.velocity.X = MathF.Sin(Timer * 0.03f) * 6;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -6, 6);
+            }
+            else
+                NPC.velocity *= 0.97f;
         }
         else
         {
             Vector2 home = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates() - new Vector2(0, 320).RotatedBy(MathF.Sin(Timer * 0.02f) * MathHelper.PiOver4);
-            NPC.velocity += NPC.DirectionTo(home);
-            float dist = (NPC.Distance(home) / 100f);
+
+            if (!NPC.IsBeingTalkedTo())
+                NPC.velocity += NPC.DirectionTo(home);
+            else
+                NPC.velocity *= 0.97f;
+
+            float dist = NPC.Distance(home) / 100f;
 
             if (NPC.velocity.LengthSquared() > dist * dist)
                 NPC.velocity = Vector2.Normalize(NPC.velocity) * dist;
         }
-
 
         return false;
     }

@@ -120,7 +120,7 @@ public class BoCPacified : ModNPC
             {
                 IdleRotation += MathF.Tau / 200f;
                 NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.2f, 0.05f);
-                float yVel = (((NPC.GetFloor(80) - 10) * 16) - NPC.Center.Y) / 300f;
+                float yVel = (((NPC.GetFloor(80, true) - 10) * 16) - NPC.Center.Y) / 300f;
                 NPC.velocity = new Vector2(0, 2).RotatedBy(IdleRotation * IdleRotDir) + new Vector2(0, yVel);
             }
 

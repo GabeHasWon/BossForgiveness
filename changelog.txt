@@ -1,6 +1,8 @@
 v1.0.1
-- Added pacified Queen Slime, Skeletron Prime
+- Added pacified Queen Slime, Skeletron Prime, Destroyer, Twins, Plantera
 - Hid all pacified bosses from the bestiary
 - Updated Deerclops dialogue
 - Fixed pacified EoC not returning home properly if blocked
 - Fixed pacified EoC not having a clamp on vertical velocity
+- Made all prehardmode bosses that stay above ground float above water to avoid drowning
+- Added clickbox system to EoW, Destroyer and Twins

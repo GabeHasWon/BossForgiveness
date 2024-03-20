@@ -56,7 +56,7 @@ public class PacifiedQueenBee : ModNPC
 
         if (NPC.homeless)
         {
-            int floor = NPC.GetFloor();
+            int floor = NPC.GetFloor(40, true);
 
             if (!discussing)
             {

@@ -39,6 +39,7 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
     {
         Main.npcFrameCount[Type] = 6;
 
+        NPCID.Sets.MustAlwaysDraw[Type] = true;
         NPCID.Sets.IsTownPet[Type] = true;
 
         this.HideFromBestiary();
@@ -76,6 +77,7 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
         if (!_isRetinazer)
             UpdateRetinazer();
 
+        NPC.breath = NPC.breathMax;
         Timer++;
 
         if (NetTimer++ > 600)
