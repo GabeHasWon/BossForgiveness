@@ -108,14 +108,14 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
 
     public override void FindFrame(int frameHeight) => NPC.frame.Y = 0;
 
-    internal void SpawnBody(Span<Vector2> positions)
+    internal void SpawnBody(List<Vector2> positions)
     {
         Segment lastSegment = null;
 
-        for (int i = 0; i < positions.Length; ++i)
+        for (int i = 0; i < positions.Count; ++i)
         {
             Entity parent = lastSegment ?? (Entity)NPC;
-            Segment segment = new(positions[i], parent, i == positions.Length - 1);
+            Segment segment = new(positions[i], parent, i == positions.Count - 1, NPC.scale);
             segments.Add(segment);
             lastSegment = segment;
         }
@@ -138,10 +138,10 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
     public override void LoadData(TagCompound tag)
     {
         int count = tag.GetInt(nameof(segments));
-        Span<Vector2> positions = stackalloc Vector2[count];
+        List<Vector2> positions = new(count);
 
         for (int i = 0; i < count; ++i)
-            positions[i] = NPC.Center;
+            positions.Add(NPC.Center);
 
         segments.Clear();
         SpawnBody(positions);
@@ -156,10 +156,10 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
         if (segments.Count == count)
             return;
 
-        Span<Vector2> positions = stackalloc Vector2[count];
+        List<Vector2> positions = new(count);
 
         for (int i = 0; i < count; ++i)
-            positions[i] = NPC.Center;
+            positions.Add(NPC.Center);
 
         segments.Clear();
         SpawnBody(positions);
@@ -184,17 +184,21 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
         private readonly bool _isTail;
 
         private float _rot = 0;
+        private float _scale = 0f;
 
-        public Segment(Vector2 pos, Entity parent, bool isTail)
+        public Segment(Vector2 pos, Entity parent, bool isTail, float scale)
         {
             position = pos;
             _parent = parent;
             _isTail = isTail;
+            _scale = scale;
+
+            Size = new Vector2(40, 40);
         }
 
         public void Update()
         {
-            const float EoWLength = 22.5f;
+            const float EoWLength = 40f;
 
             if (DistanceSQ(_parent.Center) > EoWLength * EoWLength)
                 Center += this.SafeDirectionTo(_parent.Center) * (Distance(_parent.Center) - EoWLength);
@@ -207,7 +211,7 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
         {
             var tex = TextureAssets.Npc[_isTail ? NPCID.EaterofWorldsTail : NPCID.EaterofWorldsBody].Value;
             var col = Lighting.GetColor(Center.ToTileCoordinates());
-            Main.EntitySpriteDraw(tex, Center - screenPos, null, col, _rot, tex.Size() / 2f, 1f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex, Center - screenPos, null, col, _rot, tex.Size() / 2f, _scale, SpriteEffects.None, 0);
         }
     }
 }

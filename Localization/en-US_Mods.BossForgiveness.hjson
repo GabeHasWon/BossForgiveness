@@ -15,37 +15,10 @@ NPCs: {
 	GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
 }
 
-Items: {
-	EoCLeash: {
-		DisplayName: Leash of the Eye
-		Tooltip:
-			'''
-			Throw towards a Pacified Eye of Cthulhu to ride it
-			Jump off whenever you want to
-			'Don't ask how this works.'
-			'''
-	}
-
-	ChatItemIcon: {
-		DisplayName: Chat Item Icon
-		Tooltip: ""
-	}
-
-	GolemTaser: {
-		DisplayName: Lihzahrd Power Brick
-		Tooltip:
-			'''
-			An odd brick, full of ancient Lihzahrd power 
-			Using this on Golem will eventually destroy or disable it,
-			but it will move faster every time it's hit
-			'Shakes and jitters in your hand.'
-			'''
-	}
-}
-
 Projectiles: {
 	EoCLeashProj.DisplayName: Leash
 	GolemTaserProj.DisplayName: Golem Taser Proj
+	WormMorselProj.DisplayName: Worm Morsel Proj
 }
 
 PacifiedCondition: When pacified

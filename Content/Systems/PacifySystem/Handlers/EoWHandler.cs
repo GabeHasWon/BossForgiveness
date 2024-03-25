@@ -1,10 +1,9 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
+﻿using BossForgiveness.Content.Items.ForVanilla.Food;
+using BossForgiveness.Content.NPCs.Vanilla;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,12 +13,14 @@ internal class EoWHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.EaterofWorldsHead;
 
-    private HashSet<int> _worm = [];
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormMorsel.WormPacificationNPC>().foodCount > WormMorsel.WormPacificationNPC.MaxFood;
 
-    public override bool CanPacify(NPC npc)
+    public override void OnPacify(NPC npc)
     {
-        _worm = [];
-        int selfLength = 0;
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
+        List<Vector2> positions = [];
 
         for (int i = npc.whoAmI; i < Main.maxNPCs; ++i)
         {
@@ -30,44 +31,45 @@ internal class EoWHandler : PacifiedNPCHandler
 
             if (chk.type >= NPCID.EaterofWorldsHead && chk.type <= NPCID.EaterofWorldsTail)
             {
-                selfLength++;
-
                 if (chk.type != NPCID.EaterofWorldsHead)
-                    _worm.Add(chk.whoAmI);
+                {
+                    positions.Add(chk.position);
+                    chk.active = false;
+
+                    if (Main.netMode == NetmodeID.Server)
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, chk.whoAmI);
+                }
             }
 
             if (chk.type == NPCID.EaterofWorldsTail)
                 break;
         }
 
-        bool valid = npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 60 && selfLength < 8 && selfLength > 1 && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
-
-        return valid;
-    }
-
-    public override void OnPacify(NPC npc)
-    {
-        if (Main.netMode == NetmodeID.MultiplayerClient)
-            return;
-
-        int count = _worm.Count;
-        Span<Vector2> positions = stackalloc Vector2[count];
-
-        for (int i = 0; i < count; ++i)
-        {
-            var worm = Main.npc[_worm.ElementAt(i)];
-            worm.active = false;
-
-            positions[i] = worm.position;
-
-            if (Main.netMode == NetmodeID.Server)
-                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, worm.whoAmI);
-        }
+        float oldScale = npc.scale;
+        npc.boss = true;
 
         TransformInto<PacifiedEoW>(npc);
+
+        npc.scale = oldScale;
         (npc.ModNPC as PacifiedEoW).SpawnBody(positions);
         
         if (Main.netMode == NetmodeID.Server)
             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
+    }
+
+    public override void Load(Mod mod)
+    {
+        base.Load(mod);
+        On_EaterOfWorldsProgressBar.ValidateAndCollectNecessaryInfo += StopPacifiedBar;
+    }
+
+    private bool StopPacifiedBar(On_EaterOfWorldsProgressBar.orig_ValidateAndCollectNecessaryInfo orig, EaterOfWorldsProgressBar self, ref BigProgressBarInfo info)
+    {
+        bool valid = orig(self, ref info);
+
+        if (valid && Main.npc[info.npcIndexToAimAt].type == ModContent.NPCType<PacifiedEoW>())
+            return false; // Force bar to hide if I'm not an actual Brain of Cthulhu
+
+        return valid;
     }
 }

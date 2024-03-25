@@ -1,0 +1,38 @@
+EoCLeash: {
+	DisplayName: Leash of the Eye
+	Tooltip:
+		'''
+		Throw towards a Pacified Eye of Cthulhu to ride it
+		Jump off whenever you want to
+		'Don't ask how this works.'
+		'''
+}
+
+ChatItemIcon: {
+	DisplayName: Chat Item Icon
+	Tooltip: ""
+}
+
+GolemTaser: {
+	DisplayName: Lihzahrd Power Brick
+	Tooltip:
+		'''
+		An odd brick, full of ancient Lihzahrd power 
+		Using this on Golem will eventually destroy or disable it,
+		but it will move faster every time it's hit
+		'Shakes and jitters in your hand.'
+		'''
+}
+
+WormMorsel: {
+	DisplayName: Worm Morsel
+	Tooltip:
+		'''
+		Can be eaten if you want to feel bad
+		Right click to throw
+		Throwing this at the Eater of Worlds will eventually befriend him,
+		but it'll throw up a few worms before that happens
+		It takes 30 morsels to befriend the Eater, so be careful with how you throw these!
+		'Moist and wet and soft and everything meat shouldn't be.'
+		'''
+}
