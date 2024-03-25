@@ -9,7 +9,7 @@ internal class PlanteraHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.Plantera;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 60 * 60 
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 1 * 1 * 60 
         && !NPC.AnyNPCs(ModContent.NPCType<PlanteraPacified>()) && (npc.Center.Y > Main.worldSurface * 16) && npc.life > npc.lifeMax / 2f;
     public override void OnPacify(NPC npc) => TransformInto<PlanteraPacified>(npc);
 }

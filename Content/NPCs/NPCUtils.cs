@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -45,5 +46,20 @@ public static class NPCUtils
     {
         NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new() { Hide = true };
         NPCID.Sets.NPCBestiaryDrawOffset.Add(npc.Type, drawModifiers);
+    }
+
+    public static bool CanTeleport(this NPC npc, Vector2 destination, float distanceCheck = 1500)
+    {
+        bool canTeleport = true;
+
+        for (int i = 0; i < Main.maxPlayers; ++i)
+        {
+            Player player = Main.player[i];
+
+            if (player.active && (player.DistanceSQ(npc.Center) < distanceCheck * distanceCheck || player.DistanceSQ(destination) < distanceCheck * distanceCheck))
+                canTeleport = false;
+        }
+
+        return canTeleport;
     }
 }

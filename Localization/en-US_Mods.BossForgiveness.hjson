@@ -12,6 +12,7 @@ NPCs: {
 	SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
 	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
 	PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
+	GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
 }
 
 Items: {
@@ -29,7 +30,22 @@ Items: {
 		DisplayName: Chat Item Icon
 		Tooltip: ""
 	}
+
+	GolemTaser: {
+		DisplayName: Lihzahrd Power Brick
+		Tooltip:
+			'''
+			An odd brick, full of ancient Lihzahrd power 
+			Using this on Golem will eventually destroy or disable it,
+			but it will move faster every time it's hit
+			'Shakes and jitters in your hand.'
+			'''
+	}
 }
 
-Projectiles.EoCLeashProj.DisplayName: Leash
+Projectiles: {
+	EoCLeashProj.DisplayName: Leash
+	GolemTaserProj.DisplayName: Golem Taser Proj
+}
+
 PacifiedCondition: When pacified
