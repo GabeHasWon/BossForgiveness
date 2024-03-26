@@ -31,6 +31,33 @@ public static class NPCUtils
         return y;
     }
 
+    public static int GetFloor(this NPC npc, out bool water, int maxDist = 40)
+    {
+        int x = (int)((npc.Center.X + npc.velocity.X) / 16f);
+        int y = (int)(npc.Center.Y / 16f);
+        int startY = y;
+        water = false;
+
+        if (y < 0)
+            return 1;
+
+        while (!WorldGen.SolidTile(x, y) && Main.tile[x, y].LiquidAmount < 20)
+        {
+            if (y <= 0)
+                return 1;
+
+            y++;
+
+            if (y - startY > maxDist)
+                return y;
+        }
+
+        if (Main.tile[x, y].LiquidAmount > 20)
+            water = true;
+
+        return y;
+    }
+
     public static bool IsBeingTalkedTo(this NPC npc)
     {
         for (int j = 0; j < 255; j++)

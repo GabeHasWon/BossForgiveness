@@ -18,7 +18,6 @@ public class TruffleLeechNPC : ModNPC
     private Vector2 PlayerOffset
     {
         get => new(NPC.ai[2], NPC.ai[3]);
-
         set
         {
             NPC.ai[2] = value.X;
@@ -85,6 +84,6 @@ public class TruffleLeechNPC : ModNPC
     {
         SharknadoWho = -1;
         PlayerWho = target.whoAmI;
-        PlayerOffset = NPC.Center - target.Center;
+        PlayerOffset = (NPC.Center - target.Center) * 0.9f;
     }
 }

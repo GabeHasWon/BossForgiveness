@@ -13,7 +13,9 @@ NPCs: {
 	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
 	PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
 	GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
-	TruffleLeechNPC.DisplayName: Truffle Leech N P C
+	TruffleLeechNPC.DisplayName: Truffle Leech
+	Omnileech.DisplayName: The True Truffle Treat
+	DukePacified.DisplayName: "{$NPCName.DukeFishron}"
 }
 
 Projectiles: {

@@ -45,3 +45,8 @@ TruffleLeech: {
 		Catching enough might allow you to befriend the Duke
 		'''
 }
+
+OmnileechItem: {
+	DisplayName: Omnileech Item
+	Tooltip: ""
+}
