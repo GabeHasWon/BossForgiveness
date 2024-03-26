@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-internal class EoCSoothingMechanic : GlobalNPC
+internal class EoCPacificationNPC : GlobalNPC
 {
     public const int MaxDiscontent = 5;
 

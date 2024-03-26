@@ -13,6 +13,7 @@ NPCs: {
 	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
 	PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
 	GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
+	TruffleLeechNPC.DisplayName: Truffle Leech N P C
 }
 
 Projectiles: {

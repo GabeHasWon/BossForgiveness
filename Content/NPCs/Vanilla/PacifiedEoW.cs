@@ -44,6 +44,9 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
         NPC.hide = false;
         NPC.homeless = true;
 
+        NPC.lifeMax *= 5;
+        NPC.defense = 80;
+
         Music = -1;
         AnimationType = -1;
     }

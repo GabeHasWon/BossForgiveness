@@ -36,3 +36,12 @@ WormMorsel: {
 		'Moist and wet and soft and everything meat shouldn't be.'
 		'''
 }
+
+TruffleLeech: {
+	DisplayName: Truffle Leech
+	Tooltip:
+		'''
+		A rare critter, found only in Duke Fishron's Sharknados
+		Catching enough might allow you to befriend the Duke
+		'''
+}

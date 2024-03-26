@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla.Food;
+using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Vanilla;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ internal class EoWHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.EaterofWorldsHead;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormMorsel.WormPacificationNPC>().foodCount > WormMorsel.WormPacificationNPC.MaxFood;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormPacificationNPC>().foodCount > WormPacificationNPC.MaxFood;
 
     public override void OnPacify(NPC npc)
     {
@@ -68,7 +69,7 @@ internal class EoWHandler : PacifiedNPCHandler
         bool valid = orig(self, ref info);
 
         if (valid && Main.npc[info.npcIndexToAimAt].type == ModContent.NPCType<PacifiedEoW>())
-            return false; // Force bar to hide if I'm not an actual Brain of Cthulhu
+            return false;
 
         return valid;
     }
