@@ -57,7 +57,7 @@ public class DukePacified : ModNPC
 
         if (NPC.homeless)
         {
-            int floor = NPC.GetFloor(out bool water, 40);
+            int floor = NPC.GetFloor(out bool water, 30);
             bool dontLevel = false;
 
             if (water)

@@ -22,6 +22,7 @@ Projectiles: {
 	EoCLeashProj.DisplayName: Leash
 	GolemTaserProj.DisplayName: Golem Taser Proj
 	WormMorselProj.DisplayName: Worm Morsel Proj
+	SlimeSpikeball.DisplayName: Slime Spikeball
 }
 
 PacifiedCondition: When pacified
