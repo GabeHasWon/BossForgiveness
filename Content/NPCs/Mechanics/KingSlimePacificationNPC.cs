@@ -41,29 +41,56 @@ internal class KingSlimePacificationNPC : GlobalNPC
                 return false;
             }
 
-            if (_timer % (int)(240 * (npc.scale - 0.25f)) == 0)
+            int attackSpeed = (int)(240 * (npc.scale - 0.25f));
+            int attackTime = _timer % attackSpeed;
+
+            if (attackTime == 0)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    var dir = new Vector2(0, -8f).RotatedBy(Main.rand.NextFloat(-0.8f, 0.8f));
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), npc.damage, 2f, Main.myPlayer);
+                    if (Main.rand.NextBool())
+                    {
+                        for (int i = 0; i < 8; ++i)
+                        {
+                            var dir = npc.DirectionTo(Main.player[npc.target].Center).RotatedByRandom(0.2f) * WorldGen.genRand.NextFloat(10, 16f);
+                            var pos = npc.Center + new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-40, 40));
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), pos, dir, ModContent.ProjectileType<SlimePellet>(), npc.damage, 2f, Main.myPlayer);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 4; ++i)
+                        {
+                            var dir = new Vector2(0, -Main.rand.NextFloat(4f, 10f)).RotatedBy(Main.rand.NextFloat(-0.8f, 0.8f));
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), npc.damage, 2f, Main.myPlayer);
+                        }
+                    }
                 }
 
-                for (int i = 0; i < 20; ++i)
-                {
-                    float magnitude = Main.rand.NextFloat(3, 6);
-                    float dir = npc.AngleTo(Main.player[npc.target].Center);
-                    Vector2 vel = new Vector2(0, magnitude).RotatedBy(dir);
-
-                    Dust.NewDust(npc.Center, 1, 1, DustID.t_Slime, vel.X, vel.Y);
-                }
+                for (int i = 0; i < 30; ++i)
+                    SpawnDust(npc);
 
                 _scale -= 0.01f;
             }
+            else if (attackTime > attackSpeed * 0.9f)
+            {
+                for (int i = 0; i < 2; ++i)
+                    SpawnDust(npc);
+            }
+
             return true;
         }
 
         return true;
+    }
+
+    private static void SpawnDust(NPC npc)
+    {
+        float magnitude = Main.rand.NextFloat(3, 6);
+        float dir = npc.AngleTo(Main.player[npc.target].Center);
+        Vector2 vel = new Vector2(magnitude, 0).RotatedBy(dir);
+
+        Dust.NewDust(npc.Center, 1, 1, DustID.t_Slime, vel.X, vel.Y, 0, new Color(31, 116, 196, 180));
     }
 
     public override void PostAI(NPC npc)
@@ -120,6 +147,26 @@ internal class KingSlimePacificationNPC : GlobalNPC
             Projectile.velocity *= 0;
             HitTile = true;
             return false;
+        }
+    }
+
+    public class SlimePellet : ModProjectile
+    {
+        public override void SetDefaults()
+        {
+            Projectile.Size = new(20);
+            Projectile.timeLeft = 600;
+            Projectile.penetrate = 6;
+            Projectile.aiStyle = -1;
+            Projectile.hostile = true;
+            Projectile.friendly = false;
+            Projectile.tileCollide = false;
+        }
+
+        public override void AI()
+        {
+            if (Projectile.timeLeft < 30)
+                Projectile.Opacity = Projectile.timeLeft / 30f;
         }
     }
 }

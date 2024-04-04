@@ -23,6 +23,7 @@ Projectiles: {
 	GolemTaserProj.DisplayName: Golem Taser Proj
 	WormMorselProj.DisplayName: Worm Morsel Proj
 	SlimeSpikeball.DisplayName: Slime Spikeball
+	SlimePellet.DisplayName: Slime Pellet
 }
 
 PacifiedCondition: When pacified
