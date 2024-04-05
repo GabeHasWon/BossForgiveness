@@ -79,7 +79,7 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
 
         NPC.breath = NPC.breathMax;
         Timer++;
-
+        
         if (NetTimer++ > 600)
         {
             NPC.netUpdate = true;

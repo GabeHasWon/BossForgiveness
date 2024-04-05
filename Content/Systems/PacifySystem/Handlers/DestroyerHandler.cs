@@ -15,6 +15,9 @@ internal class DestroyerHandler : PacifiedNPCHandler
 
     public override void OnPacify(NPC npc)
     {
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
         int count = NPC.GetDestroyerSegmentsCount() + 1;
         Span<Vector2> positions = stackalloc Vector2[count];
         int slot = 0;
@@ -27,17 +30,24 @@ internal class DestroyerHandler : PacifiedNPCHandler
             {
                 worm.active = false;
                 positions[slot++] = worm.Center;
+
+                if (Main.netMode == NetmodeID.Server)
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, i);
             }
         }
 
         TransformInto<DestroyerPacified>(npc);
-        var list = (npc.ModNPC as DestroyerPacified).segments;
+        npc.netUpdate = true;
+
+        if (Main.netMode != NetmodeID.SinglePlayer)
+            return;
+
         DestroyerPacified.Segment parent = null;
 
         for (int i = 0; i < positions.Length; ++i)
         {
             var segment = new DestroyerPacified.Segment(positions[i], parent ?? (Entity)npc, i == positions.Length - 1);
-            list.Add(segment);
+            (npc.ModNPC as DestroyerPacified).segments.Add(segment);
             parent = segment;
         }
     }

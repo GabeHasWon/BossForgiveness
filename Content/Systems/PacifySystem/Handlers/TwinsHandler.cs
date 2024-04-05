@@ -12,7 +12,7 @@ internal class SpazmatismHandler : PacifiedNPCHandler
 
     public override bool CanPacify(NPC npc)
     {
-        const int PacifyTime = 1 * 60 * 60;
+        const int PacifyTime = 1 * 5 * 60;
 
         bool retinazer = false;
 
@@ -34,10 +34,18 @@ internal class SpazmatismHandler : PacifiedNPCHandler
 
     public override void OnPacify(NPC npc)
     {
-        TransformInto<SpazmatismPacified>(npc, new Vector2(0, 16));
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
 
         int ret = NPC.FindFirstNPC(NPCID.Retinazer);
-        (npc.ModNPC as SpazmatismPacified).InitRetinazer(ret);
         Main.npc[ret].active = false;
+
+        if (Main.netMode == NetmodeID.Server)
+            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, ret);
+
+        TransformInto<SpazmatismPacified>(npc, new Vector2(0, 16));
+
+        (npc.ModNPC as SpazmatismPacified).InitRetinazer(ret);
+        npc.netUpdate = true;
     }
 }

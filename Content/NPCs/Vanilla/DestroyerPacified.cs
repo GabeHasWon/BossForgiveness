@@ -21,6 +21,7 @@ public class DestroyerPacified : ModNPC, IAdditionalHoverboxes
 
     private ref float Timer => ref NPC.ai[0];
     private ref float DigTimer => ref NPC.ai[1];
+    private ref float NetTimer => ref NPC.ai[2];
 
     public override void SetStaticDefaults()
     {
@@ -46,6 +47,12 @@ public class DestroyerPacified : ModNPC, IAdditionalHoverboxes
 
     public override bool PreAI()
     {
+        if (NetTimer++ > 600) // Sync occasionally to be sure
+        {
+            NPC.netUpdate = true;
+            NetTimer = 0;
+        }
+
         if (segments.Count == 0) // Populate segments if empty, saves on loading data
             PopulateSegments();
 

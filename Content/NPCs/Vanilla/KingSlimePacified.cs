@@ -34,6 +34,7 @@ public class KingSlimePacified : ModNPC
         NPC.friendly = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.scale = 1.1f;
 
         Music = -1;
         AnimationType = -1;

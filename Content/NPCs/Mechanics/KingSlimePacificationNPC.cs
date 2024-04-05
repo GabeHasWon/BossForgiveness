@@ -14,7 +14,7 @@ internal class KingSlimePacificationNPC : GlobalNPC
 
     public override bool InstancePerEntity => true;
 
-    private static bool Pacifist(NPC npc) => npc.GetGlobalNPC<KingSlimePacificationNPC>()._timer >= 1 * 10 && npc.life == npc.lifeMax;
+    private static bool Pacifist(NPC npc) => npc.GetGlobalNPC<KingSlimePacificationNPC>()._timer >= 15 * 60 && npc.life == npc.lifeMax;
 
     private int _timer = 0;
     private float _scale = 0;
@@ -68,14 +68,14 @@ internal class KingSlimePacificationNPC : GlobalNPC
                 }
 
                 for (int i = 0; i < 30; ++i)
-                    SpawnDust(npc);
+                    SpawnDust(npc, 2f);
 
                 _scale -= 0.01f;
             }
             else if (attackTime > attackSpeed * 0.9f)
             {
                 for (int i = 0; i < 2; ++i)
-                    SpawnDust(npc);
+                    SpawnDust(npc, 1f);
             }
 
             return true;
@@ -84,9 +84,9 @@ internal class KingSlimePacificationNPC : GlobalNPC
         return true;
     }
 
-    private static void SpawnDust(NPC npc)
+    private static void SpawnDust(NPC npc, float speed)
     {
-        float magnitude = Main.rand.NextFloat(3, 6);
+        float magnitude = Main.rand.NextFloat(3, 6) * speed;
         float dir = npc.AngleTo(Main.player[npc.target].Center);
         Vector2 vel = new Vector2(magnitude, 0).RotatedBy(dir);
 
@@ -96,9 +96,7 @@ internal class KingSlimePacificationNPC : GlobalNPC
     public override void PostAI(NPC npc)
     {
         if (npc.ai[1] == 5f || npc.ai[1] == 6f)
-        {
             return;
-        }
 
         if (Pacifist(npc) || _wasPacifist)
         {
