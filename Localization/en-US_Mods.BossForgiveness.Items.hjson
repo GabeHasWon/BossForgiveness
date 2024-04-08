@@ -47,6 +47,10 @@ TruffleLeech: {
 }
 
 OmnileechItem: {
-	DisplayName: Omnileech Item
-	Tooltip: ""
+	DisplayName: The True Truffle Treat
+	Tooltip:
+		'''
+		Throw when near Duke Fishron when desired
+		'A delicacy to Fishron all across the world!'
+		'''
 }

@@ -12,7 +12,7 @@ internal class SpazmatismHandler : PacifiedNPCHandler
 
     public override bool CanPacify(NPC npc)
     {
-        const int PacifyTime = 1 * 5 * 60;
+        const int PacifyTime = 1 * 60 * 60;
 
         bool retinazer = false;
 

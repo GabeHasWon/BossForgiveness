@@ -94,10 +94,10 @@ public class GolemPacificationNPC : GlobalNPC
         if (taserCount == 0)
             return;
 
-        if (Main.rand.NextBool(Math.Max(65 - (taserCount * 7), 2)))
+        if (Main.rand.NextBool(Math.Max(65 - taserCount * 7, 2)))
             SpawnGoldFlames(npc);
 
-        if (taserCount > 10 && Main.rand.NextBool(Math.Max(30 - ((taserCount - 10) * 2), 3)))
+        if (taserCount > 10 && Main.rand.NextBool(Math.Max(30 - (taserCount - 10) * 2, 3)))
             SpawnSmoke(npc);
     }
 

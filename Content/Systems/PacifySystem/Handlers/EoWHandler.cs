@@ -59,8 +59,6 @@ internal class EoWHandler : PacifiedNPCHandler
         {
             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
             new SyncEoWSegmentsModule(npc.whoAmI, [..positions]).Send(-1, -1, false);
-
-            Console.WriteLine("-- Sending body positions --");
         }
     }
 

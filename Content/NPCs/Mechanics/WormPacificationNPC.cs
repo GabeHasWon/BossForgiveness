@@ -8,7 +8,7 @@ namespace BossForgiveness.Content.NPCs.Mechanics;
 
 public class WormPacificationNPC : GlobalNPC
 {
-    public const int MaxFood = 5;
+    public const int MaxFood = 30;
 
     public override bool InstancePerEntity => true;
 
