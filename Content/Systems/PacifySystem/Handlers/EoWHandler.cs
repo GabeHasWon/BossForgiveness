@@ -1,7 +1,8 @@
-﻿using BossForgiveness.Content.Items.ForVanilla.Food;
-using BossForgiveness.Content.NPCs.Mechanics;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.UI.BigProgressBar;
@@ -14,7 +15,7 @@ internal class EoWHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.EaterofWorldsHead;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormPacificationNPC>().foodCount > WormPacificationNPC.MaxFood;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormPacificationNPC>().foodCount > WormPacificationNPC.MaxFood && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
 
     public override void OnPacify(NPC npc)
     {
@@ -30,7 +31,7 @@ internal class EoWHandler : PacifiedNPCHandler
             if (!chk.active)
                 break;
 
-            if (chk.type >= NPCID.EaterofWorldsHead && chk.type <= NPCID.EaterofWorldsTail)
+            if (chk.type is >= NPCID.EaterofWorldsHead and <= NPCID.EaterofWorldsTail)
             {
                 if (chk.type != NPCID.EaterofWorldsHead)
                 {
@@ -53,9 +54,14 @@ internal class EoWHandler : PacifiedNPCHandler
 
         npc.scale = oldScale;
         (npc.ModNPC as PacifiedEoW).SpawnBody(positions);
-        
+
         if (Main.netMode == NetmodeID.Server)
+        {
             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
+            new SyncEoWSegmentsModule(npc.whoAmI, [..positions]).Send(-1, -1, false);
+
+            Console.WriteLine("-- Sending body positions --");
+        }
     }
 
     public override void Load(Mod mod)
@@ -67,10 +73,6 @@ internal class EoWHandler : PacifiedNPCHandler
     private bool StopPacifiedBar(On_EaterOfWorldsProgressBar.orig_ValidateAndCollectNecessaryInfo orig, EaterOfWorldsProgressBar self, ref BigProgressBarInfo info)
     {
         bool valid = orig(self, ref info);
-
-        if (valid && Main.npc[info.npcIndexToAimAt].type == ModContent.NPCType<PacifiedEoW>())
-            return false;
-
-        return valid;
+        return (!valid || Main.npc[info.npcIndexToAimAt].type != ModContent.NPCType<PacifiedEoW>()) && valid;
     }
 }

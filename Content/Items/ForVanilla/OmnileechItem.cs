@@ -21,14 +21,11 @@ internal class OmnileechItem : ModItem
 
     public override bool? UseItem(Player player)
     {
-        if (Main.myPlayer == player.whoAmI)
+        if (Main.netMode == NetmodeID.Server)
         {
             int npc = NPC.NewNPC(player.GetSource_ItemUse(Item), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<Omnileech>());
             NPC n = Main.npc[npc];
-            n.velocity += player.DirectionTo(Main.MouseWorld) * 8;
-
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc);
+            n.velocity = new Microsoft.Xna.Framework.Vector2(0, -6);
         }
 
         return true;

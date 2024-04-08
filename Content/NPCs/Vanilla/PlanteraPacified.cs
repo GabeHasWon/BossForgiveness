@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.Syncing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,11 @@ public class PlanteraPacified : ModNPC
     /// Wrapper to handle controlled Plantera Hook enemies.
     /// </summary>
     /// <param name="npc">The NPC to control.</param>
-    private class PlanteraHook(NPC npc)
+    internal class PlanteraHook(NPC npc)
     {
         internal readonly NPC dummy = npc;
 
-        internal void Update(int plantera)
+        internal void Update(int plantera, int hookSlot)
         {
             dummy.active = true;
             int oldBoss = NPC.plantBoss;
@@ -31,16 +32,18 @@ public class PlanteraPacified : ModNPC
             Main.netMode = NetmodeID.SinglePlayer; // Workaround for net issues
 
             NPC boss = Main.npc[plantera];
+            int life = boss.life;
+            boss.life = boss.lifeMax;
 
             dummy.UpdateNPC(0);
             dummy.alpha = boss.alpha;
-            dummy.localAI[0] += 0.8f;
+            dummy.localAI[0] -= 0.4f;
 
             Player plr = Main.player[boss.target];
 
-            if (!boss.homeless || !plr.active || plr.dead || plr.DistanceSQ(boss.Center) > 800 * 800)
+            if ((!boss.homeless || !plr.active || plr.dead || plr.DistanceSQ(boss.Center) > 800 * 800) && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (dummy.localAI[0] <= 10f)
+                if (dummy.localAI[0] == 10f)
                 {
                     int reps = 0;
 
@@ -66,11 +69,19 @@ public class PlanteraPacified : ModNPC
 
                     dummy.ai[0] = MathHelper.Clamp(dummy.ai[0], Main.offLimitBorderTiles, Main.maxTilesX - Main.offLimitBorderTiles);
                     dummy.ai[1] = MathHelper.Clamp(dummy.ai[1], Main.offLimitBorderTiles, Main.maxTilesY - Main.offLimitBorderTiles);
+                    dummy.netUpdate = true;
                 }
             }
 
             Main.netMode = oldNetmode;
             NPC.plantBoss = oldBoss;
+            boss.life = life;
+
+            if (dummy.netUpdate)
+            {
+                dummy.netUpdate = false;
+                new SyncPlanteraHookModule(plantera, hookSlot, new Vector2(dummy.ai[0], dummy.ai[1])).Send();
+            }
         }
 
         internal void Draw(int plantera)
@@ -86,19 +97,21 @@ public class PlanteraPacified : ModNPC
                 int num17 = 16;
                 int num2 = 32;
                 float num3 = (float)Math.Sqrt(num15 * num15 + num16 * num16);
+
                 if (num3 < (float)num2)
                 {
                     num17 = (int)num3 - num2 + num17;
                     flag3 = false;
                 }
-                num3 = (float)num17 / num3;
+
+                num3 = num17 / num3;
                 num15 *= num3;
                 num16 *= num3;
                 drawPos.X += num15;
                 drawPos.Y += num16;
                 num15 = Main.npc[plantera].Center.X - drawPos.X + Main.npc[plantera].netOffset.X;
                 num16 = Main.npc[plantera].Center.Y - drawPos.Y + Main.npc[plantera].netOffset.Y;
-                
+
                 Color col = Lighting.GetColor(drawPos.ToTileCoordinates());
                 var src = new Rectangle(0, 0, TextureAssets.Chain26.Width(), num17);
                 Main.spriteBatch.Draw(TextureAssets.Chain26.Value, drawPos - Main.screenPosition, src, col, rotation2, TextureAssets.Chain26.Size() / 2f, 1f, 0, 0f);
@@ -114,7 +127,7 @@ public class PlanteraPacified : ModNPC
     private ref float RotSpeed => ref NPC.ai[1];
     private ref float RotTime => ref NPC.ai[2];
 
-    private List<PlanteraHook> _planteraHooks = [];
+    internal List<PlanteraHook> planteraHooks = [];
 
     public override void SetStaticDefaults()
     {
@@ -155,62 +168,69 @@ public class PlanteraPacified : ModNPC
         Timer++;
         Lighting.AddLight(NPC.Center, new Vector3(0.3f, 0.1f, 0.1f));
         NPC.TargetClosest();
+        NPC.netUpdate = true;
 
-        foreach (var item in _planteraHooks)
-            item.Update(NPC.whoAmI);
+        for (int i = 0; i < planteraHooks.Count; i++)
+        {
+            PlanteraHook item = planteraHooks[i];
+            item.Update(NPC.whoAmI, i);
+        }
 
-        if (_planteraHooks.Count == 0)
+        if (planteraHooks.Count == 0)
             AddHooks(3);
 
-        bool awayFromHooks = _planteraHooks.All(x => x.dummy.DistanceSQ(NPC.Center) > FocusDistance * FocusDistance);
+        bool awayFromHooks = planteraHooks.All(x => x.dummy.DistanceSQ(NPC.Center) > FocusDistance * FocusDistance);
         Vector2 average = NPC.Center;
 
         if (awayFromHooks)
         {
             average = Vector2.Zero;
 
-            foreach (var hook in _planteraHooks)
+            foreach (var hook in planteraHooks)
                 average += hook.dummy.Center;
 
-            average /= _planteraHooks.Count;
+            average /= planteraHooks.Count;
         }
 
         var plr = Main.player[Player.FindClosest(NPC.position, NPC.width, NPC.height)];
 
         if (NPC.homeless)
         {
-
-            if (plr.active && !plr.dead && plr.DistanceSQ(NPC.Center) < FocusDistance * FocusDistance)
+            if (!NPC.IsBeingTalkedTo())
             {
-                NPC.velocity += NPC.DirectionTo(plr.Center + NPC.DirectionFrom(plr.Center) * 200) * 0.12f;
-                NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.AngleTo(plr.Center) + MathHelper.PiOver2, 0.1f);
+                if (plr.active && !plr.dead && plr.DistanceSQ(NPC.Center) < FocusDistance * FocusDistance)
+                {
+                    NPC.velocity += NPC.DirectionTo(plr.Center + NPC.DirectionFrom(plr.Center) * 200) * 0.12f;
+                    NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.AngleTo(plr.Center) + MathHelper.PiOver2, 0.1f);
+                }
+                else
+                {
+                    NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
+                    NPC.velocity *= 0.99f;
+                    NPC.velocity = NPC.velocity.RotatedBy(RotSpeed);
+
+                    if (NPC.velocity.LengthSquared() < 2 * 2)
+                        NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero) * 2f;
+
+                    if (Timer % RotTime == 0)
+                    {
+                        RotTime = Main.rand.Next(120, 420);
+                        RotSpeed = Main.rand.NextFloat(-0.03f, 0.03f);
+                        NPC.netUpdate = true;
+                    }
+                }
+
+                if (awayFromHooks)
+                    NPC.velocity += NPC.DirectionTo(average) * 1.2f;
             }
             else
-            {
-                NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
-                NPC.velocity *= 0.99f;
-                NPC.velocity = NPC.velocity.RotatedBy(RotSpeed);
-
-                if (NPC.velocity.LengthSquared() < 2 * 2)
-                    NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero) * 2f;
-
-                if (Timer % RotTime == 0)
-                {
-                    RotTime = Main.rand.Next(120, 420);
-                    RotSpeed = Main.rand.NextFloat(-0.03f, 0.03f);
-                    NPC.netUpdate = true;
-                }
-            }
-
-            if (awayFromHooks)
-                NPC.velocity += NPC.DirectionTo(average) * 1.2f;
+                NPC.velocity *= 0.9f;
         }
         else
         {
-            if (plr.active && !plr.dead && plr.DistanceSQ(NPC.Center) < FocusDistance * FocusDistance)
-                NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.AngleTo(plr.Center) + MathHelper.PiOver2, 0.1f);
-            else
-                NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
+            NPC.rotation = plr.active && !plr.dead && plr.DistanceSQ(NPC.Center) < FocusDistance * FocusDistance
+                ? Utils.AngleLerp(NPC.rotation, NPC.AngleTo(plr.Center) + MathHelper.PiOver2, 0.1f)
+                : Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.1f);
 
             Vector2 home = new Vector2(NPC.homeTileX, NPC.homeTileY).ToWorldCoordinates();
             NPC.velocity += NPC.DirectionTo(home) * 0.05f;
@@ -231,7 +251,7 @@ public class PlanteraPacified : ModNPC
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        foreach (var item in _planteraHooks)
+        foreach (var item in planteraHooks)
             item.Draw(NPC.whoAmI);
 
         return true;
@@ -245,7 +265,7 @@ public class PlanteraPacified : ModNPC
             newNPC.SetDefaults(NPCID.PlanterasHook);
             newNPC.ai[0] = newNPC.Center.X / 16f;
             newNPC.ai[1] = newNPC.Center.Y / 16f;
-            _planteraHooks.Add(new PlanteraHook(newNPC));
+            planteraHooks.Add(new PlanteraHook(newNPC));
         }
     }
 

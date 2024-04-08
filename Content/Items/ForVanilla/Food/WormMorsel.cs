@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -54,19 +55,26 @@ public class WormMorsel : FoodItem
             Projectile.velocity *= 0.999f;
             Projectile.velocity.Y += 0.2f;
 
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            if (Main.myPlayer != Projectile.owner)
             {
-                NPC npc = Main.npc[i];
-
-                if (npc.active && npc.Hitbox.Intersects(Projectile.Hitbox))
+                for (int i = 0; i < Main.maxNPCs; ++i)
                 {
-                    if (npc.type == NPCID.EaterofWorldsTail || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsHead)
-                        WormPacificationNPC.AddFoodToHead(npc);
+                    NPC npc = Main.npc[i];
 
-                    SoundEngine.PlaySound(SoundID.Item2 with { PitchRange = (-0.4f, 0.4f), Volume = 0.7f });
+                    if (npc.active && npc.Hitbox.Intersects(Projectile.Hitbox))
+                    {
+                        if (npc.type is NPCID.EaterofWorldsTail or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsHead)
+                        {
+                            if (Main.netMode == NetmodeID.SinglePlayer)
+                                WormPacificationNPC.AddFoodToHead(npc);
+                            else
+                                new SyncEoWMorselModule(i, Projectile.whoAmI).Send(-1, -1);
+                        }
 
-                    Projectile.Kill();
-                    break;
+                        Projectile.Kill();
+
+                        break;
+                    }
                 }
             }
         }
@@ -75,6 +83,9 @@ public class WormMorsel : FoodItem
         {
             for (int i = 0; i < 20; ++i)
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(4) ? DustID.Bone : DustID.CorruptGibs);
+
+            if (Main.netMode != NetmodeID.Server)
+                SoundEngine.PlaySound(SoundID.Item2 with { PitchRange = (-0.4f, 0.4f), Volume = 0.7f });
         }
     }
 }

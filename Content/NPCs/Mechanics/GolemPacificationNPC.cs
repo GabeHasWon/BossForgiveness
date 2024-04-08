@@ -27,8 +27,11 @@ public class GolemPacificationNPC : GlobalNPC
             if (taserCount > 1)
                 npc.ai[0] = 1f;
 
-            if (taserCount > 5 || Main.npc[NPC.golemBoss].GetGlobalNPC<GolemPacificationNPC>().taserCount > 10)
+            if ((taserCount > 5 || Main.npc[NPC.golemBoss].GetGlobalNPC<GolemPacificationNPC>().taserCount > 10) && Main.netMode != NetmodeID.MultiplayerClient)
+            {
                 npc.Transform(NPCID.GolemHeadFree);
+                npc.netUpdate = true;
+            }
         }
         else if (npc.type == NPCID.GolemHeadFree)
         {
@@ -51,6 +54,7 @@ public class GolemPacificationNPC : GlobalNPC
                 npc.SimpleStrikeNPC(1, 0, false, 0, null, false, 0, true);
                 npc.NPCLoot();
                 npc.active = false;
+                npc.netUpdate = true;
 
                 for (int i = 0; i < 80; ++i)
                     SpawnGoldFlames(npc);

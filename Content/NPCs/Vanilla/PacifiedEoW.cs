@@ -114,6 +114,7 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
     internal void SpawnBody(List<Vector2> positions)
     {
         Segment lastSegment = null;
+        segments.Clear();
 
         for (int i = 0; i < positions.Count; ++i)
         {

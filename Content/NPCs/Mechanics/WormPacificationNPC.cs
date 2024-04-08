@@ -2,12 +2,13 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
+using System;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
 public class WormPacificationNPC : GlobalNPC
 {
-    public const int MaxFood = 40;
+    public const int MaxFood = 5;
 
     public override bool InstancePerEntity => true;
 
@@ -37,6 +38,7 @@ public class WormPacificationNPC : GlobalNPC
                 lastWormCount = foodCount;
             }
         }
+
         return true;
     }
 
@@ -44,6 +46,7 @@ public class WormPacificationNPC : GlobalNPC
     {
         if (npc.type == NPCID.EaterofWorldsHead)
         {
+            Console.WriteLine("HEAD");
             npc.GetGlobalNPC<WormPacificationNPC>().foodCount += 2;
             return;
         }
@@ -54,6 +57,7 @@ public class WormPacificationNPC : GlobalNPC
 
             if (cur.type == NPCID.EaterofWorldsHead)
             {
+                Console.WriteLine("BODY");
                 cur.GetGlobalNPC<WormPacificationNPC>().foodCount++;
                 break;
             }

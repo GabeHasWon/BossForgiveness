@@ -1,12 +1,9 @@
-﻿using BossForgiveness.Content.NPCs;
-using BossForgiveness.Content.NPCs.Mechanics;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -67,8 +64,14 @@ internal class GolemTaser : ModItem
 
                     if (npc.active && npc.Hitbox.Intersects(Projectile.Hitbox))
                     {
-                        if (npc.type == NPCID.GolemHead || npc.type == NPCID.GolemHeadFree || npc.type == NPCID.GolemFistLeft || npc.type == NPCID.GolemFistRight || npc.type == NPCID.Golem)
-                            npc.GetGlobalNPC<GolemPacificationNPC>().taserCount++;
+                        if (npc.type == NPCID.GolemHead || npc.type == NPCID.GolemHeadFree || npc.type == NPCID.GolemFistLeft ||
+                            npc.type == NPCID.GolemFistRight || npc.type == NPCID.Golem)
+                        {
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
+                                new SyncGolemTaserModule(i, (byte)(npc.GetGlobalNPC<GolemPacificationNPC>().taserCount + 1)).Send(-1, -1, false);
+                            else
+                                npc.GetGlobalNPC<GolemPacificationNPC>().taserCount++;
+                        }
 
                         owner.channel = false;
 
@@ -107,7 +110,11 @@ internal class GolemTaser : ModItem
                     if (click && npc.Hitbox.Contains(Main.MouseWorld.ToPoint()))
                     {
                         Player.ConsumeItem(ItemID.LihzahrdPowerCell, true, true);
-                        npc.Transform(ModContent.NPCType<GolemHeadPacified>());
+
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                            new SyncNPCTransformModule(i, ModContent.NPCType<GolemHeadPacified>()).Send(-1, -1, false);
+                        else
+                            npc.Transform(ModContent.NPCType<GolemHeadPacified>());
                     }
                 }
             }
