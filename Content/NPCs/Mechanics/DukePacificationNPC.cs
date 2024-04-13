@@ -35,6 +35,10 @@ internal class DukePacificationNPC : GlobalNPC
     public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
     {
         if (target.type == ModContent.NPCType<Omnileech>() && target.life <= 0 && npc.life == npc.lifeMax)
+        {
+            npc.playerInteraction[Main.myPlayer] = true;
+            npc.NPCLoot();
             npc.Transform(ModContent.NPCType<DukePacified>());
+        }
     }
 }

@@ -136,6 +136,7 @@ public class EyePacified : ModNPC
                 return true;
             }
         }
+
         return false;
     }
 
@@ -171,7 +172,7 @@ public class EyePacified : ModNPC
             plr.fullRotation = originalRotation;
             plr.fullRotationOrigin = oldRotOrigin;
 
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, Main.Rasterizer, null, Main.GameViewMatrix.ZoomMatrix);
         }
 
         // Manually draw to fix dumb vanilla origin

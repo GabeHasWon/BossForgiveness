@@ -55,7 +55,7 @@ public class WormMorsel : FoodItem
             Projectile.velocity *= 0.999f;
             Projectile.velocity.Y += 0.2f;
 
-            if (Main.myPlayer != Projectile.owner)
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 for (int i = 0; i < Main.maxNPCs; ++i)
                 {
@@ -64,16 +64,30 @@ public class WormMorsel : FoodItem
                     if (npc.active && npc.Hitbox.Intersects(Projectile.Hitbox))
                     {
                         if (npc.type is NPCID.EaterofWorldsTail or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsHead)
-                        {
-                            if (Main.netMode == NetmodeID.SinglePlayer)
-                                WormPacificationNPC.AddFoodToHead(npc);
-                            else
-                                new SyncEoWMorselModule(i, Projectile.whoAmI).Send(-1, -1);
-                        }
+                            WormPacificationNPC.AddFoodToHead(npc);
 
                         Projectile.Kill();
-
                         break;
+                    }
+                }
+            }
+            else
+            {
+                if (Main.myPlayer != Projectile.owner)
+                {
+                    for (int i = 0; i < Main.maxNPCs; ++i)
+                    {
+                        NPC npc = Main.npc[i];
+
+                        if (npc.active && npc.Hitbox.Intersects(Projectile.Hitbox))
+                        {
+                            if (npc.type is NPCID.EaterofWorldsTail or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsHead)
+                                new SyncEoWMorselModule(i, Projectile.whoAmI).Send(-1, -1);
+
+                            Projectile.Kill();
+
+                            break;
+                        }
                     }
                 }
             }

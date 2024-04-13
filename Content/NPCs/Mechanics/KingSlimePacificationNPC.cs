@@ -33,6 +33,8 @@ internal class KingSlimePacificationNPC : GlobalNPC
 
             if (_scale < MinScale && npc.ai[1] != 5 && npc.ai[1] != 6)
             {
+                npc.playerInteraction[Main.myPlayer] = true;
+                npc.NPCLoot();
                 npc.Transform(ModContent.NPCType<KingSlimePacified>());
                 npc.netUpdate = true;
                 npc.scale = _scale;

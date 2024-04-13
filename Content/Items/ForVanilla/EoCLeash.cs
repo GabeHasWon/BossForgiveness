@@ -180,6 +180,7 @@ internal class EoCLeash : ModItem
                 Player.velocity = Vector2.Zero;
                 Player.Center = (Steed.ModNPC as EyePacified).GetPlayerCenter() + Steed.velocity;
                 Player.direction = 1;
+                Player.suffocateDelay = 3;
 
                 if (Player.whoAmI == Main.myPlayer)
                     NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Main.LocalPlayer.whoAmI);

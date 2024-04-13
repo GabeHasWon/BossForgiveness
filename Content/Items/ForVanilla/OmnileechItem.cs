@@ -21,7 +21,7 @@ internal class OmnileechItem : ModItem
 
     public override bool? UseItem(Player player)
     {
-        if (Main.netMode == NetmodeID.Server)
+        if (Main.netMode != NetmodeID.MultiplayerClient)
         {
             int npc = NPC.NewNPC(player.GetSource_ItemUse(Item), (int)player.Center.X, (int)player.Center.Y, ModContent.NPCType<Omnileech>());
             NPC n = Main.npc[npc];
