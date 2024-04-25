@@ -15,7 +15,7 @@ internal class GolemTaser : ModItem
     {
         Item.Size = new(22);
         Item.useStyle = ItemUseStyleID.Swing;
-        Item.useTime = Item.useAnimation = 20;
+        Item.useTime = Item.useAnimation = 18;
         Item.shoot = ModContent.ProjectileType<GolemTaserProj>();
         Item.shootSpeed = 8;
         Item.channel = true;
@@ -23,6 +23,21 @@ internal class GolemTaser : ModItem
     }
 
     public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<GolemTaserProj>()] < 1;
+
+    public override void AddRecipes() 
+    {
+        CreateRecipe()
+            .AddIngredient(ItemID.LihzahrdPowerCell)
+            .AddIngredient(ItemID.TitaniumBar)
+            .AddTile(TileID.LihzahrdFurnace)
+            .Register();
+
+        CreateRecipe()
+            .AddIngredient(ItemID.LihzahrdPowerCell)
+            .AddIngredient(ItemID.AdamantiteBar)
+            .AddTile(TileID.LihzahrdFurnace)
+            .Register();
+    }
 
     private class GolemTaserProj : ModProjectile
     {

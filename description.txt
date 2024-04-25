@@ -1,6 +1,7 @@
 --- Pacifist Route ---
 by GabeHasWon
 commissioned by sivaexo
+community ideas from Great Grand Stelleted 120-Cell, Ko, King of Fire105, and 001 on the Discord
 
 This mod allows you to spare/mercy some bosses, letting them live alongside you.
 Each boss has their own pacification requirements, most of which are not hitting the boss for a few minutes while managing to stay alive.

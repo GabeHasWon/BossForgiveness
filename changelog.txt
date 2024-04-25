@@ -1,7 +1,3 @@
-v1.0.1.1
-- Fixed King Slime not dropping loot when pacified
-- Fixed True Truffle Treat not working in singleplayer
-- Fixed Duke Fishron not dropping loot when pacified
-- Fixed Eye of Cthulhu not zooming properly when being ridden
-- Fixed players suffocating when riding EoC and passing through sand
-- Fixed Worm Morsels not working in singleplayer
+v1.0.2
+- Added crafting recipe to Lihzahrd Power Brick
+- Added pacification mechanics to Queen Slime, Queen Bee

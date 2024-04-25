@@ -24,6 +24,8 @@ Projectiles: {
 	WormMorselProj.DisplayName: Worm Morsel Proj
 	SlimeSpikeball.DisplayName: Slime Spikeball
 	SlimePellet.DisplayName: Slime Pellet
+	CrystalBobber.DisplayName: Crystal Bobber
+	SkullLamp.DisplayName: Skull Lamp
 }
 
 PacifiedCondition: When pacified

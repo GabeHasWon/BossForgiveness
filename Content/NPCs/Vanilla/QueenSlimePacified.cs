@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
@@ -56,6 +57,7 @@ public class QueenSlimePacified : ModNPC
         _drawNPCDummy.Center = NPC.Center;
         _drawNPCDummy.velocity = NPC.velocity;
         _drawNPCDummy.FindFrame();
+        _drawNPCDummy.GetGlobalNPC<QueenSlimePacificationNPC>().crystalOffset = new Vector2(-100000);
         Main.instance.DrawNPCDirect(Main.spriteBatch, _drawNPCDummy, false, screenPos);
         return false;
     }

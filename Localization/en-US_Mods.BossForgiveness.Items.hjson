@@ -54,3 +54,17 @@ OmnileechItem: {
 		'A delicacy to Fishron all across the world!'
 		'''
 }
+
+CrystalFisher: {
+	DisplayName: Crystal Fisher
+	Tooltip:
+		'''
+		Can be used to fish out Queen Slime's crystal core
+		'Crystal-infused string gives this rod the power to fling!'
+		'''
+}
+
+CrystalCore: {
+	DisplayName: Crystal Core
+	Tooltip: ""
+}

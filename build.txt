@@ -1,4 +1,4 @@
 displayName = Pacifist Route
-author = GabeHasWon
+author = GabeHasWon, Sivaexo
 version = 1.0.1.1
 dllReferences = NetEasy_v0.1.8, NetSerializer
