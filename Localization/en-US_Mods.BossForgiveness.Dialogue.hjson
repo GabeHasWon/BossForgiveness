@@ -90,7 +90,7 @@ Destroyer: {
 Twins: {
 	0: "[c/d9fad8:Hi there,] [c/ffbcbc:pal.]"
 	1: "[c/ffbcbc:We've seen you around] [c/d9fad8:these parts a bunch.] [c/ffbcbc:You doin anything cool?]"
-	2: "[c/ffbcbc:Sometimes we wonder -] [c/d9fad8:could we ever even have glasses?]"
+	2: "[c/ffbcbc:Sometimes we wonder -] [c/d9fad8:could we ever even HAVE glasses?]"
 }
 
 Plantera: {
@@ -111,4 +111,18 @@ Duke: {
 	1: Sometimes, I dream of fungi. Fungi...
 	2: Often, all a pig needs is some time in the water, and you're good to go.
 	3: People underappreciate the ocean breeze. It brings so much to us, to the air, to the sky...such as spores.
+}
+
+Cultist: {
+	0: Before I had realized it, I was summoning an ancient god! Hope that goes well for you by the way.
+	1: '''"Do you regret the cult?" Not really, it did give me some fancy powers.'''
+	2: Hey, just...between you and me. Those followers without the bows? I don't know where they came from. They just appeared.
+	3: '''"Where did you find the Tablet?" Why is everyone asking me this? I just found it!'''
+}
+
+EoL: {
+	0: You're lucky I don't strike you down immediately, kid.
+	1: Don't talk to me unless you've got a death wish.
+	2: The light is wonderful. Why don't you look into it?
+	3: Hm...how could I harness the night, to always be day?
 }

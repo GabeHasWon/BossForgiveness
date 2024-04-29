@@ -39,7 +39,7 @@ internal class QueenBeePacificationNPC : GlobalNPC
 
         public void DrawDream(Vector2 pos)
         {
-            pos -= new Vector2(40, 30);
+            pos -= new Vector2(80, 30);
             int iteration = 0;
 
             foreach (var item in requirements.desiredDatas)
@@ -70,7 +70,10 @@ internal class QueenBeePacificationNPC : GlobalNPC
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out var te) && te is QueenBeeDreamTE dream)
+            {
                 storedRequirements = dream.requirements;
+                dream.Kill(i, j);
+            }
         }
     }
 
@@ -170,6 +173,8 @@ internal class QueenBeePacificationNPC : GlobalNPC
                         npc.playerInteraction[npc.target] = true;
                         npc.NPCLoot();
                         npc.Transform(ModContent.NPCType<PacifiedQueenBee>());
+
+                        WorldGen.QuickFindHome(npc.whoAmI);
                     }
                 }
 

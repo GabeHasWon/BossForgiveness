@@ -16,12 +16,14 @@ NPCs: {
 	TruffleLeechNPC.DisplayName: Truffle Leech
 	Omnileech.DisplayName: The True Truffle Treat
 	DukePacified.DisplayName: "{$NPCName.DukeFishron}"
+	CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
+	EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
 }
 
 Projectiles: {
 	EoCLeashProj.DisplayName: Leash
-	GolemTaserProj.DisplayName: Golem Taser Proj
-	WormMorselProj.DisplayName: Worm Morsel Proj
+	GolemTaserProj.DisplayName: Golem Taser
+	WormMorselProj.DisplayName: Worm Morsel
 	SlimeSpikeball.DisplayName: Slime Spikeball
 	SlimePellet.DisplayName: Slime Pellet
 	CrystalBobber.DisplayName: Crystal Bobber

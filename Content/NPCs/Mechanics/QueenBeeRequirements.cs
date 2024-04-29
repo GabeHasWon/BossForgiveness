@@ -1,6 +1,8 @@
 ﻿using BossForgiveness.Content.Systems.Misc;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
@@ -11,31 +13,44 @@ namespace BossForgiveness.Content.NPCs.Mechanics;
 
 internal class QueenBeeRequirements
 {
-    public readonly struct DisplayTileData(TileData data, LocalizedText display, int itemId, bool skipFrameCheck)
+    public readonly struct DisplayTileData(TileData data, int itemId, bool skipFrameCheck, bool skipEntirely = false)
     {
         public readonly TileData Data = data;
-        public readonly LocalizedText DisplayName = display;
         public readonly int ItemId = itemId;
         public readonly bool SkipFrameCheck = skipFrameCheck;
+        public readonly bool SkipEntirely = skipEntirely;
 
         public void SaveData(TagCompound tag)
         {
             TagCompound dataTag = [];
             Data.SaveData(dataTag);
             tag.Add(nameof(Data), dataTag);
-            tag.Add(nameof(DisplayName), DisplayName.Key);
             tag.Add(nameof(ItemId), ItemId);
             tag.Add(nameof(SkipFrameCheck), SkipFrameCheck);
+            tag.Add(nameof(SkipEntirely), SkipEntirely);
         }
 
         public static DisplayTileData LoadData(TagCompound tag)
         {
             var data = TileData.LoadData(tag.GetCompound(nameof(Data)));
-            LocalizedText name = Language.GetText(tag.GetString(nameof(DisplayName)));
             int itemId = tag.GetInt(nameof(ItemId));
             bool skipFrameCheck = tag.GetBool(nameof(SkipFrameCheck));
+            bool skipEntirely = tag.GetBool(nameof(SkipEntirely));
 
-            return new DisplayTileData(data, name, itemId, skipFrameCheck);
+            return new DisplayTileData(data, itemId, skipFrameCheck, skipEntirely);
+        }
+
+        public override bool Equals([NotNullWhen(true)] object obj)
+        {
+            if (obj is not DisplayTileData other)
+            {
+                if (obj is TileData data)
+                    return !SkipFrameCheck ? data == Data : data.Type == Data.Type;
+
+                return false;
+            }
+
+            return other.SkipFrameCheck || SkipFrameCheck ? other.Data.Type == Data.Type : other.Data == Data;
         }
     }
 
@@ -43,28 +58,36 @@ internal class QueenBeeRequirements
 
     public QueenBeeRequirements(bool skipInit)
     {
+        if (skipInit)
+            return;
+
         DisplayTileData[] datas = 
-            [   new(new(TileID.Bottles, new Point(126, 0)), Lang.GetItemName(ItemID.HoneyCup), ItemID.HoneyCup, false), 
-                new(new(TileID.Containers, new Point(1044, 0)), Lang.GetItemName(ItemID.HoneyChest), ItemID.HoneyChest, false), 
-                new(new(TileID.HoneyDispenser, default), Lang.GetItemName(ItemID.HoneyDispenser), ItemID.HoneyDispenser, true),
-                new(new(TileID.GoldCoinPile, default), Lang.GetItemName(ItemID.GoldCoin), ItemID.GoldCoin, true), 
-                new(new(TileID.MetalBars, new Point(108, 0)), Lang.GetItemName(ItemID.GoldBar), ItemID.GoldBar, false)
+            [   new(new(TileID.Bottles, new Point(126, 0)), ItemID.HoneyCup, false), 
+                new(new(TileID.Containers, new Point(1044, 0)), ItemID.HoneyChest, false), 
+                new(new(TileID.HoneyDispenser, default), ItemID.HoneyDispenser, true),
+                new(new(TileID.GoldCoinPile, default), ItemID.GoldCoin, true), 
+                new(new(TileID.MetalBars, new Point(108, 0)), ItemID.GoldBar, false),
+                new(new(TileID.Books, default), ItemID.Book, true)
             ];
 
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 6; ++i)
             desiredDatas.Add(Main.rand.Next(datas));
+
+        desiredDatas.Add(new DisplayTileData(new(TileID.Tables, new Point(1026, 18)), ItemID.HoneyTable, false, true));
+        desiredDatas.Add(new DisplayTileData(new(TileID.Chairs, new Point(880, 18)), ItemID.HoneyChair, false, true));
     }
 
     public bool RequirementsSatisfied(List<TileData> data)
     {
         bool hasTable = false;
         bool hasChair = false;
-        bool hasHoneyLight = false;
 
         List<DisplayTileData> checkData = new(desiredDatas.Count);
 
         foreach (var item in desiredDatas)
             checkData.Add(item);
+
+        checkData.RemoveAll(x => x.SkipEntirely);
 
         foreach (var item in data)
         {
@@ -74,14 +97,11 @@ internal class QueenBeeRequirements
             if (!hasChair && item.Type == TileID.Chairs && item.Frame.Y == 880)
                 hasChair = true;
 
-            if (!hasHoneyLight && CheckDataIsHoneyLight(item))
-                hasHoneyLight = true;
-
-            if (checkData.Any(x => x.Data == item))
-                checkData.Remove(checkData.First(x => x.Data == item));
+            if (checkData.Any(x => x.Equals(item)))
+                checkData.Remove(checkData.First(x => x.Equals(item)));
         }
 
-        return hasTable && hasChair && hasHoneyLight && checkData.Count == 0;
+        return hasTable && hasChair && checkData.Count == 0;
     }
 
     private static bool CheckDataIsHoneyLight(TileData tile)
