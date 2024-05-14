@@ -18,6 +18,7 @@ NPCs: {
 	DukePacified.DisplayName: "{$NPCName.DukeFishron}"
 	CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
 	EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
+	Flea.DisplayName: Flea
 }
 
 Projectiles: {
@@ -28,6 +29,9 @@ Projectiles: {
 	SlimePellet.DisplayName: Slime Pellet
 	CrystalBobber.DisplayName: Crystal Bobber
 	SkullLamp.DisplayName: Skull Lamp
+	BoCSpike.DisplayName: Bo C Spike
+	HayNeedle.DisplayName: Hay Needle
+	Splinter.DisplayName: Splinter
 }
 
 PacifiedCondition: When pacified

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem;
+using Microsoft.Xna.Framework;
+using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -88,5 +90,22 @@ public static class NPCUtils
         }
 
         return canTeleport;
+    }
+
+    public static void SetAllPlayerInteraction(this NPC npc)
+    {
+        foreach (var item in Main.ActivePlayers)
+            npc.PlayerInteraction(item.whoAmI);
+    }
+
+    public static void Pacify<T>(this NPC npc) where T : ModNPC
+    {
+        PacifiedNPCHandler.TransformingNPC = true;
+
+        npc.SetAllPlayerInteraction();
+        npc.NPCLoot();
+        npc.Transform(ModContent.NPCType<T>());
+
+        PacifiedNPCHandler.TransformingNPC = false;
     }
 }

@@ -170,10 +170,7 @@ internal class QueenBeePacificationNPC : GlobalNPC
                 {
                     if (!npc.homeless)
                     {
-                        npc.playerInteraction[npc.target] = true;
-                        npc.NPCLoot();
-                        npc.Transform(ModContent.NPCType<PacifiedQueenBee>());
-
+                        npc.Pacify<PacifiedQueenBee>();
                         WorldGen.QuickFindHome(npc.whoAmI);
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -153,6 +154,8 @@ public class BoCPacified : ModNPC
     {
         _creepers.Clear();
 
+        PacifiedNPCHandler.TransformingNPC = true;
+
         for (int i = 0; i < Main.maxNPCs; ++i)
         {
             NPC npc = Main.npc[i];
@@ -164,8 +167,13 @@ public class BoCPacified : ModNPC
                 _creepers.Add(new Creeper(newNPC));
                 npc.active = false;
                 npc.netUpdate = true;
+
+                npc.SetAllPlayerInteraction();
+                npc.NPCLoot();
             }
         }
+
+        PacifiedNPCHandler.TransformingNPC = false;
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";

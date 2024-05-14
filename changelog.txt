@@ -1,3 +1,4 @@
 v1.0.2
 - Added crafting recipe to Lihzahrd Power Brick
-- Added pacification mechanics to Queen Slime, Queen Bee
+- Improved the pacification code for King Slime, Duke Fishron to include "being pacified" flag
+- Added pacification mechanics to Queen Slime, Queen Bee, Brain of Cthulhu
