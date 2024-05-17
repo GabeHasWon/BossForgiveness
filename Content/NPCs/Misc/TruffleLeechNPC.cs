@@ -1,7 +1,9 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla;
 using Microsoft.Xna.Framework;
+using NPCUtils;
 using System;
 using Terraria;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
@@ -42,6 +44,7 @@ public class TruffleLeechNPC : ModNPC
         NPC.dontTakeDamageFromHostiles = true;
     }
 
+    public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry) => bestiaryEntry.AddInfo(this, "Ocean");
     public override bool CanHitPlayer(Player target, ref int cooldownSlot) => PlayerWho == -1;
 
     public override void AI()

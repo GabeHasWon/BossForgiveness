@@ -11,10 +11,11 @@
     <None Remove="Localization\en-US_Mods.BossForgiveness.Items.hjson" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="NetEasy">
       <HintPath>lib\NetEasy_v0.1.8.dll</HintPath>
+    </Reference>
+    <Reference Include="NPCUtils">
+      <HintPath>lib\NPCUtils.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

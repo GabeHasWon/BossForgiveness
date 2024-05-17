@@ -66,5 +66,19 @@ CrystalFisher: {
 
 CrystalCore: {
 	DisplayName: Crystal Core
-	Tooltip: ""
+	Tooltip: Useless for now...
+}
+
+GuidesLocket: {
+	DisplayName: Guides Locket
+	Tooltip:
+		'''
+		A powerful token from the Guide
+		Breaks when thrown or trashed
+		Allows you to summon the Wall of Flesh, while also angering it
+		Its angered form is significantly faster, shoots different types of lasers and spawns more leeches
+		However, the leeches will not hurt you when wearing this and will be pacified on touch
+		Pacified leeches will return to the wall, petrifying some part of it
+		'It stirs with an idle power, yet is completely still.'
+		'''
 }

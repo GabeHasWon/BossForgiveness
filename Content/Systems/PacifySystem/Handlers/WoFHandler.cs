@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.NPCs;
+using BossForgiveness.Content.NPCs.Mechanics.WoF;
+using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -13,7 +15,7 @@ internal class WoFHandler : PacifiedNPCHandler
 
     public override int Type => NPCID.WallofFlesh;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 3 * 60 * 60 && !Main.hardMode;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WoFPacificationNPC>().petrifyCount >= WoFPacificationNPC.MaxPetrify && !Main.hardMode;
 
     public override void Load(Mod mod)
     {
@@ -30,9 +32,8 @@ internal class WoFHandler : PacifiedNPCHandler
 
     public override void OnPacify(NPC npc)
     {
-        npc.playerInteraction[Main.myPlayer] = true;
-
         Pacifying = true;
+        npc.SetAllPlayerInteraction();
         npc.NPCLoot();
         Pacifying = false;
 
@@ -102,7 +103,7 @@ internal class WoFHandler : PacifiedNPCHandler
 
         int mod = x + y + sine;
 
-        if (mod % 5 == 0 || mod % 8 == 0 || x - y % 3 == 0 || x % 5 == (sine % 5) || y % 5 == (sine % 5))
+        if (mod % 5 == 0 || mod % 8 == 0 || x - y % 3 == 0 || x % 5 == sine % 5 || y % 5 == sine % 5)
             return TileID.FleshBlock;
 
         if ((y - sine) % 30 < 6)

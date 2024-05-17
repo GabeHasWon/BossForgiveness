@@ -13,12 +13,25 @@ NPCs: {
 	RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
 	PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
 	GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
-	TruffleLeechNPC.DisplayName: Truffle Leech
-	Omnileech.DisplayName: The True Truffle Treat
+
+	TruffleLeechNPC: {
+		DisplayName: Truffle Leech
+		Entry: A small, aggressive but rather unthreatening leech, often carried by Fishrons. Tastes weird.
+	}
+
+	Omnileech: {
+		DisplayName: The True Truffle Treat
+		Entry: A legendary, massive truffle worm that can no longer move due to its size. Prized by Fishrons across the universe.
+	}
+
 	DukePacified.DisplayName: "{$NPCName.DukeFishron}"
 	CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
 	EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
-	Flea.DisplayName: Flea
+
+	SpiritLeech: {
+		DisplayName: Bursting Leech
+		Entry: An odd variant of the Leech that explodes after a short time. Sometimes, they appear as ghosts. It is unclear what this means.
+	}
 }
 
 Projectiles: {
@@ -35,3 +48,4 @@ Projectiles: {
 }
 
 PacifiedCondition: When pacified
+GuideLocketDialogue: I fear I'm at that point. You are approaching a great threat. If I may, I offer you this locket. It'll help you best the Wall, though it will be angered by the charm. Best of luck, your choice is my fate.
