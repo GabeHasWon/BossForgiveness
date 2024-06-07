@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using NPCUtils;
 using System;
+using System.IO;
 using System.Reflection;
 using Terraria;
 using Terraria.Audio;
@@ -159,7 +160,7 @@ public class SpiritLeech : ModNPC
     {
         if (Main.npc[Main.wofNPCIndex].Hitbox.Intersects(NPC.Hitbox))
         {
-            Main.npc[Main.wofNPCIndex].GetGlobalNPC<WoFPacificationNPC>().AddPacification();
+            Main.npc[Main.wofNPCIndex].GetGlobalNPC<WoFPacificationNPC>().AddPacification(Main.npc[Main.wofNPCIndex]);
             NPC.active = false;
 
             SoundEngine.PlaySound(SoundID.NPCHit54, NPC.Center);
@@ -174,6 +175,9 @@ public class SpiritLeech : ModNPC
             }
         }
     }
+
+    public override void SendExtraAI(BinaryWriter writer) => writer.Write(isSpirit);
+    public override void ReceiveExtraAI(BinaryReader reader) => isSpirit = reader.ReadBoolean();
 
     private void CheckHitPlayers()
     {

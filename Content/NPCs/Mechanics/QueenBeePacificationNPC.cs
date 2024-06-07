@@ -1,19 +1,24 @@
 ﻿using BossForgiveness.Common.Camera;
 using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.Misc;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
+using Terraria.WorldBuilding;
+using static BossForgiveness.Content.NPCs.Mechanics.QueenBeePacificationNPC;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
@@ -52,21 +57,13 @@ internal class QueenBeePacificationNPC : GlobalNPC
                 pos.X += tex.Width + 4;
             }
         }
+
+        public override void NetSend(BinaryWriter writer) => requirements.NetSend(writer);
+        public override void NetReceive(BinaryReader reader) => requirements = QueenBeeRequirements.NetRecieve(reader);
     }
     
     public class LarveDrawDream : GlobalTile
     {
-        public override void NearbyEffects(int i, int j, int type, bool closer)
-        {
-            Tile tile = Main.tile[i, j];
-
-            if (tile.TileType != TileID.Larva || tile.TileFrameX != 0 || tile.TileFrameY != 0)
-                return;
-
-            if (!TileEntity.ByPosition.ContainsKey(new Point16(i, j)))
-                ModContent.GetInstance<QueenBeeDreamTE>().Place(i, j);
-        }
-
         public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out var te) && te is QueenBeeDreamTE dream)
@@ -137,6 +134,14 @@ internal class QueenBeePacificationNPC : GlobalNPC
             return;
         }
 
+        if (Main.netMode == NetmodeID.Server && Main.npc[who].GetGlobalNPC<QueenBeePacificationNPC>()._checkedHouseBee)
+            new SyncQBCheckedHouseModule(who).Send();
+        else
+            SetChecked(who);
+    }
+
+    public static void SetChecked(int who)
+    {
         WorldGen.canSpawn = Main.npc[who].GetGlobalNPC<QueenBeePacificationNPC>().requirements.RequirementsSatisfied(data);
         Main.npc[who].GetGlobalNPC<QueenBeePacificationNPC>()._checkedHouseBee = true;
     }
@@ -157,7 +162,7 @@ internal class QueenBeePacificationNPC : GlobalNPC
         {
             if (_dramaticPauseTimer++ < 300)
             {
-                if (_dramaticPauseTimer == 1)
+                if (Main.netMode != NetmodeID.Server && _dramaticPauseTimer == 1 && Main.LocalPlayer.DistanceSQ(npc.Center) < 900 * 900)
                 {
                     var modifier = new ZoomModifier(npc, 200, 100, 30, Main.GameZoomTarget);
                     Main.instance.CameraModifiers.Add(modifier);
@@ -181,4 +186,25 @@ internal class QueenBeePacificationNPC : GlobalNPC
 
         return true;
     }
+}
+
+public class LarvaeAddTESystem : ModSystem
+{
+    public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
+        => tasks.Insert(tasks.Count - 1, new PassLegacy("BossForgiveness: Add TEs to Larvae", (_, _) =>
+        {
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = (int)Main.worldSurface - 20; j < Main.maxTilesY - 200; j++)
+                {
+                    Tile tile = Main.tile[i, j];
+
+                    if (tile.TileType != TileID.Larva || tile.TileFrameX != 0 || tile.TileFrameY != 0)
+                        continue;
+
+                    if (!TileEntity.ByPosition.ContainsKey(new Point16(i, j)))
+                        ModContent.GetInstance<QueenBeeDreamTE>().Place(i, j);
+                }
+            }
+        }));
 }

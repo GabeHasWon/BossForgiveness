@@ -1,15 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.WoF;
 
 internal class WoFPacificationNPC : GlobalNPC
 {
-    public const int MaxPetrify = 10;
+    public const int MaxPetrify = 3;
 
     public override bool InstancePerEntity => true;
 
@@ -35,16 +37,21 @@ internal class WoFPacificationNPC : GlobalNPC
         if (leechTimer++ > MathHelper.Lerp(400f, 200f, lifeFactor))
         {
             SoundEngine.PlaySound(SoundID.NPCDeath13, npc.Center);
-            int leech = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SpiritLeech>());
-            Main.npc[leech].velocity = npc.velocity;
 
             leechCount++;
             leechTimer = 0;
 
-            if (leechCount == 2)
+            if (Main.netMode == NetmodeID.Server)
             {
-                leechCount = 0;
-                (Main.npc[leech].ModNPC as SpiritLeech).isSpirit = true;
+                int leech = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SpiritLeech>());
+                Main.npc[leech].velocity = npc.velocity;
+
+                if (leechCount == 2)
+                {
+                    leechCount = 0;
+                    (Main.npc[leech].ModNPC as SpiritLeech).isSpirit = true;
+                    Main.npc[leech].netUpdate = true;
+                }
             }
         }
 
@@ -54,5 +61,21 @@ internal class WoFPacificationNPC : GlobalNPC
         return true;
     }
 
-    internal void AddPacification() => petrifyCount++;
+    internal void AddPacification(NPC npc)
+    {
+        petrifyCount++;
+        npc.netUpdate = true;
+    }
+    
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        bitWriter.WriteBit(isAngry);
+        binaryWriter.Write(petrifyCount);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        isAngry = bitReader.ReadBit();
+        petrifyCount = binaryReader.ReadInt32();
+    }
 }

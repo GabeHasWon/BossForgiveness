@@ -48,10 +48,27 @@ internal class BoCPacificationNPC : GlobalNPC
             npc.noTileCollide = true;
             sleepyTime++;
 
-            if (sleepyTime > 120)
+            if (sleepyTime > 120 && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.Pacify<BoCPacified>();
-                (npc.ModNPC as BoCPacified).BuildCreepers();
+                if (!NPC.AnyNPCs(ModContent.NPCType<BoCPacified>()))
+                {
+                    npc.Pacify<BoCPacified>();
+                    (npc.ModNPC as BoCPacified).BuildCreepers();
+                    npc.netUpdate = true;
+                }
+                else
+                {
+                    if (Main.netMode != NetmodeID.Server)
+                    {
+                        for (int i = 0; i < 20; ++i)
+                        {
+                            var pos = npc.position + new Vector2(Main.rand.Next(npc.width), Main.rand.Next(npc.height));
+                            Gore.NewGore(npc.GetSource_Death(), pos, Vector2.Zero, GoreID.Smoke1 + Main.rand.Next(3));
+                        }
+                    }
+
+                    ClearCreepers();
+                }
             }
 
             return false;
@@ -59,6 +76,28 @@ internal class BoCPacificationNPC : GlobalNPC
 
         CheckCreepersHurt(npc);
         return true;
+    }
+
+    private void ClearCreepers()
+    {
+        for (int i = 0; i < Main.maxNPCs; ++i)
+        {
+            NPC npc = Main.npc[i];
+
+            if (npc.CanBeChasedBy() && npc.type == NPCID.Creeper)
+            {
+                npc.active = false;
+                npc.netUpdate = true;
+                npc.SetAllPlayerInteraction();
+                npc.NPCLoot();
+
+                for (int j = 0; j < 3; ++j)
+                {
+                    var pos = npc.position + new Vector2(Main.rand.Next(npc.width), Main.rand.Next(npc.height));
+                    Gore.NewGore(npc.GetSource_Death(), pos, Vector2.Zero, GoreID.Smoke1 + Main.rand.Next(3));
+                }
+            }
+        }
     }
 
     private void CheckCreepersHurt(NPC npc)
@@ -80,8 +119,9 @@ internal class BoCPacificationNPC : GlobalNPC
 
     private static void SpamSpikes(NPC npc, IEntitySource source)
     {
-        int x = (int)(npc.Center.X / 16f);
-        int y = (int)(npc.Center.Y / 16f);
+        Player plr = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
+        int x = (int)(plr.Center.X / 16f);
+        int y = (int)(plr.Center.Y / 16f);
 
         var points = new HashSet<Vector3>();
 
@@ -89,7 +129,7 @@ internal class BoCPacificationNPC : GlobalNPC
         {
             for (int j = -100; j < 100; j++)
             {
-                if (Collision.CanHit(npc.Center, npc.width, npc.height, new Vector2(x + i, y + j).ToWorldCoordinates(0, 0), 16, 16) && CanConnect(x + i, y + j, out float rot))
+                if (Collision.CanHit(plr.Center, plr.width, plr.height, new Vector2(x + i, y + j).ToWorldCoordinates(0, 0), 16, 16) && CanConnect(x + i, y + j, out float rot))
                     points.Add(new(x + i, y + j, rot));
             }
         }
@@ -100,11 +140,15 @@ internal class BoCPacificationNPC : GlobalNPC
             {
                 int type = ModContent.ProjectileType<BoCSpike>();
                 var pos = new Vector2(item.X, item.Y).ToWorldCoordinates();
-                Projectile proj = Main.projectile[Projectile.NewProjectile(source, pos, Vector2.Zero, type, 20, 0f, Main.myPlayer)];
+                int p = Projectile.NewProjectile(source, pos, Vector2.Zero, type, 20, 0f, Main.myPlayer);
+                Projectile proj = Main.projectile[p];
                 proj.rotation = item.Z - MathHelper.PiOver2;
                 proj.frame = Main.rand.Next(3);
                 proj.ai[2] = -1;
                 (proj.ModProjectile as BoCSpike).Parent = npc.whoAmI;
+
+                if (Main.netMode == NetmodeID.Server)
+                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
             }
         }
     }

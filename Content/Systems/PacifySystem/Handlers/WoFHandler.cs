@@ -37,22 +37,23 @@ internal class WoFHandler : PacifiedNPCHandler
         npc.NPCLoot();
         Pacifying = false;
 
-        for (int i = 0; i < Main.maxNPCs; ++i)
+        if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            NPC eye = Main.npc[i];
+            for (int i = 0; i < Main.maxNPCs; ++i)
+            {
+                NPC eye = Main.npc[i];
 
-            if (eye.active && eye.type == NPCID.WallofFleshEye)
-                OreifyNPC(eye);
+                if (eye.active && eye.type == NPCID.WallofFleshEye)
+                    OreifyNPC(eye);
+            }
+
+            OreifyNPC(npc);
+            int orePosX = (int)(npc.position.X / 16f) - 6 * Math.Sign(npc.velocity.X);
+            OreifyArea(orePosX, Main.maxTilesY - 210, new(orePosX, Main.maxTilesY - 105), 10, 200, true, byte.MaxValue);
         }
-
-        OreifyNPC(npc);
-        int orePosX = (int)(npc.position.X / 16f) - (6 * Math.Sign(npc.velocity.X));
-        OreifyArea(orePosX, Main.maxTilesY - 210, new(orePosX, Main.maxTilesY - 105), 10, 200, true, byte.MaxValue);
 
         SoundEngine.PlaySound(SoundID.NPCDeath10, npc.Center);
         SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
-
-        npc.active = false;
     }
 
     private static void OreifyNPC(NPC npc)
@@ -60,7 +61,11 @@ internal class WoFHandler : PacifiedNPCHandler
         int baseX = (int)(npc.position.X / 16f);
         int baseY = (int)(npc.position.Y / 16f);
         byte paintId = npc.type == NPCID.WallofFleshEye ? PaintID.WhitePaint : PaintID.DeepRedPaint;
+        
         OreifyArea(baseX, baseY, npc.Center / 16f, npc.width / 16, npc.height / 16, false, paintId);
+        
+        npc.active = false;
+        npc.netUpdate = true;
     }
 
     private static void OreifyArea(int baseX, int baseY, Vector2 center, int width, int height, bool replaceFullWall, byte paint)
@@ -86,6 +91,9 @@ internal class WoFHandler : PacifiedNPCHandler
                 }
             }
         }
+
+        if (Main.netMode == NetmodeID.Server)
+            NetMessage.SendTileSquare(-1, baseX, baseY, width, height);
     }
 
     /// <summary>

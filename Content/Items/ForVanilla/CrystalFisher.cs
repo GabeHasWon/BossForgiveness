@@ -1,5 +1,7 @@
-﻿using BossForgiveness.Content.NPCs.Mechanics;
+﻿using BossForgiveness.Content.NPCs;
+using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,6 +16,7 @@ namespace BossForgiveness.Content.Items.ForVanilla;
 class CrystalFisher : ModItem
 {
     public override void SetStaticDefaults() => Item.ResearchUnlockCount = 1;
+    public override bool IsLoadingEnabled(Mod mod) => false;
 
     public override void SetDefaults()
     {
@@ -36,8 +39,7 @@ class CrystalFisher : ModItem
         private Player Owner => Main.player[Projectile.owner];
 
         private bool Returning => Projectile.ai[0] == 1;
-        private ref float Time => ref Projectile.ai[1];
-        private ref float ConnectedQS => ref Projectile.ai[2];
+        public ref float ConnectedQS => ref Projectile.ai[2];
 
         public override void SetDefaults()
         {
@@ -52,28 +54,37 @@ class CrystalFisher : ModItem
             if (ConnectedQS != -1)
             {
                 Queen.GetGlobalNPC<QueenSlimePacificationNPC>().crystalHooked = true;
-                Vector2 pos = Queen.GetGlobalNPC<QueenSlimePacificationNPC>().crystalPosition - new Vector2(0, 6);
-                Projectile.Center = pos;
+
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Vector2 pos = Queen.GetGlobalNPC<QueenSlimePacificationNPC>().crystalPosition - new Vector2(0, 6);
+
+                    Projectile.Center = pos;
+                    Projectile.netUpdate = true;
+                }
 
                 if (Returning)
                     Queen.GetGlobalNPC<QueenSlimePacificationNPC>().crystalOffset += Projectile.DirectionTo(Owner.Center) * 0.1f;
 
-                var crystalBox = new Rectangle((int)pos.X - 16, (int)pos.Y - 16, 38, 40);
-                Rectangle hitbox = Queen.Hitbox;
-                hitbox.Inflate(14, 14);
-
-                if (!hitbox.Intersects(crystalBox))
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Projectile.ai[0] = 1;
-                    Projectile.ai[1] = ModContent.ItemType<CrystalCore>();
-                    Queen.playerInteraction[Owner.whoAmI] = true;
-                    Queen.NPCLoot();
-                    Queen.Transform(ModContent.NPCType<QueenSlimePacified>());
-                    ConnectedQS = -1;
+                    var crystalBox = new Rectangle((int)Projectile.Center.X - 16, (int)Projectile.Center.Y - 16, 38, 40);
+                    Rectangle hitbox = Queen.Hitbox;
+                    hitbox.Inflate(14, 14);
+
+                    if (!hitbox.Intersects(crystalBox))
+                    {
+                        Projectile.ai[0] = 1;
+                        Projectile.ai[1] = ModContent.ItemType<CrystalCore>();
+                        Projectile.netUpdate = true;
+                        Queen.Pacify<QueenSlimePacified>();
+                        Queen.netUpdate = true;
+                        ConnectedQS = -1;
+                    }
                 }
 
-                if (Owner.DistanceSQ(pos) > 400 * 400)
-                    Owner.velocity -= Owner.DirectionFrom(pos) * 4;
+                if (Owner.DistanceSQ(Projectile.Center) > 400 * 400)
+                    Owner.velocity -= Owner.DirectionFrom(Projectile.Center) * 4;
             }
             else
             {
@@ -81,7 +92,10 @@ class CrystalFisher : ModItem
                 {
                     if (item.type == NPCID.QueenSlimeBoss && item.Hitbox.Intersects(Projectile.Hitbox))
                     {
-                        ConnectedQS = item.whoAmI;
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            ConnectedQS = item.whoAmI;
+                        else if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == Projectile.owner)
+                            new SyncFishQSModule(Projectile.identity, item.whoAmI).Send();
                         break;
                     }
                 }
@@ -189,6 +203,7 @@ class CrystalFisher : ModItem
                 float rotation = playerToProjectile.ToRotation() - MathHelper.PiOver2;
                 Main.spriteBatch.Draw(TextureAssets.FishingLine.Value, new Vector2(lineOrigin.X - Main.screenPosition.X + TextureAssets.FishingLine.Value.Width * 0.5f, lineOrigin.Y - Main.screenPosition.Y + TextureAssets.FishingLine.Value.Height * 0.5f), new Rectangle(0, 0, TextureAssets.FishingLine.Value.Width, (int)height), lineColor, rotation, new Vector2(TextureAssets.FishingLine.Value.Width * 0.5f, 0f), 1f, SpriteEffects.None, 0f);
             }
+            
             return false;
         }
     }

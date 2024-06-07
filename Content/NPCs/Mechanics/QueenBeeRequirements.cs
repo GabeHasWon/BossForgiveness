@@ -1,12 +1,11 @@
 ﻿using BossForgiveness.Content.Systems.Misc;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
@@ -38,6 +37,27 @@ internal class QueenBeeRequirements
             bool skipEntirely = tag.GetBool(nameof(SkipEntirely));
 
             return new DisplayTileData(data, itemId, skipFrameCheck, skipEntirely);
+        }
+
+        public void NetSend(BinaryWriter writer)
+        {
+            writer.Write(Data.Type);
+            writer.Write((short)Data.Frame.X);
+            writer.Write((short)Data.Frame.Y);
+            writer.Write((short)ItemId);
+            writer.Write(SkipFrameCheck);
+            writer.Write(SkipEntirely);
+        }
+
+        public static DisplayTileData NetRecieve(BinaryReader reader)
+        {
+            int dataType = reader.ReadInt32();
+            var dataFrame = new Point(reader.ReadInt16(), reader.ReadInt16());
+            int itemId = reader.ReadInt16();
+            bool skipFrameCheck = reader.ReadBoolean();
+            bool skipEntirely = reader.ReadBoolean();
+
+            return new DisplayTileData(new TileData(dataType, dataFrame), itemId, skipFrameCheck, skipEntirely);
         }
 
         public override bool Equals([NotNullWhen(true)] object obj)
@@ -137,6 +157,25 @@ internal class QueenBeeRequirements
             TagCompound data = tag.GetCompound("data" + i);
             requirements.desiredDatas.Add(DisplayTileData.LoadData(data));
         }
+
+        return requirements;
+    }
+
+    public void NetSend(BinaryWriter writer)
+    {
+        writer.Write((byte)desiredDatas.Count);
+
+        for (int i = 0; i < desiredDatas.Count; ++i)
+            desiredDatas[i].NetSend(writer);
+    }
+
+    public static QueenBeeRequirements NetRecieve(BinaryReader reader)
+    {
+        int count = reader.ReadByte();
+        QueenBeeRequirements requirements = new(true);
+
+        for (int i = 0; i < count; ++i)
+            requirements.desiredDatas.Add(DisplayTileData.NetRecieve(reader));
 
         return requirements;
     }

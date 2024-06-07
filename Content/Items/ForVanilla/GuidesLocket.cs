@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.WoF;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -27,9 +28,15 @@ internal class GuidesLocket : ModItem
         if (NPC.AnyNPCs(NPCID.WallofFlesh) || !player.ZoneUnderworldHeight)
             return false;
 
-        NPC.SpawnWOF(player.Center);
-        NPC wof = Main.npc[NPC.FindFirstNPC(NPCID.WallofFlesh)];
-        wof.GetGlobalNPC<WoFPacificationNPC>().isAngry = true;
+        if (Main.netMode == NetmodeID.SinglePlayer)
+        {
+            NPC.SpawnWOF(player.Center);
+            NPC wof = Main.npc[NPC.FindFirstNPC(NPCID.WallofFlesh)];
+            wof.GetGlobalNPC<WoFPacificationNPC>().isAngry = true;
+        }
+        else if (Main.myPlayer == player.whoAmI)
+            new SyncSpawnAngryWoFModule(Main.myPlayer).Send();
+
         return true;
     }
 

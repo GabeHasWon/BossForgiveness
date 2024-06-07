@@ -3,7 +3,8 @@ using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using System;
-using SteelSeries.GameSense;
+using System.IO;
+using BossForgiveness.Content.Systems.Syncing;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
@@ -37,9 +38,13 @@ public class BoCSpike : ModProjectile
         NPC parent = Main.npc[(int)Parent];
 
         if (!parent.active || parent.type != NPCID.BrainofCthulhu || parent.life < parent.lifeMax)
+        {
             Projectile.Kill();
+            Projectile.netUpdate = true;
+        }
 
-        CollideWithNPCs();
+        if (Main.netMode != NetmodeID.MultiplayerClient)
+            CollideWithNPCs();
 
         if (ConnectedNPC != -1)
         {
@@ -54,22 +59,30 @@ public class BoCSpike : ModProjectile
     {
         foreach (var npc in Main.ActiveNPCs)
         {
-            if (!npc.Hitbox.Intersects(Projectile.Hitbox)) 
+            if (!npc.Hitbox.Intersects(Projectile.Hitbox))
                 continue;
 
             if (ConnectedNPC == -1 && npc.type == NPCID.Creeper)
             {
                 ConnectedNPC = npc.whoAmI;
                 _offset = npc.Center - Projectile.Center;
+                Projectile.netUpdate = true;
 
-                npc.GetGlobalNPC<CreeperPacificationNPC>().rage++;
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                    npc.GetGlobalNPC<CreeperPacificationNPC>().rage++;
+                else if (Main.netMode == NetmodeID.Server)
+                    new SyncSpikedCreeperModule(npc.whoAmI).Send();
             }
 
             if (ConnectedNPC > -1 && npc.type == NPCID.BrainofCthulhu)
             {
                 Projectile.Kill();
 
-                npc.GetGlobalNPC<BoCPacificationNPC>().sleepyness++;
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                    npc.GetGlobalNPC<BoCPacificationNPC>().sleepyness++;
+                else if (Main.netMode == NetmodeID.Server)
+                    new SyncSleepyBoCModule((int)Parent).Send();
+
                 break;
             }
         }
@@ -83,4 +96,16 @@ public class BoCSpike : ModProjectile
 
     public override bool OnTileCollide(Vector2 oldVelocity) => false;
     public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Slimed, 120);
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(Projectile.rotation);
+        writer.WriteVector2(_offset);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        Projectile.rotation = reader.ReadSingle();
+        _offset = reader.ReadVector2();
+    }
 }

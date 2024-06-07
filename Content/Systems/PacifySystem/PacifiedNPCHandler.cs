@@ -13,12 +13,9 @@ internal abstract class PacifiedNPCHandler : ILoadable
 
     public abstract int Type { get; }
 
-    public virtual void Load(Mod mod)
-    {
-        Handlers.Add(Type, this);
-    }
+    public virtual void Load(Mod mod) => Handlers.Add(Type, this);
 
-    public void Unload() { }
+    public void Unload() => Handlers.Remove(Type);
 
     public abstract bool CanPacify(NPC npc);
     public abstract void OnPacify(NPC npc);

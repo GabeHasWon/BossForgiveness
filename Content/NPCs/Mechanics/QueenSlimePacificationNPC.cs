@@ -1,15 +1,11 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using System;
-using System.Threading;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
@@ -32,7 +28,7 @@ internal class QueenSlimePacificationNPC : GlobalNPC
         if (!c.TryGotoNext(x => x.MatchCall<Main>(nameof(Main.DrawNPCDirect_QueenSlimeWings))))
             return;
 
-        if (!c.TryGotoNext(MoveType.After, x => x.MatchCallvirt<EffectPass>(nameof(EffectPass.Apply))))
+        if (!c.TryGotoNext(MoveType.Before, x => x.MatchCallvirt<EffectPass>(nameof(EffectPass.Apply))))
             return;
 
         c.Emit(OpCodes.Ldloca_S, (byte)54);
