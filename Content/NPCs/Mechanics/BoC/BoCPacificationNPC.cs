@@ -4,10 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
@@ -25,8 +27,13 @@ internal class BoCPacificationNPC : GlobalNPC
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.BrainofCthulhu;
     public override void SetStaticDefaults() => zzzTex = ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/BoC/Zzzz");
-    public override void OnSpawn(NPC npc, IEntitySource source) => SpamSpikes(npc, source);
     public override void Unload() => zzzTex = null;
+
+    public override void OnSpawn(NPC npc, IEntitySource source)
+    {
+        if (Main.netMode != NetmodeID.MultiplayerClient)
+            SpamSpikes(npc, source);
+    }
 
     public override bool PreAI(NPC npc)
     {
@@ -78,7 +85,19 @@ internal class BoCPacificationNPC : GlobalNPC
         return true;
     }
 
-    private void ClearCreepers()
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        binaryWriter.Write((byte)sleepyness);
+        binaryWriter.Write(sleepyTime);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        sleepyness = binaryReader.ReadByte();
+        sleepyTime = binaryReader.ReadInt32();
+    }
+
+    private static void ClearCreepers()
     {
         for (int i = 0; i < Main.maxNPCs; ++i)
         {

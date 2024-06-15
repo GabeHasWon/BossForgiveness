@@ -72,11 +72,14 @@ public class BoCSpike : ModProjectile
                     npc.GetGlobalNPC<CreeperPacificationNPC>().rage++;
                 else if (Main.netMode == NetmodeID.Server)
                     new SyncSpikedCreeperModule(npc.whoAmI).Send();
+
+                break;
             }
 
             if (ConnectedNPC > -1 && npc.type == NPCID.BrainofCthulhu)
             {
                 Projectile.Kill();
+                Projectile.netUpdate = true;
 
                 if (Main.netMode == NetmodeID.SinglePlayer)
                     npc.GetGlobalNPC<BoCPacificationNPC>().sleepyness++;

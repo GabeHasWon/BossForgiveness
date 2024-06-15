@@ -15,6 +15,7 @@ public class SyncSleepyBoCModule(int brainWho) : Module
     {
         NPC npc = Main.npc[_brainWho];
         npc.GetGlobalNPC<BoCPacificationNPC>().sleepyness++;
+        npc.netUpdate = true;
 
         if (Main.netMode == NetmodeID.Server)
             Send(-1, -1, false);
@@ -30,6 +31,7 @@ public class SyncSpikedCreeperModule(int creeperWho) : Module
     {
         NPC npc = Main.npc[_creeperWho];
         npc.GetGlobalNPC<CreeperPacificationNPC>().rage++;
+        npc.netUpdate = true;
 
         if (Main.netMode == NetmodeID.Server)
             Send(-1, -1, false);

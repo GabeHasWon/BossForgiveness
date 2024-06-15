@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Steamworks;
 using System;
 using Terraria;
 using Terraria.GameContent;
@@ -23,6 +24,8 @@ public class CultistPacified : ModNPC
         set => NPC.ai[2] = value ? 1 : 0;
     }
 
+    private ref float AnimSpeed => ref NPC.ai[3];
+
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 16;
@@ -38,6 +41,7 @@ public class CultistPacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.Opacity = 1f;
 
         Music = -1;
         AnimationType = -1;
@@ -45,7 +49,8 @@ public class CultistPacified : ModNPC
 
     public override void FindFrame(int frameHeight)
     {
-        NPC.frameCounter++;
+        AnimSpeed = MathHelper.Lerp(AnimSpeed, NPC.IsBeingTalkedTo() ? 0.8f : 1.1f, 0.2f);
+        NPC.frameCounter += AnimSpeed;
         NPC.frame.Y = 64 * (int)(NPC.frameCounter / 8f % 4 + 3);
     }
 
@@ -64,7 +69,6 @@ public class CultistPacified : ModNPC
             NPC.TargetClosest(false);
             NPC.FaceTarget();
             NPC.spriteDirection = NPC.direction;
-            NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.8f, 0.1f);
             float sin = MathF.Sin(Timer * 0.025f) * 35;
 
             if (NPC.IsBeingTalkedTo())
@@ -93,7 +97,6 @@ public class CultistPacified : ModNPC
                 NPC.TargetClosest(false);
                 NPC.FaceTarget();
                 NPC.spriteDirection = NPC.direction;
-                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.05f);
 
                 float sin = MathF.Sin(Timer * 0.025f) * 35;
 
@@ -112,6 +115,6 @@ public class CultistPacified : ModNPC
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.BoC." + Main.rand.Next(7));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Cultist." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }

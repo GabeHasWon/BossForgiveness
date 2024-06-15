@@ -1,5 +1,6 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla;
 using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -9,7 +10,7 @@ internal class GuideWoFNPC : GlobalNPC
 {
     public override void GetChat(NPC npc, ref string chat)
     {
-        if (!ModContent.GetInstance<GuideLocketSystem>().locketGiven && NPC.downedBoss2)
+        if (npc.type == NPCID.Guide && !ModContent.GetInstance<GuideLocketSystem>().locketGiven && NPC.downedBoss2)
         {
             chat = Language.GetTextValue("Mods.BossForgiveness.GuideLocketDialogue");
             Item.NewItem(npc.GetSource_GiftOrReward("GuideLocket"), npc.Hitbox, ModContent.ItemType<GuidesLocket>(), noGrabDelay: true);

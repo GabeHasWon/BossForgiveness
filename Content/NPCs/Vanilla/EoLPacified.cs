@@ -181,6 +181,6 @@ public class EoLPacified : ModNPC
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";
-    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoL." + Main.rand.Next(7));
+    public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.EoL." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
 }

@@ -7,7 +7,7 @@ This mod allows you to spare/mercy some bosses, letting them live alongside you.
 Each boss has their own pacification requirements, most of which are not hitting the boss for a few minutes while managing to stay alive.
 Each boss has a unique effect or town pet version when pacified.
 
-Currently, the mod goes up to and includes all prehardmode bosses.
+Currently, the mod goes up to and includes all prehardmode bosses, and all hardmode bosses up to Lunatic Cultist/Empress of Light.
 
 Discord: https://discord.gg/gVUw3W8ypD
 Patreon: https://www.patreon.com/gabehaswon
