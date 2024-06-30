@@ -74,6 +74,8 @@ internal class QueenBeePacificationNPC : GlobalNPC
         }
     }
 
+    public static bool CheckingQueenBeeHousing = false;
+
     public static List<TileData> data = [];
     public static QueenBeeRequirements storedRequirements = null;
 
@@ -130,7 +132,6 @@ internal class QueenBeePacificationNPC : GlobalNPC
     {
         if (Main.npc[who].type != NPCID.QueenBee)
         {
-            WorldGen.canSpawn = false;
             return;
         }
 

@@ -75,7 +75,10 @@ public class EyePacified : ModNPC
         NPC.rotation = Utils.AngleLerp(NPC.rotation, NPC.velocity.ToRotation() - MathHelper.PiOver2, 0.1f);
 
         if (IsLassoed) // Stop all behaviour
+        {
+            NPC.noTileCollide = false;
             return false;
+        }
 
         int y = (!NPC.homeless ? NPC.homeTileY : NPC.GetFloor(40, true)) * 16;
         float dist = y - NPC.Center.Y;

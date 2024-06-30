@@ -1,5 +1,3 @@
-v1.0.2
-- Added crafting recipe to Lihzahrd Power Brick
-- Improved the pacification code for King Slime, Duke Fishron to include "being pacified" flag
-- Added pacification mechanics to Queen Bee, Brain of Cthulhu, Wall of Flesh, Deerclops
-- Added Lunatic Cultist and Empress of Light pacifications, each with the default 2 minute timer pacification method
+v1.0.2.1
+- Hopefully fixed issue with town NPC housing
+- Significantly reduced damage for King Slime's pacification phase

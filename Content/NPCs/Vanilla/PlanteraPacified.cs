@@ -39,32 +39,33 @@ public class PlanteraPacified : ModNPC
             dummy.alpha = boss.alpha;
             dummy.localAI[0] -= 0.4f;
 
+            Main.NewText(hookSlot + ": " + dummy.localAI[0]);
+
             Player plr = Main.player[boss.target];
 
             if ((!boss.homeless || !plr.active || plr.dead || plr.DistanceSQ(boss.Center) > 800 * 800) && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (dummy.localAI[0] == 10f)
+                dummy.localAI[0] -= 3f;
+
+                if (dummy.localAI[0] <= 0)
                 {
                     int reps = 0;
 
-                    while (true)
+                    while (!Collision.SolidCollision(new Vector2(dummy.ai[0], dummy.ai[1]) * 16 + dummy.Size / 2f, 16, 16))
                     {
                         reps++;
 
                         if (reps > 500)
                         {
                             boss.velocity.Y += 0.6f;
-                            dummy.ai[0] = boss.Center.X / 16 + Main.rand.Next(-20, 20);
-                            dummy.ai[1] = boss.Center.Y / 16 + Main.rand.Next(15, 30);
+                            dummy.ai[0] = boss.Center.X / 16f + Main.rand.Next(-20, 20);
+                            dummy.ai[1] = boss.Center.Y / 16f + Main.rand.Next(15, 30);
                             break;
                         }
 
-                        dummy.ai[0] = boss.Center.X / 16 + Main.rand.Next(-20, 20);
-                        dummy.ai[1] = boss.Center.Y / 16 + Main.rand.Next(-20, 20);
-                        dummy.localAI[0] = Main.rand.Next(300, 600);
-
-                        if (Collision.SolidCollision(new Vector2(dummy.ai[0], dummy.ai[1]) * 16 + dummy.Size / 2f, 8, 8))
-                            break;
+                        dummy.ai[0] = boss.Center.X / 16f + Main.rand.Next(-20, 20);
+                        dummy.ai[1] = boss.Center.Y / 16f + Main.rand.Next(-20, 20);
+                        dummy.localAI[0] = Main.rand.Next(350, 500);
                     }
 
                     dummy.ai[0] = MathHelper.Clamp(dummy.ai[0], Main.offLimitBorderTiles, Main.maxTilesX - Main.offLimitBorderTiles);
@@ -72,6 +73,11 @@ public class PlanteraPacified : ModNPC
                     dummy.netUpdate = true;
                 }
             }
+
+            const int MaxDistance = 1000;
+
+            dummy.ai[0] = MathHelper.Clamp(dummy.ai[0], (boss.Center.X - MaxDistance) / 16, (boss.Center.X + MaxDistance) / 16);
+            dummy.ai[1] = MathHelper.Clamp(dummy.ai[1], (boss.Center.Y - MaxDistance) / 16, (boss.Center.Y + MaxDistance) / 16);
 
             Main.netMode = oldNetmode;
             NPC.plantBoss = oldBoss;
