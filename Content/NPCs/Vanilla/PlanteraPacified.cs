@@ -39,8 +39,6 @@ public class PlanteraPacified : ModNPC
             dummy.alpha = boss.alpha;
             dummy.localAI[0] -= 0.4f;
 
-            Main.NewText(hookSlot + ": " + dummy.localAI[0]);
-
             Player plr = Main.player[boss.target];
 
             if ((!boss.homeless || !plr.active || plr.dead || plr.DistanceSQ(boss.Center) > 800 * 800) && Main.netMode != NetmodeID.MultiplayerClient)
