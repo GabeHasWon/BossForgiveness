@@ -1,4 +1,5 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
+﻿using BossForgiveness.Content.NPCs.Mechanics.Mech;
+using BossForgiveness.Content.NPCs.Vanilla;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -29,7 +30,7 @@ internal class SpazmatismHandler : PacifiedNPCHandler
             }
         }
 
-        return npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > PacifyTime && npc.life > npc.lifeMax / 2f && !NPC.AnyNPCs(ModContent.NPCType<SpazmatismPacified>()) && retinazer;
+        return npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= 10 && npc.life > npc.lifeMax / 2f && !NPC.AnyNPCs(ModContent.NPCType<SpazmatismPacified>()) && retinazer;
     }
 
     public override void OnPacify(NPC npc)

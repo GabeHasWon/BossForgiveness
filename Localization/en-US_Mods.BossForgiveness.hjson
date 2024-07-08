@@ -45,6 +45,7 @@ Projectiles: {
 	BoCSpike.DisplayName: Bo C Spike
 	HayNeedle.DisplayName: Hay Needle
 	Splinter.DisplayName: Splinter
+	CobaltOrbProjectile.DisplayName: Cobalt Orb Projectile
 }
 
 PacifiedCondition: When pacified

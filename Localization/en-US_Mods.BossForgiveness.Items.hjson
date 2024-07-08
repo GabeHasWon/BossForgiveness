@@ -82,3 +82,8 @@ GuidesLocket: {
 		'It stirs with an idle power, yet is completely still.'
 		'''
 }
+
+CobaltOrb: {
+	DisplayName: Cobalt Orb
+	Tooltip: ""
+}
