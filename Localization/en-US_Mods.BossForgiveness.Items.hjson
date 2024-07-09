@@ -85,5 +85,20 @@ GuidesLocket: {
 
 CobaltOrb: {
 	DisplayName: Cobalt Orb
-	Tooltip: ""
+	Tooltip:
+		'''
+		Creates a large EMP blast through a mix of electric and magic power
+		May screw with large machinery
+		'Ponder.'
+		'''
+}
+
+PalladiumOrb: {
+	DisplayName: Palladium Orb
+	Tooltip:
+		'''
+		Creates a large EMP blast through a mix of electric and magic power
+		May screw with large machinery
+		'Ponder.'
+		'''
 }

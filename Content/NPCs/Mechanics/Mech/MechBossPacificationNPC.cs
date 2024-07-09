@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using Terraria;
-using Terraria.Achievements;
-using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +14,9 @@ internal class MechBossPacificationNPC : GlobalNPC
         public float Speed = 1;
         public float Damage = 1;
     }
-    
+
+    public const int MaxStun = 20;
+
     public override bool InstancePerEntity => true;
 
     private readonly Modifiers _modifiers = Modifiers.Default;
@@ -41,7 +41,7 @@ internal class MechBossPacificationNPC : GlobalNPC
 
         if (parent is not null && parent.TryGetGlobalNPC<MechBossPacificationNPC>(out var pacParent))
         {
-            if (pacParent.electrified)
+            if (pacParent.electrified && Main.rand.NextBool(parent.type == NPCID.TheDestroyer ? 120 : 10))
                 Dust.NewDust(npc.position, npc.width, npc.height, DustID.Electric);
         }
         else
@@ -98,21 +98,21 @@ internal class MechBossPacificationNPC : GlobalNPC
         if (pac.stunCooldown > 0)
             return;
 
+        for (int i = 0; i < 20; ++i)
+            Dust.NewDust(npc.position, npc.width, npc.height, DustID.Electric);
+
         if (!Main.rand.NextBool(8))
         {
             Modifiers modifiers = pac._modifiers;
             modifiers.Speed += speedMod;
             modifiers.Damage += damageMod;
-
-            Main.NewText("AppliedMod: " + speedMod + ":" + damageMod);
         }
         else
         {
             pac.electrified = true;
-            Main.NewText("AppliedElec");
         }
 
-        pac.stunCooldown = 5 * 60;
+        pac.stunCooldown = 1 * 60;
         pac.stunCount++;
 
         if (parent.whoAmI != npc.whoAmI)

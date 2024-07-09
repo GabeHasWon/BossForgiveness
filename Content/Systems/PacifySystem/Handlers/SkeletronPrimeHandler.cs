@@ -10,6 +10,7 @@ internal class SkeletronPrimeHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.SkeletronPrime;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= 10 && !NPC.AnyNPCs(ModContent.NPCType<SkelePrimePacified>()) && !Main.dayTime;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= MechBossPacificationNPC.MaxStun 
+        && !NPC.AnyNPCs(ModContent.NPCType<SkelePrimePacified>()) && !Main.dayTime;
     public override void OnPacify(NPC npc) => TransformInto<SkelePrimePacified>(npc);
 }

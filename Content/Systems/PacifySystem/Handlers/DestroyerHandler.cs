@@ -1,4 +1,5 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
+﻿using BossForgiveness.Content.NPCs.Mechanics.Mech;
+using BossForgiveness.Content.NPCs.Vanilla;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
@@ -11,7 +12,8 @@ internal class DestroyerHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.TheDestroyer;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > 2 * 60 * 60 && !NPC.AnyNPCs(ModContent.NPCType<DestroyerPacified>());
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= MechBossPacificationNPC.MaxStun
+        && !NPC.AnyNPCs(ModContent.NPCType<DestroyerPacified>());
 
     public override void OnPacify(NPC npc)
     {
