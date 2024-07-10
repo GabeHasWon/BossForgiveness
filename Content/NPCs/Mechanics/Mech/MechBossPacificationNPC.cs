@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.WorldBuilding;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Mech;
 
@@ -11,11 +15,11 @@ internal class MechBossPacificationNPC : GlobalNPC
     {
         public static readonly Modifiers Default = new();
         
-        public float Speed = 1;
+        public float Speed = 0;
         public float Damage = 1;
     }
 
-    public const int MaxStun = 20;
+    public const int MaxStun = 12;
 
     public override bool InstancePerEntity => true;
 
@@ -29,7 +33,12 @@ internal class MechBossPacificationNPC : GlobalNPC
 
     public override bool PreAI(NPC npc)
     {
-        npc.GetGlobalNPC<SpeedUpBehaviourNPC>().behaviourSpeed *= _modifiers.Speed;
+        NPC parent = GetParent(npc);
+
+        if (parent is null || !parent.TryGetGlobalNPC<MechBossPacificationNPC>(out var pacParent))
+            return true;
+
+        npc.GetGlobalNPC<SpeedUpBehaviourNPC>().behaviourSpeed += pacParent._modifiers.Speed;
         return true;
     }
 
@@ -106,14 +115,21 @@ internal class MechBossPacificationNPC : GlobalNPC
             Modifiers modifiers = pac._modifiers;
             modifiers.Speed += speedMod;
             modifiers.Damage += damageMod;
+
+            if (modifiers.Speed < 0.5f)
+                modifiers.Speed = 0.5f;
+
+            if (modifiers.Damage < 0.1f)
+                modifiers.Damage = 0.1f;
         }
         else
         {
             pac.electrified = true;
         }
 
-        pac.stunCooldown = 1 * 60;
+        pac.stunCooldown = 60;
         pac.stunCount++;
+        parent.netUpdate = true;
 
         if (parent.whoAmI != npc.whoAmI)
         {
@@ -127,6 +143,7 @@ internal class MechBossPacificationNPC : GlobalNPC
                         break;
 
                     CopyPacifiedValues(pac, seg);
+                    segment.netUpdate = true;
                 }
             }
             else if (npc.TryGetGlobalNPC<MechBossPacificationNPC>(out var selfPac))
@@ -141,5 +158,23 @@ internal class MechBossPacificationNPC : GlobalNPC
         self.electrified = parent.electrified;
         self.stunCooldown = parent.stunCooldown;
         self.stunCount = parent.stunCount;
+    }
+
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        binaryWriter.Write((byte)stunCount);
+        binaryWriter.Write((byte)stunCooldown);
+        binaryWriter.Write((Half)_modifiers.Speed);
+        binaryWriter.Write((Half)_modifiers.Damage);
+        bitWriter.WriteBit(electrified);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        stunCount = binaryReader.ReadByte();
+        stunCooldown = binaryReader.ReadByte();
+        _modifiers.Speed = (float)binaryReader.ReadHalf();
+        _modifiers.Damage = (float)binaryReader.ReadHalf();
+        electrified = bitReader.ReadBit();
     }
 }

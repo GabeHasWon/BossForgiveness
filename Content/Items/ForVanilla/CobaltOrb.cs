@@ -92,8 +92,8 @@ public class CobaltOrbProjectile : ModProjectile
                 {
                     if (MechBossPacificationNPC.IsValidEntity(npc))
                     {
-                        float value = Main.rand.NextFloat(-1, 1f);
-                        MechBossPacificationNPC.ModifyModifiers(npc, -value, value * 2);
+                        float value = Main.rand.NextFloat(0.05f, 0.01f);
+                        MechBossPacificationNPC.ModifyModifiers(npc, value * 0.2f, value);
                     }
                     else
                     {
