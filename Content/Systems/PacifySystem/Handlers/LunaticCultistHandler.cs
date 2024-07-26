@@ -1,6 +1,4 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

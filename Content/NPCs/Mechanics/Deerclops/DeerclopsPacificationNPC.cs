@@ -1,7 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
 using Microsoft.Xna.Framework;
-using ReLogic.Content;
-using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -94,13 +92,12 @@ internal class DeerclopsPacificationNPC : GlobalNPC
                 WorldGen.KillTile(item.X, item.Y, false, false, false);
             }
 
-            var vel = npc.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(1.8f, 3f) - new Vector2(0, 1);
+            var vel = npc.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(1.8f, 3f) - new Vector2(0, 3);
 
             if (type is TileID.HayBlock or TileID.TargetDummy)
                 Projectile.NewProjectile(npc.GetSource_FromAI(), item.ToWorldCoordinates(), vel, ModContent.ProjectileType<HayNeedle>(), 20, 0, Main.myPlayer);
             else
                 Projectile.NewProjectile(npc.GetSource_FromAI(), item.ToWorldCoordinates(), vel, ModContent.ProjectileType<Splinter>(), 40, 0, Main.myPlayer);
-
 
             if (_rageTime > 20)
             {
@@ -110,5 +107,5 @@ internal class DeerclopsPacificationNPC : GlobalNPC
         }
     }
 
-    private static bool ValidTile(int i, int j) => Main.tile[i, j].TileType is TileID.HayBlock or TileID.TargetDummy or TileID.Mannequin or TileID.Womannequin;
+    private static bool ValidTile(int i, int j) => Main.tile[i, j].TileType is TileID.HayBlock or TileID.TargetDummy or TileID.DisplayDoll;
 }

@@ -32,6 +32,8 @@ NPCs: {
 		DisplayName: Bursting Leech
 		Entry: An odd variant of the Leech that explodes after a short time. Sometimes, they appear as ghosts. It is unclear what this means.
 	}
+
+	PinkyPacified.DisplayName: Pinky Pacified
 }
 
 Projectiles: {

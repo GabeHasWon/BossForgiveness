@@ -9,5 +9,8 @@ Each boss has a unique effect or town pet version when pacified.
 
 Currently, the mod goes up to and includes all prehardmode bosses, and all hardmode bosses up to Lunatic Cultist/Empress of Light.
 
+If you need help on how to pacify specific bosses or what they do, check out the GitHub wiki: 
+https://github.com/GabeHasWon/BossForgiveness/wiki/Pacification-Requirements
+
 Discord: https://discord.gg/gVUw3W8ypD
 Patreon: https://www.patreon.com/gabehaswon

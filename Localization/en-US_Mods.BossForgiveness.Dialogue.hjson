@@ -126,3 +126,10 @@ EoL: {
 	2: The light is wonderful. Why don't you look into it?
 	3: Hm...how could I harness the night, to always be day?
 }
+
+Pinky: {
+	0: Ah, a Terrarian. Foolish mortal; your tidings bless me forever naught; so leave be - I've no time to tarry.
+	1: Bewixt rock and dirt, steps fall. Hello, mortal. Do you bring worth?
+	2: My machinations, yes...a grip stronger than that of the Moon. Death approaches, child.
+	3: Alas, I have must ask - forget you saw me. Not that it shall matter, soon.
+}

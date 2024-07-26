@@ -16,7 +16,6 @@ internal class GuidesLocket : ModItem
         Item.Size = new(30, 26);
         Item.noUseGraphic = true;
         Item.rare = ItemRarityID.Lime;
-        Item.accessory = true;
         Item.useTime = 30;
         Item.useAnimation = 30;
         Item.noMelee = true;
