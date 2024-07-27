@@ -41,12 +41,12 @@ internal class WoFPacificationNPC : GlobalNPC
             leechCount++;
             leechTimer = 0;
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int leech = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SpiritLeech>());
                 Main.npc[leech].velocity = npc.velocity;
 
-                if (leechCount == 2)
+                if (leechCount >= 2)
                 {
                     leechCount = 0;
                     (Main.npc[leech].ModNPC as SpiritLeech).isSpirit = true;

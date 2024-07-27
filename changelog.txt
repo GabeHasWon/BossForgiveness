@@ -1,3 +1,6 @@
-v1.0.2.4
-- Added wiki to description
-- Fixed Deerclops not destroying [Wo]Mannequins
+v1.0.2.5
+- Decreased amount of time that Deerclops is in her blue angry phase during pacification
+- Deerclops no longer breaks tiles when in her angry phase
+- Deerclops can no longer be pacified if hurt
+- Wall of Flesh now properly spawns Bursting Leeches
+- Bursting Leeches now have a proper tail

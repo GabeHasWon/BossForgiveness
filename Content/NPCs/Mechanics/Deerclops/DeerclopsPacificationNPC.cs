@@ -19,7 +19,8 @@ internal class DeerclopsPacificationNPC : GlobalNPC
 
     public override void AI(NPC npc)
     {
-        BreakBreakableTiles(npc);
+        if (npc.life < npc.lifeMax)
+            return;
 
         if (_raging)
         {
@@ -28,6 +29,10 @@ internal class DeerclopsPacificationNPC : GlobalNPC
 
             if (_rageTime <= 0)
                 _raging = false;
+        }
+        else
+        {
+            BreakBreakableTiles(npc);
         }
 
         if (_satisfaction > 200)
@@ -102,7 +107,7 @@ internal class DeerclopsPacificationNPC : GlobalNPC
             if (_rageTime > 20)
             {
                 _raging = true;
-                _rageTime = 600;
+                _rageTime = 480;
             }
         }
     }

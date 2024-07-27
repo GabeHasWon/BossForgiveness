@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using NPCUtils;
 using System;
 using System.IO;
-using System.Reflection;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -67,8 +66,10 @@ public class SpiritLeech : ModNPC
 
                 for (int i = 0; i < Max; ++i)
                 {
-                    parent = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, Type, NPC.whoAmI, i == Max - 1 ? 2 : 1, parent);
-                    (Main.npc[parent].ModNPC as SpiritLeech).isSpirit = isSpirit;
+                    int segmentType = i == Max - 1 ? 2 : 1;
+                    parent = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, Type, NPC.whoAmI, segmentType, parent);
+                    var spiritLeech = Main.npc[parent].ModNPC as SpiritLeech;
+                    spiritLeech.isSpirit = isSpirit;
                 }
 
                 Initialized = true;
@@ -201,6 +202,8 @@ public class SpiritLeech : ModNPC
             _ => new Rectangle(40, 0, 22, 18)
         };
 
+        SpriteEffects effect = SegmentType == 2 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+         
         if (isSpirit)
             frame.Y += 20;
 
@@ -208,7 +211,7 @@ public class SpiritLeech : ModNPC
             drawColor = Color.White;
 
         float scale = MathF.Sin(timer * 0.3f + NPC.whoAmI * MathHelper.PiOver4) * 0.2f;
-        spriteBatch.Draw(tex, NPC.Center - screenPos, frame, drawColor * NPC.Opacity, NPC.rotation, frame.Size() / 2f, NPC.scale + 0.2f + scale, SpriteEffects.None, 0);
+        spriteBatch.Draw(tex, NPC.Center - screenPos, frame, drawColor * NPC.Opacity, NPC.rotation, frame.Size() / 2f, NPC.scale + 0.2f + scale, effect, 0);
 
         return false;
     }
