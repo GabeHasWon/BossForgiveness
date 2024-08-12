@@ -133,3 +133,10 @@ Pinky: {
 	2: My machinations, yes...a grip stronger than that of the Moon. Death approaches, child.
 	3: Alas, I have must ask - forget you saw me. Not that it shall matter, soon.
 }
+
+LostGirl: {
+	0: Thanks...
+	1: Um...hi.
+	2: We all have bad days, right?
+	3: Whoops!
+}
