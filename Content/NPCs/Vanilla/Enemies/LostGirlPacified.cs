@@ -11,22 +11,23 @@ public class LostGirlPacified : ModNPC
 {
     public override void SetStaticDefaults()
     {
-        Main.npcFrameCount[Type] = 16;
+        Main.npcFrameCount[Type] = Main.npcFrameCount[NPCID.Steampunker];
         NPCID.Sets.IsTownPet[Type] = true;
     }
 
     public override void SetDefaults()
     {
-        NPC.CloneDefaults(NPCID.LostGirl);
+        NPC.CloneDefaults(NPCID.Steampunker);
         NPC.aiStyle = NPCAIStyleID.Passive;
         NPC.damage = 0;
         NPC.boss = false;
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.Size = new Microsoft.Xna.Framework.Vector2(20, 44);
 
         Music = -1;
-        AnimationType = -1;
+        AnimationType = NPCID.Steampunker;
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";

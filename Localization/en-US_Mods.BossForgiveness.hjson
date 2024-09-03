@@ -33,8 +33,8 @@ NPCs: {
 		Entry: An odd variant of the Leech that explodes after a short time. Sometimes, they appear as ghosts. It is unclear what this means.
 	}
 
-	PinkyPacified.DisplayName: Pinky
-	LostGirlPacified.DisplayName: Lost Girl Pacified
+	PinkyPacified.DisplayName: "{$NPCName.Pinky}"
+	LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"
 }
 
 Projectiles: {
@@ -45,11 +45,13 @@ Projectiles: {
 	SlimePellet.DisplayName: Slime Pellet
 	CrystalBobber.DisplayName: Crystal Bobber
 	SkullLamp.DisplayName: Skull Lamp
-	BoCSpike.DisplayName: Bo C Spike
+	BoCSpike.DisplayName: Neuron Spike
 	HayNeedle.DisplayName: Hay Needle
 	Splinter.DisplayName: Splinter
 	CobaltOrbProjectile.DisplayName: Cobalt Orb
 	PalladiumOrbProjectile.DisplayName: Palladium Orb
+	LilyProjectile.DisplayName: Lily Projectile
+	LilyPetalProjectile.DisplayName: Lily Petal Projectile
 }
 
 PacifiedCondition: When pacified
