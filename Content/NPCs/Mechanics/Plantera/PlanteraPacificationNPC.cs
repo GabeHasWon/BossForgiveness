@@ -9,6 +9,8 @@ internal class PlanteraPacificationNPC : GlobalNPC
 {
     public override bool InstancePerEntity => true;
 
+    internal int pacification = 1;
+
     int _flowerTimer = 0;
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.Plantera;

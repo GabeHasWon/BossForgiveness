@@ -30,7 +30,7 @@ public class LilyProjectile : ModProjectile
 
     public override void SetDefaults()
     {
-        Projectile.Size = new(24);
+        Projectile.Size = new(8);
         Projectile.timeLeft = 600;
         Projectile.penetrate = -1;
         Projectile.aiStyle = -1;
@@ -52,8 +52,14 @@ public class LilyProjectile : ModProjectile
             return;
         }
 
+        CheckPlantTouch.CheckTouch(Projectile, Target);
+
         if (!IsLanded)
+        {
             Projectile.velocity.Y += 0.01f;
+            Projectile.timeLeft++;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+        }
         else
         {
             Timer++;
@@ -78,6 +84,8 @@ public class LilyProjectile : ModProjectile
     public class LilyPetalProjectile : ModProjectile
     {
         private ref float Timer => ref Projectile.ai[0];
+        private ref float BaseAngle => ref Projectile.ai[1];
+        private ref float Length => ref Projectile.ai[2];
 
         public override void SetDefaults()
         {
@@ -90,6 +98,16 @@ public class LilyProjectile : ModProjectile
             Projectile.tileCollide = false;
         }
 
-        public override void AI() => Projectile.velocity = Projectile.velocity.RotatedBy(MathF.Sin(Timer++ * 0.9f));
+        public override void AI()
+        {
+            if (BaseAngle == 0)
+            {
+                BaseAngle = Projectile.velocity.ToRotation();// + MathHelper.PiOver4;
+                Length = Projectile.velocity.Length();
+            }
+
+            Timer++;
+            Projectile.velocity = new Vector2(Length, 0).RotatedBy(BaseAngle + MathF.Sin(Timer * 0.2f));
+        }
     }
 }
