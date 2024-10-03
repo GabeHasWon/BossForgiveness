@@ -22,7 +22,7 @@ internal class PlanteraPacificationNPC : GlobalNPC
 
         _flowerTimer++;
 
-        if (_flowerTimer > 600)
+        if (_flowerTimer > 480)
             ShootFlower(npc);
 
         return true;
@@ -35,7 +35,13 @@ internal class PlanteraPacificationNPC : GlobalNPC
 
         if (_flowerTimer == 700f && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            int type = ModContent.ProjectileType<LilyProjectile>();
+            int type = 2 switch // Main.rand.Next(2) switch
+            {
+                0 => ModContent.ProjectileType<LilyProjectile>(),
+                1 => ModContent.ProjectileType<PoppyProjectile>(),
+                _ => ModContent.ProjectileType<RoseProjectile>(),
+            };
+
             Vector2 velocity = npc.DirectionTo(Main.player[npc.target].Center) * 6;
             Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, type, 0, 0f, Main.myPlayer);
             _flowerTimer = 0;

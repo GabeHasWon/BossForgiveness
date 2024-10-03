@@ -52,6 +52,9 @@ Projectiles: {
 	PalladiumOrbProjectile.DisplayName: Palladium Orb
 	LilyProjectile.DisplayName: Lily Projectile
 	LilyPetalProjectile.DisplayName: Lily Petal Projectile
+	PoppyProjectile.DisplayName: Poppy Projectile
+	GrowthProjectileFX.DisplayName: Growth Projectile F X
+	RoseProjectile.DisplayName: Rose Projectile
 }
 
 PacifiedCondition: When pacified

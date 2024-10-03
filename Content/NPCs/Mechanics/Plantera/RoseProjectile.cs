@@ -2,12 +2,15 @@
 using Terraria;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
-using System;
+using ReLogic.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;
 
-public class LilyProjectile : ModProjectile
+public class RoseProjectile : ModProjectile
 {
+    private static Asset<Texture2D> _aura = null;
+
     private bool IsLanded
     {
         get => Projectile.ai[0] == 1f;
@@ -22,10 +25,16 @@ public class LilyProjectile : ModProjectile
 
     private ref float Timer => ref Projectile.ai[2];
     private ref float TargetId => ref Projectile.localAI[0];
+    private ref float AuraFadein => ref Projectile.localAI[1];
 
     private NPC Target => Main.npc[(int)TargetId];
 
-    public override void SetStaticDefaults() => Main.projFrames[Type] = 3;
+    public override void SetStaticDefaults()
+    {
+        Main.projFrames[Type] = 3;
+
+        _aura = ModContent.Request<Texture2D>(Texture + "_Aura");
+    }
 
     public override void SetDefaults()
     {
@@ -39,6 +48,8 @@ public class LilyProjectile : ModProjectile
 
     public override void AI()
     {
+        Lighting.AddLight(Projectile.Center, new Vector3(0.9f, 0.1f, 0.1f));
+
         if (!Initialized)
         {
             Initialized = true;
@@ -65,11 +76,10 @@ public class LilyProjectile : ModProjectile
 
             Projectile.frame = (int)MathHelper.Clamp(Timer / 8, 0, 2);
 
-            if (Timer % 240 == 0)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Vector2 velocity = Projectile.DirectionTo(Target.Center) * 5f;
-                int type = ModContent.ProjectileType<LilyPetalProjectile>();
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, type, 40, 0, Projectile.owner);
+                if (player.DistanceSQ(Projectile.Center) < 100 * 100)
+                    player.velocity += player.DirectionTo(Projectile.Center) * 0.2f;
             }
         }
     }
@@ -80,33 +90,17 @@ public class LilyProjectile : ModProjectile
         return !(IsLanded = true);
     }
 
-    public class LilyPetalProjectile : ModProjectile
+    public override bool PreDraw(ref Color lightColor)
     {
-        private ref float Timer => ref Projectile.ai[0];
-        private ref float BaseAngle => ref Projectile.ai[1];
-        private ref float Length => ref Projectile.ai[2];
-
-        public override void SetDefaults()
+        if (IsLanded)
         {
-            Projectile.Size = new(10);
-            Projectile.timeLeft = 600;
-            Projectile.penetrate = -1;
-            Projectile.aiStyle = -1;
-            Projectile.hostile = true;
-            Projectile.friendly = false;
-            Projectile.tileCollide = false;
+            AuraFadein = MathHelper.Lerp(AuraFadein, 1, 0.05f);
+
+            Vector2 position = Projectile.Center - Main.screenPosition;
+            Color color = Color.White * AuraFadein;
+            Main.spriteBatch.Draw(_aura.Value, position, null, color, Timer * 0.02f, _aura.Size() / 2f, 1f, SpriteEffects.None, 0);
         }
 
-        public override void AI()
-        {
-            if (BaseAngle == 0)
-            {
-                BaseAngle = Projectile.velocity.ToRotation();// + MathHelper.PiOver4;
-                Length = Projectile.velocity.Length();
-            }
-
-            Timer++;
-            Projectile.velocity = new Vector2(Length, 0).RotatedBy(BaseAngle + MathF.Sin(Timer * 0.2f));
-        }
+        return true;
     }
 }

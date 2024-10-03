@@ -6,7 +6,7 @@ using System;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;
 
-public class LilyProjectile : ModProjectile
+public class PoppyProjectile : ModProjectile
 {
     private bool IsLanded
     {
@@ -64,12 +64,11 @@ public class LilyProjectile : ModProjectile
             Timer++;
 
             Projectile.frame = (int)MathHelper.Clamp(Timer / 8, 0, 2);
+            Projectile.Opacity = 1 - Timer / 180f;
 
-            if (Timer % 240 == 0)
+            if (Projectile.Opacity <= 0)
             {
-                Vector2 velocity = Projectile.DirectionTo(Target.Center) * 5f;
-                int type = ModContent.ProjectileType<LilyPetalProjectile>();
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, type, 40, 0, Projectile.owner);
+                Projectile.Kill();
             }
         }
     }
@@ -78,35 +77,5 @@ public class LilyProjectile : ModProjectile
     {
         Projectile.velocity *= 0;
         return !(IsLanded = true);
-    }
-
-    public class LilyPetalProjectile : ModProjectile
-    {
-        private ref float Timer => ref Projectile.ai[0];
-        private ref float BaseAngle => ref Projectile.ai[1];
-        private ref float Length => ref Projectile.ai[2];
-
-        public override void SetDefaults()
-        {
-            Projectile.Size = new(10);
-            Projectile.timeLeft = 600;
-            Projectile.penetrate = -1;
-            Projectile.aiStyle = -1;
-            Projectile.hostile = true;
-            Projectile.friendly = false;
-            Projectile.tileCollide = false;
-        }
-
-        public override void AI()
-        {
-            if (BaseAngle == 0)
-            {
-                BaseAngle = Projectile.velocity.ToRotation();// + MathHelper.PiOver4;
-                Length = Projectile.velocity.Length();
-            }
-
-            Timer++;
-            Projectile.velocity = new Vector2(Length, 0).RotatedBy(BaseAngle + MathF.Sin(Timer * 0.2f));
-        }
     }
 }
