@@ -38,7 +38,7 @@ public class RoseProjectile : ModProjectile
 
     public override void SetDefaults()
     {
-        Projectile.Size = new(8);
+        Projectile.Size = new(16);
         Projectile.timeLeft = 600;
         Projectile.penetrate = -1;
         Projectile.aiStyle = -1;
@@ -78,7 +78,7 @@ public class RoseProjectile : ModProjectile
 
             foreach (Player player in Main.ActivePlayers)
             {
-                if (player.DistanceSQ(Projectile.Center) < 100 * 100)
+                if (player.DistanceSQ(Projectile.Center) < 200 * 200)
                     player.velocity += player.DirectionTo(Projectile.Center) * 0.2f;
             }
         }
@@ -97,8 +97,8 @@ public class RoseProjectile : ModProjectile
             AuraFadein = MathHelper.Lerp(AuraFadein, 1, 0.05f);
 
             Vector2 position = Projectile.Center - Main.screenPosition;
-            Color color = Color.White * AuraFadein;
-            Main.spriteBatch.Draw(_aura.Value, position, null, color, Timer * 0.02f, _aura.Size() / 2f, 1f, SpriteEffects.None, 0);
+            Color color = Color.White * AuraFadein * 0.5f;
+            Main.spriteBatch.Draw(_aura.Value, position, null, color, Timer * 0.02f, _aura.Size() / 2f, 2f, SpriteEffects.None, 0);
         }
 
         return true;

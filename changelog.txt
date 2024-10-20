@@ -1,6 +1,5 @@
-v1.0.2.5
-- Decreased amount of time that Deerclops is in her blue angry phase during pacification
-- Deerclops no longer breaks tiles when in her angry phase
-- Deerclops can no longer be pacified if hurt
-- Wall of Flesh now properly spawns Bursting Leeches
-- Bursting Leeches now have a proper tail
+v1.0.3
+- Added Nymph pacification mechanic and NPC
+- Added Plantera pacification mechanic and boss bar
+- Fixed Brain of Cthulhu pacification accidentally turning the tile collision of all npcs off
+- Reduced the damage of all King Slime pacification projectiles

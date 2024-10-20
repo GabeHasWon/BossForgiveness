@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;
@@ -8,6 +9,9 @@ internal class CheckPlantTouch
 {
     public static void CheckTouch(Projectile projectile, NPC plantera)
     {
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
         foreach (var player in Main.ActivePlayers)
         {
             if (player.Hitbox.Intersects(projectile.Hitbox))

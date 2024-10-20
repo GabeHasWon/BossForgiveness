@@ -15,6 +15,8 @@ internal class CreeperPacificationNPC : GlobalNPC
 
     public int rage = 0;
 
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.Creeper;
+
     public override bool PreAI(NPC npc)
     {
         if (NPC.crimsonBoss == -1)

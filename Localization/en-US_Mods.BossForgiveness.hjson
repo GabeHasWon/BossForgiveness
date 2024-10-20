@@ -55,6 +55,7 @@ Projectiles: {
 	PoppyProjectile.DisplayName: Poppy Projectile
 	GrowthProjectileFX.DisplayName: Growth Projectile F X
 	RoseProjectile.DisplayName: Rose Projectile
+	BlackPoppyProjectile.DisplayName: Black Poppy Projectile
 }
 
 PacifiedCondition: When pacified

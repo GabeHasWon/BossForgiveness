@@ -52,7 +52,7 @@ internal class KingSlimePacificationNPC : GlobalNPC
                         {
                             var dir = npc.DirectionTo(Main.player[npc.target].Center).RotatedByRandom(0.2f) * WorldGen.genRand.NextFloat(10, 16f);
                             var pos = npc.Center + new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-40, 40));
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), pos, dir, ModContent.ProjectileType<SlimePellet>(), npc.damage / 2, 2f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), pos, dir, ModContent.ProjectileType<SlimePellet>(), npc.damage / 4, 2f, Main.myPlayer);
                         }
                     }
                     else
@@ -60,7 +60,7 @@ internal class KingSlimePacificationNPC : GlobalNPC
                         for (int i = 0; i < 4; ++i)
                         {
                             var dir = new Vector2(0, -Main.rand.NextFloat(4f, 10f)).RotatedBy(Main.rand.NextFloat(-0.8f, 0.8f));
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), npc.damage / 3, 2f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), npc.damage / 5, 2f, Main.myPlayer);
                         }
                     }
                 }

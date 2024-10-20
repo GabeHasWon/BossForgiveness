@@ -29,7 +29,7 @@ public class PoppyProjectile : ModProjectile
 
     public override void SetDefaults()
     {
-        Projectile.Size = new(8);
+        Projectile.Size = new(16);
         Projectile.timeLeft = 600;
         Projectile.penetrate = -1;
         Projectile.aiStyle = -1;

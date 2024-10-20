@@ -3,10 +3,11 @@ using Terraria;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
 using System;
+using Terraria.Audio;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;
 
-public class LilyProjectile : ModProjectile
+public class BlackPoppyProjectile : ModProjectile
 {
     private bool IsLanded
     {
@@ -45,6 +46,27 @@ public class LilyProjectile : ModProjectile
             TargetId = NPC.FindFirstNPC(NPCID.Plantera);
         }
 
+        if (Projectile.timeLeft == 3)
+        {
+            for (int i = 0; i < 30; ++i)
+            {
+                Vector2 vel = Main.rand.NextVector2CircularEdge(10, 10) * Main.rand.NextFloat(0.5f, 1f);
+                Dust.NewDustPerfect(Projectile.Center, DustID.Torch, vel);
+            }
+
+            for (int i = 0; i < 6; ++i)
+            {
+                Vector2 vel = Main.rand.NextVector2CircularEdge(8, 8) * Main.rand.NextFloat(0.3f, 1f);
+                Gore.NewGorePerfect(Projectile.GetSource_Death(), Projectile.Center, vel, GoreID.Smoke1 + Main.rand.Next(3));
+            }
+
+            Projectile.Resize(180, 180);
+            Projectile.hostile = true;
+            Projectile.damage = 50;
+
+            SoundEngine.PlaySound(SoundID.Item8, Projectile.Center);
+        }
+
         if (TargetId == -1 || !Target.active || Target.type != NPCID.Plantera)
         {
             Projectile.Kill();
@@ -59,54 +81,39 @@ public class LilyProjectile : ModProjectile
         }
         else
         {
-            CheckPlantTouch.CheckTouch(Projectile, Target);
-
             Timer++;
 
             Projectile.frame = (int)MathHelper.Clamp(Timer / 8, 0, 2);
 
-            if (Timer % 240 == 0)
+            if (Projectile.timeLeft > 4)
             {
-                Vector2 velocity = Projectile.DirectionTo(Target.Center) * 5f;
-                int type = ModContent.ProjectileType<LilyPetalProjectile>();
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, velocity, type, 40, 0, Projectile.owner);
+                if (Timer > 180f)
+                {
+                    Projectile.timeLeft = 4;
+                }
+
+                foreach (var player in Main.ActivePlayers)
+                {
+                    if (player.Hitbox.Intersects(Projectile.Hitbox))
+                        Projectile.timeLeft = 4;
+                }
             }
         }
+    }
+
+    public override Color? GetAlpha(Color lightColor)
+    {
+        var baseColor = Color.Lerp(lightColor, Color.Red, 0.4f);
+
+        if (Timer > 90)
+            return Color.Lerp(baseColor, Color.Black, (Timer - 90) / 90f);
+
+        return baseColor;
     }
 
     public override bool OnTileCollide(Vector2 oldVelocity)
     {
         Projectile.velocity *= 0;
         return !(IsLanded = true);
-    }
-
-    public class LilyPetalProjectile : ModProjectile
-    {
-        private ref float Timer => ref Projectile.ai[0];
-        private ref float BaseAngle => ref Projectile.ai[1];
-        private ref float Length => ref Projectile.ai[2];
-
-        public override void SetDefaults()
-        {
-            Projectile.Size = new(10);
-            Projectile.timeLeft = 600;
-            Projectile.penetrate = -1;
-            Projectile.aiStyle = -1;
-            Projectile.hostile = true;
-            Projectile.friendly = false;
-            Projectile.tileCollide = false;
-        }
-
-        public override void AI()
-        {
-            if (BaseAngle == 0)
-            {
-                BaseAngle = Projectile.velocity.ToRotation();// + MathHelper.PiOver4;
-                Length = Projectile.velocity.Length();
-            }
-
-            Timer++;
-            Projectile.velocity = new Vector2(Length, 0).RotatedBy(BaseAngle + MathF.Sin(Timer * 0.2f));
-        }
     }
 }

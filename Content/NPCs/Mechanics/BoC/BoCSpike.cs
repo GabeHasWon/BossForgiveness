@@ -32,7 +32,9 @@ public class BoCSpike : ModProjectile
     public override void AI()
     {
         Time++;
-        Projectile.timeLeft++;
+
+        if (Main.CurrentFrameFlags.AnyActiveBossNPC)
+            Projectile.timeLeft++;
 
         Lighting.AddLight(Projectile.Center, new Vector3(0.2f + MathF.Pow(MathF.Sin(Time++ * 0.03f + Projectile.whoAmI), 2) * 0.3f, 0, 0));
         NPC parent = Main.npc[(int)Parent];

@@ -1,6 +1,5 @@
 ﻿using BossForgiveness.Content.Systems.PacifySystem;
 using Microsoft.Xna.Framework;
-using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -105,6 +104,7 @@ public static class NPCUtils
         npc.SetAllPlayerInteraction();
         npc.NPCLoot();
         npc.Transform(ModContent.NPCType<T>());
+        npc.boss = false;
 
         PacifiedNPCHandler.TransformingNPC = false;
     }
