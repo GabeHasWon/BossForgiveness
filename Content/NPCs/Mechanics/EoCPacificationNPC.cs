@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-internal class EoCPacificationNPC : GlobalNPC
+internal class EoCPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public const int MaxDiscontent = 5;
 
@@ -34,4 +34,11 @@ internal class EoCPacificationNPC : GlobalNPC
     }
 
     public override Color? GetAlpha(NPC npc, Color drawColor) => Color.Lerp(drawColor, Color.Red, _discontentness / MaxDiscontent * 0.5f);
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = MaxDiscontent - _discontentness;
+        barMax = MaxDiscontent;
+        return true;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -6,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-internal class KingSlimePacificationNPC : GlobalNPC
+internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
 {
     private const float MinScale = 1.1f;
 
@@ -19,6 +20,13 @@ internal class KingSlimePacificationNPC : GlobalNPC
     private bool _wasPacifist = false;
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.KingSlime;
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = MinScale / npc.scale;
+        barMax = MinScale;
+        return Pacifist(npc);
+    }
 
     public override bool PreAI(NPC npc)
     {

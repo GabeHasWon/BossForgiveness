@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -7,7 +8,7 @@ using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;
 
-internal class PlanteraPacificationNPC : GlobalNPC
+internal class PlanteraPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public const int MaxPacificationsNeeded = 10;
 
@@ -81,5 +82,12 @@ internal class PlanteraPacificationNPC : GlobalNPC
             for (int i = 0; i < 16; ++i)
                 Dust.NewDustPerfect(npc.Center, DustID.JungleGrass, velocity.RotatedByRandom(0.2f) * 8);
         }
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = pacification;
+        barMax = MaxPacificationsNeeded;
+        return CanPacify(npc);
     }
 }

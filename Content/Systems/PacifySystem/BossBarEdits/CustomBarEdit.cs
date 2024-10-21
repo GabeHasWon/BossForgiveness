@@ -1,19 +1,15 @@
-﻿using BossForgiveness.Content.NPCs.Mechanics.Plantera;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.GameContent.UI.BigProgressBar;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 
-internal class PlanteraBarEdit : ILoadable
+internal class CustomBarEdit : ILoadable
 {
-    private static int PlanteraBar = -1;
+    private static int CurrentBarNPC = -1;
 
     public static Asset<Texture2D> PacificationSymbol = null;
 
@@ -28,37 +24,40 @@ internal class PlanteraBarEdit : ILoadable
     private void HijackBar(On_BigProgressBarHelper.orig_DrawFancyBar_SpriteBatch_float_float_Texture2D_Rectangle orig, SpriteBatch spriteBatch, float lifeAmount, float lifeMax, 
         Texture2D barIconTexture, Rectangle barIconFrame)
     {
-        if (PlanteraBar != -1)
+        if (CurrentBarNPC != -1)
         {
-            NPC npc = Main.npc[PlanteraBar];
+            NPC npc = Main.npc[CurrentBarNPC];
 
-            if (PlanteraBar != -1 && npc.TryGetGlobalNPC<PlanteraPacificationNPC>(out _) && PlanteraPacificationNPC.CanPacify(npc))
+            foreach (var gNPC in npc.Globals)
             {
-                Vector2 barCenter = Main.ScreenSize.ToVector2() * new Vector2(0.5f, 1f) + new Vector2(-1f, -90f);
-                spriteBatch.Draw(PacificationSymbol.Value, barCenter, null, Color.White, 0f, PacificationSymbol.Size() / 2f, 1f, SpriteEffects.None, 0);
+                if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out _, out _))
+                {
+                    Vector2 barCenter = Main.ScreenSize.ToVector2() * new Vector2(0.5f, 1f) + new Vector2(-1f, -90f);
+                    spriteBatch.Draw(PacificationSymbol.Value, barCenter, null, Color.White, 0f, PacificationSymbol.Size() / 2f, 1f, SpriteEffects.None, 0);
+                }
             }
         }
 
         orig(spriteBatch, lifeAmount, lifeMax, barIconTexture, barIconFrame);
 
-        if (PlanteraBar != -1)
+        if (CurrentBarNPC != -1)
         {
-            NPC npc = Main.npc[PlanteraBar];
+            NPC npc = Main.npc[CurrentBarNPC];
 
-            if (npc.TryGetGlobalNPC<PlanteraPacificationNPC>(out _) && PlanteraPacificationNPC.CanPacify(npc))
-                DrawOverlay(npc, barIconFrame, barIconTexture);
+            foreach (var gNPC in npc.Globals)
+            {
+                if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out float prog, out float max))
+                    DrawOverlay(prog, max);
+            }
         }
     }
 
-    private void DrawOverlay(NPC npc, Rectangle barIconFrame, Texture2D barIconTexture)
+    private static void DrawOverlay(float pac, float maxPac)
     {
         Texture2D value = Main.Assets.Request<Texture2D>("Images/UI/UI_BossBar").Value;
 
-        int pac = npc.GetGlobalNPC<PlanteraPacificationNPC>().pacification;
-        float maxPac = PlanteraPacificationNPC.MaxPacificationsNeeded;
-
-        Point p = new Point(456, 22);
-        Point p2 = new Point(32, 24);
+        var p = new Point(456, 22);
+        var p2 = new Point(32, 24);
         Rectangle frame = value.Frame(1, 6, 0, 3);
         Color color = Color.Green * 1f;
         Rectangle rectangle = Utils.CenteredRectangle(Main.ScreenSize.ToVector2() * new Vector2(0.5f, 1f) + new Vector2(0f, -50f), p.ToVector2());
@@ -75,9 +74,9 @@ internal class PlanteraBarEdit : ILoadable
     {
         NPC npc = Main.npc[info.npcIndexToAimAt];
 
-        PlanteraBar = npc.whoAmI;
+        CurrentBarNPC = npc.whoAmI;
         orig(self, ref info, spriteBatch);
-        PlanteraBar = -1;
+        CurrentBarNPC = -1;
     }
 
     public void Unload() { }
