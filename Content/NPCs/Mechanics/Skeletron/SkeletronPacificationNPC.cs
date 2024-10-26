@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -10,8 +11,10 @@ using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Skeletron;
 
-internal class SkeletronPacificationNPC : GlobalNPC
+internal class SkeletronPacificationNPC : GlobalNPC, ICustomBarNPC
 {
+    private const int MaxLamps = 6;
+
     private static Asset<Texture2D> _flame = null;
 
     public override bool InstancePerEntity => true;
@@ -42,7 +45,7 @@ internal class SkeletronPacificationNPC : GlobalNPC
             TorchID.TorchColor(TorchID.Torch, out float r, out float g, out float b);
             Lighting.AddLight(npc.Center, new Vector3(r, g, b) * lampFinishes / 5f);
 
-            if (lampFinishes > 5)
+            if (lampFinishes >= MaxLamps)
             {
                 npc.playerInteraction[npc.target] = true;
                 npc.NPCLoot();
@@ -135,8 +138,8 @@ internal class SkeletronPacificationNPC : GlobalNPC
 
     internal void FinishLamps(NPC npc)
     {
-        lampFinishes++;
         lampTimer = 0;
+        lampFinishes++;
 
         foreach (int id in lamps)
             Main.projectile.First(x => x.identity == id).Kill();
@@ -158,6 +161,13 @@ internal class SkeletronPacificationNPC : GlobalNPC
         drawColor *= lampFinishes / 5f;
 
         spriteBatch.Draw(tex, npc.Center - screenPos, frame, drawColor, npc.rotation, npc.Size / 2f + new Vector2(6, 46), 1f, effect, 0);
+        return true;
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = lampFinishes;
+        barMax = MaxLamps;
         return true;
     }
 }

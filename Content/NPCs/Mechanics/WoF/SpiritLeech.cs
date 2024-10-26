@@ -68,6 +68,8 @@ public class SpiritLeech : ModNPC
                 {
                     int segmentType = i == Max - 1 ? 2 : 1;
                     parent = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, Type, NPC.whoAmI, segmentType, parent);
+                    Main.npc[parent].realLife = NPC.whoAmI;
+                    Main.npc[parent].knockBackResist = 0f;
                     var spiritLeech = Main.npc[parent].ModNPC as SpiritLeech;
                     spiritLeech.isSpirit = isSpirit;
                 }

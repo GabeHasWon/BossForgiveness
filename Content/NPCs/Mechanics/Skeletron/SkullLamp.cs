@@ -65,9 +65,12 @@ public class SkullLamp : ModProjectile
                     if (item.Hitbox.Intersects(Projectile.Hitbox))
                     {
                         _touched = true;
-                        
+
                         if (!final)
+                        {
                             (Main.projectile.First(x => x.identity == (int)NextLamp).ModProjectile as SkullLamp).Lit = true;
+                            Main.npc[NPC.FindFirstNPC(NPCID.SkeletronHead)].GetGlobalNPC<SkeletronPacificationNPC>().lampFinishes++;
+                        }
                         else
                             Main.npc[(int)NextLamp].GetGlobalNPC<SkeletronPacificationNPC>().FinishLamps(Main.npc[(int)NextLamp]);
                     }

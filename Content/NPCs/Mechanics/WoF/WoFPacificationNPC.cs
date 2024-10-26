@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using Microsoft.Xna.Framework;
 using System;
 using System.IO;
 using Terraria;
@@ -9,9 +10,9 @@ using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.WoF;
 
-internal class WoFPacificationNPC : GlobalNPC
+internal class WoFPacificationNPC : GlobalNPC, ICustomBarNPC
 {
-    public const int MaxPetrify = 3;
+    public const int MaxPetrify = 10;
 
     public override bool InstancePerEntity => true;
 
@@ -27,11 +28,10 @@ internal class WoFPacificationNPC : GlobalNPC
 
     public override bool PreAI(NPC npc)
     {
-        if (!isAngry)
+        if (!isAngry || npc.life < npc.lifeMax)
             return true;
 
         float lifeFactor = petrifyCount / (float)MaxPetrify;
-        npc.velocity.X *= MathHelper.Lerp(1.25f, 3.25f, lifeFactor);
         npc.scale = 1.1f + MathF.Sin(_time++ * 0.025f) * 0.1f;
 
         if (leechTimer++ > MathHelper.Lerp(400f, 200f, lifeFactor))
@@ -61,6 +61,12 @@ internal class WoFPacificationNPC : GlobalNPC
         return true;
     }
 
+    public override void PostAI(NPC npc)
+    {
+        float lifeFactor = petrifyCount / (float)MaxPetrify;
+        npc.velocity.X *= MathHelper.Lerp(1.25f, 2.5f, lifeFactor);
+    }
+
     internal void AddPacification(NPC npc)
     {
         petrifyCount++;
@@ -77,5 +83,12 @@ internal class WoFPacificationNPC : GlobalNPC
     {
         isAngry = bitReader.ReadBit();
         petrifyCount = binaryReader.ReadInt32();
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = petrifyCount;
+        barMax = MaxPetrify;
+        return npc.GetGlobalNPC<WoFPacificationNPC>().isAngry && npc.life >= npc.lifeMax;
     }
 }

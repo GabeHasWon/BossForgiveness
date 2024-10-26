@@ -24,6 +24,7 @@ public class PacifiedDeerclops : ModNPC
         NPCID.Sets.IsTownPet[Type] = true;
         this.HideFromBestiary();
     }
+
     public override void SetDefaults()
     {
         NPC.CloneDefaults(NPCID.Deerclops);

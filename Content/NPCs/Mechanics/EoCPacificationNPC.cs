@@ -25,6 +25,7 @@ internal class EoCPacificationNPC : GlobalNPC, ICustomBarNPC
         {
             if (!_wet)
                 _discontentness--;
+
             _wet = true;
         }
         else

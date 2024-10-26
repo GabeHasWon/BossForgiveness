@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using System;
 using System.IO;
 using System.Linq;
 using Terraria;
@@ -9,7 +10,7 @@ using Terraria.WorldBuilding;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Mech;
 
-internal class MechBossPacificationNPC : GlobalNPC
+internal class MechBossPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     internal class Modifiers
     {
@@ -176,5 +177,12 @@ internal class MechBossPacificationNPC : GlobalNPC
         _modifiers.Speed = (float)binaryReader.ReadHalf();
         _modifiers.Damage = (float)binaryReader.ReadHalf();
         electrified = bitReader.ReadBit();
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = stunCount;
+        barMax = npc.type is NPCID.TheDestroyer or NPCID.TheDestroyerBody or NPCID.TheDestroyerTail ? MaxStun * 5 : MaxStun;
+        return true;
     }
 }

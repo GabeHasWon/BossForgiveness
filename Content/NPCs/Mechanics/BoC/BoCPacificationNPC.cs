@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -13,7 +14,7 @@ using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
-internal class BoCPacificationNPC : GlobalNPC
+internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public const int MaxSleepy = 40;
 
@@ -49,13 +50,10 @@ internal class BoCPacificationNPC : GlobalNPC
 
         if (sleepyness >= MaxSleepy)
         {
-            if (npc.noTileCollide && Collision.SolidCollision(npc.position, npc.width, npc.height))
+            if (Collision.SolidCollision(npc.position, npc.width, npc.height))
                 return true;
 
-            npc.noTileCollide = true;
-            sleepyTime++;
-
-            if (sleepyTime > 120 && Main.netMode != NetmodeID.MultiplayerClient)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!NPC.AnyNPCs(ModContent.NPCType<BoCPacified>()))
                 {
@@ -198,5 +196,12 @@ internal class BoCPacificationNPC : GlobalNPC
     {
         float alpha = sleepyness / (float)MaxSleepy * npc.Opacity;
         spriteBatch.Draw(zzzTex.Value, npc.Center - screenPos, null, drawColor * alpha, 0f, zzzTex.Size() / new Vector2(2f, 1f), 1f, SpriteEffects.None, 0);
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = sleepyness;
+        barMax = MaxSleepy;
+        return true;
     }
 }

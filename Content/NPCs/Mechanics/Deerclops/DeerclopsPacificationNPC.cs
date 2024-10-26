@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
@@ -7,8 +8,10 @@ using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Deerclops;
 
-internal class DeerclopsPacificationNPC : GlobalNPC
+internal class DeerclopsPacificationNPC : GlobalNPC, ICustomBarNPC
 {
+    public const int SatisfactoryDestruction = 200;
+
     public override bool InstancePerEntity => true;
 
     private int _satisfaction = 0;
@@ -35,7 +38,7 @@ internal class DeerclopsPacificationNPC : GlobalNPC
             BreakBreakableTiles(npc);
         }
 
-        if (_satisfaction > 200)
+        if (_satisfaction > SatisfactoryDestruction)
             npc.Pacify<PacifiedDeerclops>();
     }
 
@@ -113,4 +116,11 @@ internal class DeerclopsPacificationNPC : GlobalNPC
     }
 
     private static bool ValidTile(int i, int j) => Main.tile[i, j].TileType is TileID.HayBlock or TileID.TargetDummy or TileID.DisplayDoll;
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = _satisfaction;
+        barMax = SatisfactoryDestruction;
+        return true;
+    }
 }

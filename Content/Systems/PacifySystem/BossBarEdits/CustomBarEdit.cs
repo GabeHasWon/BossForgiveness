@@ -17,8 +17,38 @@ internal class CustomBarEdit : ILoadable
     {
         On_CommonBossBigProgressBar.Draw += DrawBar;
         On_BigProgressBarHelper.DrawFancyBar_SpriteBatch_float_float_Texture2D_Rectangle += HijackBar;
+        On_BrainOfCthuluBigProgressBar.Draw += DrawBarBoC;
+        On_DeerclopsBigProgressBar.Draw += DrawBarDeerclops;
+        //On_TwinsBigProgressBar.Draw += DrawBarTwins;
 
         PacificationSymbol = mod.Assets.Request<Texture2D>("Content/Systems/PacifySystem/BossBarEdits/PacificationSymbol");
+    }
+
+    private void DrawBarTwins(On_TwinsBigProgressBar.orig_Draw orig, TwinsBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        NPC npc = Main.npc[info.npcIndexToAimAt];
+
+        CurrentBarNPC = npc.whoAmI;
+        orig(self, ref info, spriteBatch);
+        CurrentBarNPC = -1;
+    }
+
+    private void DrawBarDeerclops(On_DeerclopsBigProgressBar.orig_Draw orig, DeerclopsBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        NPC npc = Main.npc[info.npcIndexToAimAt];
+
+        CurrentBarNPC = npc.whoAmI;
+        orig(self, ref info, spriteBatch);
+        CurrentBarNPC = -1;
+    }
+
+    private void DrawBarBoC(On_BrainOfCthuluBigProgressBar.orig_Draw orig, BrainOfCthuluBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        NPC npc = Main.npc[info.npcIndexToAimAt];
+
+        CurrentBarNPC = npc.whoAmI;
+        orig(self, ref info, spriteBatch);
+        CurrentBarNPC = -1;
     }
 
     private void HijackBar(On_BigProgressBarHelper.orig_DrawFancyBar_SpriteBatch_float_float_Texture2D_Rectangle orig, SpriteBatch spriteBatch, float lifeAmount, float lifeMax, 
