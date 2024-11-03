@@ -2,11 +2,11 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
-using System;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-public class WormPacificationNPC : GlobalNPC
+public class WormPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public const int MaxFood = 30;
 
@@ -14,11 +14,18 @@ public class WormPacificationNPC : GlobalNPC
 
     internal int foodCount = 0;
     internal int lastWormCount = 0;
+    internal bool wasHarmed = false;
 
     public override bool AppliesToEntity(NPC n, bool lateInstantiation) => n.type == NPCID.EaterofWorldsHead;
 
     public override bool PreAI(NPC npc)
     {
+        if (wasHarmed || NPC.CountNPCS(NPCID.EaterofWorldsHead) > 1)
+        {
+            wasHarmed = true;
+            return true;
+        }
+
         if (foodCount > 0)
         {
             if (lastWormCount < foodCount)
@@ -46,7 +53,6 @@ public class WormPacificationNPC : GlobalNPC
     {
         if (npc.type == NPCID.EaterofWorldsHead)
         {
-            Console.WriteLine("HEAD");
             npc.GetGlobalNPC<WormPacificationNPC>().foodCount += 2;
             return;
         }
@@ -57,10 +63,16 @@ public class WormPacificationNPC : GlobalNPC
 
             if (cur.type == NPCID.EaterofWorldsHead)
             {
-                Console.WriteLine("BODY");
                 cur.GetGlobalNPC<WormPacificationNPC>().foodCount++;
                 break;
             }
         }
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = foodCount;
+        barMax = MaxFood;
+        return npc.life == npc.lifeMax && !wasHarmed;
     }
 }

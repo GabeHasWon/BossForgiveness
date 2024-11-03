@@ -9,6 +9,7 @@
     <None Remove="changelog.txt" />
     <None Remove="Localization\en-US_Mods.BossForgiveness.Dialogue.hjson" />
     <None Remove="Localization\en-US_Mods.BossForgiveness.Items.hjson" />
+    <None Remove="Localization\en-US_Mods.BossForgiveness.NPCs.hjson" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NetEasy">

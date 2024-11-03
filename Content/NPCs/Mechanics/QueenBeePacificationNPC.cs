@@ -1,6 +1,9 @@
 ﻿using BossForgiveness.Common.Camera;
+using BossForgiveness.Content.Items.ForVanilla;
+using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.Misc;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,15 +17,17 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
 using Terraria.WorldBuilding;
+
 using static BossForgiveness.Content.NPCs.Mechanics.QueenBeePacificationNPC;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-internal class QueenBeePacificationNPC : GlobalNPC
+internal class QueenBeePacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public class QueenBeeDreamTE : ModTileEntity
     {
@@ -186,6 +191,23 @@ internal class QueenBeePacificationNPC : GlobalNPC
         }
 
         return true;
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = 0;
+        barMax = 1;
+
+        CustomBarEdit.TextOffsetX = 96;
+        CustomBarEdit.OverrideText = Language.GetTextValue("Mods.BossForgiveness.BarLines.QueenBee");
+
+        for (int i = 0; i < requirements.desiredDatas.Count; ++i)
+        {
+            var data = requirements.desiredDatas[i];
+            CustomBarEdit.OverrideText += $"[i:{data.ItemId}] ";
+        }
+
+        return npc.life >= npc.lifeMax;
     }
 }
 

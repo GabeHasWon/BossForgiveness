@@ -9,8 +9,6 @@ namespace BossForgiveness.Content.NPCs.Misc;
 
 public class Omnileech : ModNPC
 {
-    internal static int Self = -1;
-
     public override void SetStaticDefaults() => Main.npcCatchable[NPC.type] = true;
 
     public override void SetDefaults()
@@ -30,21 +28,9 @@ public class Omnileech : ModNPC
 
     public override void AI()
     {
-        Self = NPC.whoAmI;
         NPC.velocity.Y += 0.1f;
 
         if (!NPC.collideY)
             NPC.rotation += 0.05f;
-    }
-
-    public override void OnKill() => Self = -1;
-}
-
-class OmnileechResetSystem : ModSystem
-{
-    public override void PreUpdateNPCs()
-    {
-        if (Omnileech.Self != -1 && !NPC.AnyNPCs(ModContent.NPCType<Omnileech>()))
-            Omnileech.Self = -1;
     }
 }

@@ -182,7 +182,7 @@ internal class MechBossPacificationNPC : GlobalNPC, ICustomBarNPC
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
     {
         barProgress = stunCount;
-        barMax = npc.type is NPCID.TheDestroyer or NPCID.TheDestroyerBody or NPCID.TheDestroyerTail ? MaxStun * 5 : MaxStun;
+        barMax = npc.type is NPCID.TheDestroyer or NPCID.TheDestroyerBody or NPCID.TheDestroyerTail ? MaxStun * 3 : MaxStun;
         return true;
     }
 }

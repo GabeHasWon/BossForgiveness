@@ -65,15 +65,16 @@ public class DukePacified : ModNPC
                 int x = (int)NPC.Center.X / 16;
                 int bottomPool = floor;
 
-                while (!WorldGen.SolidTile(x, ++bottomPool)) { }
+                while (!WorldGen.SolidTile(x, ++bottomPool))
+                {
+                }
 
                 int dif = bottomPool - floor;
 
                 if (dif > 12)
                 {
                     NPC.velocity.X *= 0.95f;
-                    NPC.velocity.Y = (bottomPool - 12) * 16 - NPC.Center.Y;
-                    NPC.velocity.Y *= 0.02f;
+                    NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, MathHelper.Clamp((bottomPool - 12) * 16 - NPC.Center.Y, -10, 20), 0.05f);
 
                     dontLevel = true;
                 }

@@ -1,0 +1,36 @@
+KingSlimePacified.DisplayName: "{$NPCName.KingSlime}"
+EyePacified.DisplayName: "{$NPCName.EyeofCthulhu}"
+BoCPacified.DisplayName: "{$NPCName.BrainofCthulhu}"
+PacifiedEoW.DisplayName: "{$NPCName.EaterofWorldsTail}"
+PacifiedQueenBee.DisplayName: "{$NPCName.QueenBee}"
+SkeletronPacified.DisplayName: "{$NPCName.SkeletronHead}"
+PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
+QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
+SkelePrimePacified.DisplayName: "{$NPCName.SkeletronPrime}"
+DestroyerPacified.DisplayName: "{$NPCName.TheDestroyer}"
+SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
+RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
+PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
+GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
+
+TruffleLeechNPC: {
+	DisplayName: Truffle Leech
+	Entry: A small, aggressive but rather unthreatening leech, often carried by Fishrons. Tastes weird.
+}
+
+Omnileech: {
+	DisplayName: The True Truffle Treat
+	Entry: A legendary, massive truffle worm that can no longer move due to its size. Prized by Fishrons across the universe.
+}
+
+DukePacified.DisplayName: "{$NPCName.DukeFishron}"
+CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
+EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
+
+SpiritLeech: {
+	DisplayName: Bursting Leech
+	Entry: An odd variant of the Leech that explodes after a short time. Sometimes, they appear as ghosts. It is unclear what this means.
+}
+
+PinkyPacified.DisplayName: "{$NPCName.Pinky}"
+LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"

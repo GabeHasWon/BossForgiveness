@@ -13,7 +13,7 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override bool InstancePerEntity => true;
 
-    private static bool Pacifist(NPC npc) => npc.GetGlobalNPC<KingSlimePacificationNPC>()._timer >= 15 * 60 && npc.life == npc.lifeMax;
+    private static bool Pacifist(NPC npc) => npc.GetGlobalNPC<KingSlimePacificationNPC>()._timer >= 8 * 60 && npc.life == npc.lifeMax;
 
     private int _timer = 0;
     private float _scale = 0;
@@ -23,8 +23,9 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
 
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
     {
-        barProgress = MinScale / npc.scale;
-        barMax = MinScale;
+        float dif = _scale - MinScale;
+        barProgress = (1 - dif / 0.15f) * 100;
+        barMax = 100;
         return Pacifist(npc);
     }
 

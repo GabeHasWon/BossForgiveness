@@ -38,7 +38,7 @@ public class WormMorsel : FoodItem
         return true;
     }
 
-    public override void AddRecipes() => CreateRecipe(40).AddIngredient(ItemID.RottenChunk, 30).Register();
+    public override void AddRecipes() => CreateRecipe(7).AddIngredient(ItemID.RottenChunk, 6).Register();
 
     private class WormMorselProj : ModProjectile
     {
@@ -54,6 +54,7 @@ public class WormMorsel : FoodItem
         {
             Projectile.velocity *= 0.999f;
             Projectile.velocity.Y += 0.2f;
+            Projectile.rotation += Projectile.velocity.X * 0.1f;
 
             if (Main.netMode == NetmodeID.SinglePlayer)
             {
@@ -65,6 +66,8 @@ public class WormMorsel : FoodItem
                     {
                         if (npc.type is NPCID.EaterofWorldsTail or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsHead)
                             WormPacificationNPC.AddFoodToHead(npc);
+                        else
+                            npc.AddBuff(Main.rand.NextBool(4) ? BuffID.Venom : BuffID.Poisoned, 60 * 60);
 
                         Projectile.Kill();
                         break;
@@ -83,6 +86,8 @@ public class WormMorsel : FoodItem
                         {
                             if (npc.type is NPCID.EaterofWorldsTail or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsHead)
                                 new SyncEoWMorselModule(i, Projectile.whoAmI).Send(-1, -1);
+                            else
+                                npc.AddBuff(Main.rand.NextBool(4) ? BuffID.Venom : BuffID.Poisoned, 60 * 60);
 
                             Projectile.Kill();
 

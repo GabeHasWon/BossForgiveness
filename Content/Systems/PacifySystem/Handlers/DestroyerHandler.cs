@@ -12,7 +12,7 @@ internal class DestroyerHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.TheDestroyer;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= MechBossPacificationNPC.MaxStun * 5
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= MechBossPacificationNPC.MaxStun * 3
         && !NPC.AnyNPCs(ModContent.NPCType<DestroyerPacified>());
 
     public override void OnPacify(NPC npc)

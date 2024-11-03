@@ -1,22 +1,31 @@
-﻿using BossForgiveness.Content.NPCs.Misc;
+﻿using BossForgiveness.Content.Items.ForVanilla;
+using BossForgiveness.Content.NPCs.Mechanics.WoF;
+using BossForgiveness.Content.NPCs.Misc;
 using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-internal class DukePacificationNPC : GlobalNPC
+internal class DukePacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.DukeFishron;
 
     public override bool PreAI(NPC npc)
     {
-        if (Omnileech.Self > -1)
+        if (npc.life < npc.lifeMax)
+            return true;
+
+        int omnileech = NPC.FindFirstNPC(ModContent.NPCType<Omnileech>());
+
+        if (omnileech > -1)
         {
             npc.localAI[3]++;
-            npc.velocity = npc.DirectionTo(Main.npc[Omnileech.Self].Center) * npc.localAI[3] * 0.2f;
+            npc.velocity = npc.DirectionTo(Main.npc[omnileech].Center) * npc.localAI[3] * 0.2f;
             npc.rotation = npc.velocity.ToRotation();
 
             if (npc.velocity.X < 0)
@@ -37,5 +46,14 @@ internal class DukePacificationNPC : GlobalNPC
     {
         if (target.type == ModContent.NPCType<Omnileech>() && target.life <= 0 && npc.life == npc.lifeMax)
             npc.Pacify<DukePacified>();
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = 0;
+        barMax = 1;
+
+        CustomBarEdit.OverrideText = Language.GetText("Mods.BossForgiveness.BarLines.Duke").Format(ModContent.ItemType<OmnileechItem>());
+        return npc.life == npc.lifeMax;
     }
 }

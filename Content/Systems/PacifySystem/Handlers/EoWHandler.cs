@@ -1,5 +1,6 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.Handlers;
@@ -15,7 +17,7 @@ internal class EoWHandler : PacifiedNPCHandler
 {
     public override int Type => NPCID.EaterofWorldsHead;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormPacificationNPC>().foodCount > WormPacificationNPC.MaxFood && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WormPacificationNPC>().foodCount >= WormPacificationNPC.MaxFood && !NPC.AnyNPCs(ModContent.NPCType<PacifiedEoW>());
 
     public override void OnPacify(NPC npc)
     {

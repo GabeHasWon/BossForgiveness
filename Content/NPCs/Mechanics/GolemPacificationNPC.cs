@@ -6,12 +6,17 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using BossForgiveness.Content.Items.ForVanilla;
+using Terraria.Localization;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
-public class GolemPacificationNPC : GlobalNPC
+public class GolemPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public override bool InstancePerEntity => true;
+
+    public const int MaxTaser = 5;
 
     internal int taserCount = 0;
 
@@ -40,6 +45,7 @@ public class GolemPacificationNPC : GlobalNPC
                 npc.damage = 0;
                 npc.velocity.Y += 0.2f;
                 npc.rotation += npc.velocity.X * 0.02f;
+                npc.noTileCollide = true;
 
                 return false;
             }
@@ -127,5 +133,16 @@ public class GolemPacificationNPC : GlobalNPC
         }
 
         return true;
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = taserCount;
+        barMax = MaxTaser;
+
+        if (npc.type == NPCID.GolemHeadFree && taserCount > 5)
+            CustomBarEdit.OverrideText = Language.GetTextValue("Mods.BossForgiveness.BarLines.Golem");
+
+        return npc.life == npc.lifeMax;
     }
 }

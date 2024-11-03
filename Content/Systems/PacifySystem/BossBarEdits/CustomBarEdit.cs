@@ -2,8 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
+using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 
@@ -11,6 +14,8 @@ internal class CustomBarEdit : ILoadable
 {
     private static int CurrentBarNPC = -1;
 
+    public static string OverrideText = "";
+    public static int TextOffsetX = 0;
     public static Asset<Texture2D> PacificationSymbol = null;
 
     public void Load(Mod mod)
@@ -19,14 +24,50 @@ internal class CustomBarEdit : ILoadable
         On_BigProgressBarHelper.DrawFancyBar_SpriteBatch_float_float_Texture2D_Rectangle += HijackBar;
         On_BrainOfCthuluBigProgressBar.Draw += DrawBarBoC;
         On_DeerclopsBigProgressBar.Draw += DrawBarDeerclops;
-        //On_TwinsBigProgressBar.Draw += DrawBarTwins;
+        On_GolemHeadProgressBar.Draw += On_GolemHeadProgressBar_Draw;
+        On_EaterOfWorldsProgressBar.Draw += On_EaterOfWorldsProgressBar_Draw;
+        On_TwinsBigProgressBar.Draw += DrawBarTwins;
 
         PacificationSymbol = mod.Assets.Request<Texture2D>("Content/Systems/PacifySystem/BossBarEdits/PacificationSymbol");
     }
 
-    private void DrawBarTwins(On_TwinsBigProgressBar.orig_Draw orig, TwinsBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    private void On_EaterOfWorldsProgressBar_Draw(On_EaterOfWorldsProgressBar.orig_Draw orig, EaterOfWorldsProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
     {
         NPC npc = Main.npc[info.npcIndexToAimAt];
+
+        CurrentBarNPC = npc.whoAmI;
+        orig(self, ref info, spriteBatch);
+        CurrentBarNPC = -1;
+    }
+
+    private void On_GolemHeadProgressBar_Draw(On_GolemHeadProgressBar.orig_Draw orig, GolemHeadProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        int freeHead = NPC.FindFirstNPC(NPCID.GolemHead);
+
+        if (freeHead == -1)
+            freeHead = NPC.FindFirstNPC(NPCID.GolemHeadFree);
+
+        if (freeHead == -1)
+            freeHead = NPC.FindFirstNPC(NPCID.Golem);
+
+        if (freeHead == -1)
+            freeHead = info.npcIndexToAimAt;
+
+        NPC npc = Main.npc[freeHead];
+
+        CurrentBarNPC = npc.whoAmI;
+        orig(self, ref info, spriteBatch);
+        CurrentBarNPC = -1;
+    }
+
+    private void DrawBarTwins(On_TwinsBigProgressBar.orig_Draw orig, TwinsBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        int who = NPC.FindFirstNPC(NPCID.Spazmatism);
+
+        if (who == -1)
+            who = info.npcIndexToAimAt;
+
+        NPC npc = Main.npc[who];
 
         CurrentBarNPC = npc.whoAmI;
         orig(self, ref info, spriteBatch);
@@ -96,8 +137,18 @@ internal class CustomBarEdit : ILoadable
         Main.spriteBatch.Draw(value, vector, new Rectangle(frame.X, frame.Y, frame.Width, frame.Height), Color.Red, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         Main.spriteBatch.Draw(value, vector, new Rectangle(frame.X, frame.Y, (int)(frame.Width * (pac / maxPac)), frame.Height), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-        if (BigProgressBarSystem.ShowText)
+        if (OverrideText != null && OverrideText != string.Empty)
+        {
+            var font = FontAssets.ItemStack.Value;
+            Vector2 textSize = font.MeasureString(OverrideText);
+            Vector2 position = rectangle.Center.ToVector2() - textSize * 0.5f + new Vector2(TextOffsetX, 0);
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, OverrideText, position, Color.White, 0f, Vector2.Zero, Vector2.One);
+        }
+        else if (BigProgressBarSystem.ShowText)
             BigProgressBarHelper.DrawHealthText(Main.spriteBatch, rectangle, Vector2.Zero, pac, maxPac);
+
+        OverrideText = string.Empty;
+        TextOffsetX = 0;
     }
 
     private void DrawBar(On_CommonBossBigProgressBar.orig_Draw orig, CommonBossBigProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
