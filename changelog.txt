@@ -1,14 +1,4 @@
-v1.0.3.2
-- Adds in pacification bar/tooltip for Duke Fishron, Queen Bee, Golem, King Slime, Eater of Worlds, Twins
-- Optimizes how the True Truffle Treat is eaten by Fishron, should work consistently now
-- Improved Pacified Fishron down movement when relaxing in water
-- Reduced King Slime wait-to-pacify timer to 8 seconds (from 15)
-- Reduce Destroyer pacification requirement to 36 (from 60)
-- Improved visual feedback for EoC pacification with anger mark instead of red coloration
-- Made EoC not seem to be able to be pacified if another pacified EoC is already in-world
-- Added the ability to defeat Skeletron as a prerequisite for getting the Guide's Locket
-- Fixed EoW requiring 31 food to pacify instead of 30
-- Added polish to Worm Morsel projectile
-- Rewrote Worm Morsel tooltip
-- Added functionality for Worm Morsel as a Poison/Venom debuff item
-- Adjusted recipe for Worm Morsel, made it have a better Rotten Chunk:Morsel ratio
+v1.0.3.3
+- Added Tim pacification mechanic & NPC
+- Fixed some bad localization
+- Fixed EoC not being pacifyable

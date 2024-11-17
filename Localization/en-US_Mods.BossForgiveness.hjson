@@ -11,14 +11,16 @@ Projectiles: {
 	Splinter.DisplayName: Splinter
 	CobaltOrbProjectile.DisplayName: Cobalt Orb
 	PalladiumOrbProjectile.DisplayName: Palladium Orb
-	LilyProjectile.DisplayName: Lily Projectile
-	LilyPetalProjectile.DisplayName: Lily Petal Projectile
-	PoppyProjectile.DisplayName: Poppy Projectile
-	GrowthProjectileFX.DisplayName: Growth Projectile F X
-	RoseProjectile.DisplayName: Rose Projectile
-	BlackPoppyProjectile.DisplayName: Black Poppy Projectile
+	LilyProjectile.DisplayName: Lily
+	LilyPetalProjectile.DisplayName: Petal
+	PoppyProjectile.DisplayName: Poppy
+	GrowthProjectileFX.DisplayName: Growth
+	RoseProjectile.DisplayName: Rose
+	BlackPoppyProjectile.DisplayName: Black Poppy
+	TimRune.DisplayName: Tim Rune
 }
 
+TimLaserHurtReason: "{0} couldn't dodge the magic lasers."
 PacifiedCondition: When pacified
 GuideLocketDialogue: I fear I'm at that point. You are approaching a great threat. If I may, I offer you this locket. It'll help you best the Wall, though it will be angered by the charm. Best of luck, your choice is my fate.
 

@@ -31,7 +31,7 @@ internal class EoCPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override bool PreAI(NPC npc)
     {
-        _canPacify ??= NPC.AnyNPCs(ModContent.NPCType<EyePacified>());
+        _canPacify ??= !NPC.AnyNPCs(ModContent.NPCType<EyePacified>());
 
         if (!_canPacify.Value)
             return true;
