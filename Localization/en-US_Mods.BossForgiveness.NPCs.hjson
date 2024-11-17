@@ -34,3 +34,4 @@ SpiritLeech: {
 
 PinkyPacified.DisplayName: "{$NPCName.Pinky}"
 LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"
+TimPacified.DisplayName: "{$NPCName.Tim}"

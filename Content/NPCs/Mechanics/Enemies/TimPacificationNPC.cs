@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -18,14 +19,14 @@ internal class TimPacificationNPC : GlobalNPC
 
     public int runesCaught = 0;
 
+    public override void SetDefaults(NPC entity) => entity.damage = 0;
+
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
         if (Main.netMode != NetmodeID.MultiplayerClient)
         {
             for (int i = 0; i < 3; ++i)
-            {
                 Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<TimRune>(), 0, 0, Main.myPlayer, npc.whoAmI);
-            }
         }
     }
 
@@ -36,7 +37,7 @@ internal class TimPacificationNPC : GlobalNPC
 
         if (runesCaught > 2)
         {
-            npc.active = false;
+            npc.Pacify<TimPacified>();
             return false;
         }
 
@@ -76,7 +77,7 @@ internal class TimPacificationNPC : GlobalNPC
             if (Tim.ai[0] == 1f)
                 Teleport();
 
-            if (Timer == 0)
+            if (Timer == 5)
                 Projectile.frame = Main.rand.Next(3);
             else if (Timer % 6 == 0)
                 Projectile.frame = (Projectile.frame + 1) % 3;
@@ -90,7 +91,7 @@ internal class TimPacificationNPC : GlobalNPC
         {
             Vector2 pos = Projectile.Center;
             Vector2 vel = Projectile.DirectionTo(Tim.Center);
-            bool fieldActive = Timer % 300 < 200;
+            bool fieldActive = Timer % 300 < 150;
 
             if (Timer % 8 == 0 && fieldActive)
             {
@@ -139,14 +140,18 @@ internal class TimPacificationNPC : GlobalNPC
 
         private void Teleport()
         {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
             Vector2 pos;
 
             do
             {
-                pos = Tim.Center + Main.rand.NextVector2Circular(700, 700);
+                pos = Tim.Center + Main.rand.NextVector2Circular(500, 500);
             } while (Collision.SolidCollision(pos, 22, 20));
 
             Projectile.position = pos;
+            Projectile.netUpdate = true;
 
             for (int i = 0; i < 10; ++i)
             {

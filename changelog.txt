@@ -1,4 +1,6 @@
 v1.0.3.3
-- Added Tim pacification mechanic & NPC
+- Added Tim pacification mechanic & NPC & pacified mechanic
+	His Enchant option will give you one of the following buffs for 4 minutes, with a 15 minute cooldown:
+	Summoner, Magic Power, Magic Regeneration
 - Fixed some bad localization
 - Fixed EoC not being pacifyable

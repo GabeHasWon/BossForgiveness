@@ -141,3 +141,25 @@ LostGirl: {
 	2: We all have bad days, right?
 	3: Whoops!
 }
+
+Tim: {
+	0: The wiles that time has yet not seen! Tim is too powerful! Beyond your scope of imagination is where Tim lies!
+	1: A party trick for Tim is a life-shattering ritual for your mind! Revel in Tim's absolution!
+	2: Grovel and weep as Tim once more obliterates the opposition with pure, rending power! Grovel and weep!
+	3: Tim's superlatives rival and surpass those of the strongest! Wrestle with your weakness as Tim supercedes all!
+
+	Enchant: {
+		Button: Enchant
+		0: Behold! You hold a mote of Tim's power! Revel, and pray your flimsy caricature holds steady under the weight!
+		1: Aha! Tim bestows upon you a gift most legendary! May your enemies grovel as you rend and gnash through their ranks!
+		2: Rejoice, mortal! You and Tim, united - if barely - and your strength uplifed evermore! Be careful - your power towers over most!
+		3: From the depths of arcane horrors Tim wrestles strength yet unseen! Carry it well, weakling, for it is fleeting!
+	}
+
+	RejectEnchant: {
+		0: Alas, Tim mustn't overpower your frail being! It can only hold but a microcosm of Tim's strength!
+		1: Take care of yourself! But a touch of Tim's magic would immediately end your weak existence! You must have patience!
+		2: Hold your army, child! Tim is protecting you from yourself! Alas, you cannot handle more of Tim's power...for now!
+		3: Return when you're ready, fool! Tim has strength aplenty; but such that Tim would obliterate you in an instant if Tim overdoes it!
+	}
+}
