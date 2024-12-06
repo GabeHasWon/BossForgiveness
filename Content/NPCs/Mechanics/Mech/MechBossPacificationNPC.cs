@@ -74,8 +74,19 @@ internal class MechBossPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public static NPC GetParent(NPC npc)
     {
-        if (npc.type is NPCID.Spazmatism or NPCID.Retinazer or NPCID.SkeletronPrime or NPCID.TheDestroyer)
+        if (npc.type is NPCID.Spazmatism or NPCID.SkeletronPrime or NPCID.TheDestroyer)
             return npc;
+
+        if (npc.type == NPCID.Retinazer)
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].active && Main.npc[i].type == NPCID.Spazmatism)
+                    return Main.npc[i];
+            }
+
+            return null;
+        }
 
         if (npc.type is NPCID.PrimeCannon or NPCID.PrimeLaser or NPCID.PrimeSaw or NPCID.PrimeVice)
         {

@@ -45,7 +45,7 @@ public class GolemPacificationNPC : GlobalNPC, ICustomBarNPC
                 npc.damage = 0;
                 npc.velocity.Y += 0.2f;
                 npc.rotation += npc.velocity.X * 0.02f;
-                npc.noTileCollide = true;
+                npc.noTileCollide = false;
 
                 return false;
             }
@@ -138,10 +138,12 @@ public class GolemPacificationNPC : GlobalNPC, ICustomBarNPC
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
     {
         barProgress = taserCount;
-        barMax = MaxTaser;
+        barMax = MaxTaser + 1;
 
         if (npc.type == NPCID.GolemHeadFree && taserCount > 5)
             CustomBarEdit.OverrideText = Language.GetTextValue("Mods.BossForgiveness.BarLines.Golem");
+        else if (npc.type == NPCID.Golem && !NPC.AnyNPCs(NPCID.GolemHeadFree) && !NPC.AnyNPCs(NPCID.GolemHead))
+            barMax = 20;
 
         return npc.life == npc.lifeMax;
     }

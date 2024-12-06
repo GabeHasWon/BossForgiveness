@@ -23,7 +23,10 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
     private NPC _retinazerDummy = null;
     private bool _isRetinazer = false;
 
-    public override void Load() => On_TwinsBigProgressBar.ValidateAndCollectNecessaryInfo += StopPacifiedBar;
+    public override void Load()
+    {
+        On_TwinsBigProgressBar.ValidateAndCollectNecessaryInfo += StopPacifiedBar;
+    }
 
     private bool StopPacifiedBar(On_TwinsBigProgressBar.orig_ValidateAndCollectNecessaryInfo orig, TwinsBigProgressBar self, ref BigProgressBarInfo info)
     {
@@ -153,7 +156,13 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
 
     private void UpdateRetinazer()
     {
-        _retinazerDummy.UpdateNPC(200);
+        if (_retinazerDummy.ModNPC.PreAI())
+        {
+            _retinazerDummy.VanillaAI();
+            _retinazerDummy.ModNPC.PostAI();
+        }
+
+        _retinazerDummy.position += _retinazerDummy.velocity;
         _retinazerDummy.ai[0] = Timer + MathHelper.Pi / 0.03f;
         _retinazerDummy.homeless = NPC.homeless;
         _retinazerDummy.homeTileX = NPC.homeTileX;

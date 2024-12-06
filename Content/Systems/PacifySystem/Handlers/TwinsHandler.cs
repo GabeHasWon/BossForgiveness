@@ -13,9 +13,8 @@ internal class SpazmatismHandler : PacifiedNPCHandler
 
     public override bool CanPacify(NPC npc)
     {
-        const int PacifyTime = 1 * 60 * 60;
-
         bool retinazer = false;
+        int stun = npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount;
 
         for (int i = 0; i < Main.maxNPCs; ++i)
         {
@@ -23,14 +22,14 @@ internal class SpazmatismHandler : PacifiedNPCHandler
 
             if (other.active && other.type == NPCID.Retinazer)
             {
-                if (other.GetGlobalNPC<PacifiedGlobalNPC>().unhitTime > PacifyTime && other.life > other.lifeMax / 2f)
+                if (other.life > other.lifeMax / 2f)
                     retinazer = true;
 
                 break;
             }
         }
 
-        return npc.GetGlobalNPC<MechBossPacificationNPC>().stunCount >= MechBossPacificationNPC.MaxStun && npc.life > npc.lifeMax / 2f 
+        return stun >= MechBossPacificationNPC.MaxStun && npc.life > npc.lifeMax / 2f 
             && !NPC.AnyNPCs(ModContent.NPCType<SpazmatismPacified>()) && retinazer;
     }
 
