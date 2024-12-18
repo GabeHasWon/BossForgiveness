@@ -1,6 +1,2 @@
-v1.0.3.4
-- Fix Golem's pacified head falling through the world
-- Adjust Golem pacify bar display
-- Fixed issue with Calamity (and other mods) where pacified Retinazer would be invalid and never appear
-- Fixed issue where Retinazer being hit by a stun would not sync with Spazmatism
-- Fixed issue where Retinazer required old minute-long wait for pacification instead of stun
+v1.0.3.5
+- Made Pinky's pacification mechanic consume the dropped item

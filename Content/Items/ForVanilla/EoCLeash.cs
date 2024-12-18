@@ -131,7 +131,7 @@ internal class EoCLeash : ModItem
             {
                 const int MaxSpeed = 10;
 
-                bool steedInvalid = !Steed.active || Steed.type != ModContent.NPCType<EyePacified>() || Steed.life <= 0;
+                bool steedInvalid = !Steed.active || Steed.type != ModContent.NPCType<EyePacified>() || Steed.life <= 0 || (Steed.ModNPC as EyePacified).flyTime <= 0;
 
                 if (steedInvalid || Player.controlMount || Player.grappling[0] >= 0 || Player.controlJump)
                 {

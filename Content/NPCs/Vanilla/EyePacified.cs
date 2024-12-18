@@ -27,6 +27,8 @@ public class EyePacified : ModNPC
 
     private ref float NetTimer => ref NPC.ai[3];
 
+    internal int flyTime = 0;
+
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 6;
@@ -77,6 +79,7 @@ public class EyePacified : ModNPC
         if (IsLassoed) // Stop all behaviour
         {
             NPC.noTileCollide = false;
+            flyTime--;
             return false;
         }
 
@@ -149,6 +152,7 @@ public class EyePacified : ModNPC
     {
         IsLassoed = false;
         RiderWhoAmI = -1;
+        flyTime = 15 * 60;
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";

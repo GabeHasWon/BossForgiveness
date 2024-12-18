@@ -29,8 +29,7 @@ internal class SpazmatismHandler : PacifiedNPCHandler
             }
         }
 
-        return stun >= MechBossPacificationNPC.MaxStun && npc.life > npc.lifeMax / 2f 
-            && !NPC.AnyNPCs(ModContent.NPCType<SpazmatismPacified>()) && retinazer;
+        return stun >= MechBossPacificationNPC.MaxStun && npc.life > npc.lifeMax / 2f && !NPC.AnyNPCs(ModContent.NPCType<SpazmatismPacified>()) && retinazer;
     }
 
     public override void OnPacify(NPC npc)

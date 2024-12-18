@@ -22,6 +22,7 @@ internal class PinkyPacificationNPC : GlobalNPC
             if (npc.Hitbox.Intersects(item.Hitbox) && (ValidGrabItems.Contains(item.type) || ItemID.Sets.IsFood[item.type]))
             {
                 npc.Pacify<PinkyPacified>();
+                item.active = false;
                 return false;
             }
         }
