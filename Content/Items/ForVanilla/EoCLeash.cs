@@ -1,6 +1,8 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
+﻿using BossForgiveness.Content.NPCs;
+using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.Graphics;
 using Terraria.Graphics.Renderers;
@@ -131,13 +133,15 @@ internal class EoCLeash : ModItem
             {
                 const int MaxSpeed = 10;
 
-                bool steedInvalid = !Steed.active || Steed.type != ModContent.NPCType<EyePacified>() || Steed.life <= 0 || (Steed.ModNPC as EyePacified).flyTime <= 0;
+                bool steedInvalid = !Steed.active || Steed.type != ModContent.NPCType<EyePacified>() || Steed.life <= 0;
+                bool canGoUp = (Steed.ModNPC as EyePacified).flyTime > 0;
 
-                if (steedInvalid || Player.controlMount || Player.grappling[0] >= 0 || Player.controlJump)
+                if (steedInvalid || Player.controlMount || Player.grappling[0] >= 0 || Player.controlJump || !canGoUp && Math.Abs(Steed.GetFloor() - Steed.Center.Y / 16f) < 15)
                 {
                     Unmount();
                     return;
                 }
+
 
                 if (Steed.Right.Y > (Main.maxTilesY - Main.offLimitBorderTiles - 8) * 16)
                     eoCVelocity.Y -= 1.2f;
@@ -157,14 +161,15 @@ internal class EoCLeash : ModItem
                 if (Steed.collideY)
                     eoCVelocity.Y = 0;
 
-                if (Player.controlUp)
+                if (Player.controlUp && canGoUp)
                     eoCVelocity.Y -= 0.6f;
                 
-                if (Player.controlDown)
+                if (Player.controlDown || !canGoUp)
                     eoCVelocity.Y += 0.6f;
                 
                 if (Player.controlLeft)
                     eoCVelocity.X -= 0.6f;
+
                 if (Player.controlRight)
                     eoCVelocity.X += 0.6f;
                 

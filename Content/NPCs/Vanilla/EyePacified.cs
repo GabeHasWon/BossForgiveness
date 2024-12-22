@@ -1,6 +1,7 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -32,7 +33,6 @@ public class EyePacified : ModNPC
     public override void SetStaticDefaults()
     {
         Main.npcFrameCount[Type] = 6;
-
         NPCID.Sets.IsTownPet[Type] = true;
 
         this.HideFromBestiary();
@@ -83,8 +83,12 @@ public class EyePacified : ModNPC
             return false;
         }
 
-        int y = (!NPC.homeless ? NPC.homeTileY : NPC.GetFloor(40, true)) * 16;
+        int floor = NPC.GetFloor(40, true);
+        int y = (!NPC.homeless ? NPC.homeTileY : floor) * 16;
         float dist = y - NPC.Center.Y;
+
+        if (Math.Abs(dist) < 20 * 16 && flyTime < 10 * 60)
+            flyTime += 2;
 
         if (dist < 16 * 15)
             NPC.velocity.Y -= 0.05f;
@@ -116,7 +120,7 @@ public class EyePacified : ModNPC
         {
             float homeX = NPC.homeTileX * 16;
 
-            if (NPC.DistanceSQ(new Vector2(homeX, NPC.homeTileY * 16)) > 2400 || Collision.SolidCollision(NPC.position + new Vector2(8), NPC.width - 16, NPC.height - 16))
+            if (NPC.DistanceSQ(new Vector2(homeX, NPC.homeTileY * 16)) > 2400 * 2400 || Collision.SolidCollision(NPC.position + new Vector2(8), NPC.width - 16, NPC.height - 16))
                 NPC.noTileCollide = true;
             else
                 NPC.noTileCollide = false;
@@ -152,7 +156,6 @@ public class EyePacified : ModNPC
     {
         IsLassoed = false;
         RiderWhoAmI = -1;
-        flyTime = 15 * 60;
     }
 
     public override void SetChatButtons(ref string button, ref string button2) => button = "";

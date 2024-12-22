@@ -101,3 +101,14 @@ PalladiumOrb: {
 		'Ponder.'
 		'''
 }
+
+PrismLens: {
+	DisplayName: Prism Lens
+	Tooltip:
+		'''
+		Harnesses light's power
+		Focus on the Empress of Light in order to siphon her light
+		She will try to stop you
+		'Burns in rainbows'
+		'''
+}

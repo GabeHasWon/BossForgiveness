@@ -198,3 +198,10 @@ SkeleMiner: {
 		3: GO ON DOWN THERE! GET ME SOME MORE GOLD!
 	}
 }
+
+Empress: {
+	0: Tarry not.
+	1: Speak less.
+	2: Do not percieve me.
+	3: Rot.
+}
