@@ -31,6 +31,7 @@ internal class SpeedUpBehaviourNPC : GlobalNPC
                 _accumulatedSpeed--;
                 npc.UpdateNPC(npc.whoAmI);
             }
+
             SkipSpeedBoost = false;
         }
     }

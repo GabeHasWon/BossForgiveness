@@ -1,3 +1,3 @@
 v1.0.3.5
-- Made Pinky's pacification mechanic consume the dropped item
-- Added max flight timer for the Eye of Cthulhu, 10 seconds of flight time before landing
+- Removed old EoL pacification timer
+- Updated EoL pacified NPC (whoops)

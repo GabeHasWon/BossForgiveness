@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 namespace BossForgiveness.Content.NPCs.Vanilla;
 
 [AutoloadHead]
+[LegacyName("EoLPacified")]
 public class EmpressPacified : ModNPC
 {
     public const float MaxTeleportTime = 180;
