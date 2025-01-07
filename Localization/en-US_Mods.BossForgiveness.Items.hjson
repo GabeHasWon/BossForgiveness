@@ -112,3 +112,8 @@ PrismLens: {
 		'Burns in rainbows'
 		'''
 }
+
+MimicChestItem: {
+	DisplayName: Mimic Chest Item
+	Tooltip: ""
+}

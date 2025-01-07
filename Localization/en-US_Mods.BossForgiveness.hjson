@@ -31,3 +31,10 @@ BarLines: {
 	QueenBee: "Build a house with: "
 	Golem: Right-click Golem's head with a [i:1293] Lihzahrd Power Cell
 }
+
+Tiles: {
+	MimicChest: {
+		MapEntry: Mimic Chest
+		ChestName: Mimic Chest
+	}
+}
