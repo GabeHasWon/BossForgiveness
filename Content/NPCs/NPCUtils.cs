@@ -1,6 +1,7 @@
 ﻿using BossForgiveness.Content.Systems.PacifySystem;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -67,6 +68,9 @@ public static class NPCUtils
 
         return false;
     }
+
+    public static Point16 HomeTile(this NPC npc) => new(npc.homeTileX, npc.homeTileY);
+    public static Vector2 HomeTileWorld(this NPC npc) => new Vector2(npc.homeTileX + 0.5f, npc.homeTileY + 0.5f) * 16;
 
     public static ITownNPCProfile DefaultProfile(this ModNPC npc) => new Profiles.DefaultNPCProfile(npc.Texture, ModContent.GetModHeadSlot(npc.HeadTexture));
 

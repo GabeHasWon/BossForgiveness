@@ -117,3 +117,8 @@ MimicChestItem: {
 	DisplayName: Mimic Chest Item
 	Tooltip: ""
 }
+
+MimicBell: {
+	DisplayName: Mimic Bell
+	Tooltip: 'A Domesticated Mimic's Favorite Toy!'
+}

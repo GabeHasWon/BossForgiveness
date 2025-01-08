@@ -18,8 +18,9 @@ Projectiles: {
 	RoseProjectile.DisplayName: Rose
 	BlackPoppyProjectile.DisplayName: Black Poppy
 	TimRune.DisplayName: Tim Rune
-	PrismLensProj.DisplayName: Prism Lens Proj
+	PrismLensProj.DisplayName: Prism Lens
 	PrismLight.DisplayName: Prism Light
+	MimicBellProj.DisplayName: Mimic Bell
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."
