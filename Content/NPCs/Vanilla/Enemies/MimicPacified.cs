@@ -123,8 +123,10 @@ public class MimicPacified : ModNPC
 
             if (_bell is not null && _bell.Hitbox.Intersects(NPC.Hitbox))
             {
-                _bell.Kill();
                 _hasBell = (byte)_bell.owner;
+
+                if (Main.myPlayer == _hasBell.Value)
+                    _bell.Kill();
 
                 NPC.netUpdate = true;
                 SoundEngine.PlaySound(SoundID.CoinPickup);
@@ -161,7 +163,7 @@ public class MimicPacified : ModNPC
     public override void SendExtraAI(BinaryWriter writer)
     {
         writer.Write(_hasBell ?? 255);
-        writer.Write(_bell.identity);
+        writer.Write(_bell is not null ? (short)_bell.identity : (short)Main.maxProjectiles);
     }
 
     public override void ReceiveExtraAI(BinaryReader reader)
@@ -170,7 +172,11 @@ public class MimicPacified : ModNPC
         _hasBell = hasBell == 255 ? null : hasBell;
 
         short id = reader.ReadInt16();
-        _bell = Main.projectile.FirstOrDefault(x => x.identity == id);
+
+        if (id == Main.maxProjectiles)
+            _bell = null;
+        else
+            _bell = Main.projectile.FirstOrDefault(x => x.identity == id);
     }
 
     public override void FindFrame(int frameHeight)

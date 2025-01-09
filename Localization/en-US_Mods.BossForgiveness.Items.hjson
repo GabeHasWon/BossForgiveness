@@ -120,5 +120,5 @@ MimicChestItem: {
 
 MimicBell: {
 	DisplayName: Mimic Bell
-	Tooltip: 'A Domesticated Mimic's Favorite Toy!'
+	Tooltip: "'A Domesticated Mimic's Favorite Toy!'"
 }
