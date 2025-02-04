@@ -18,7 +18,6 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
     private Vector2 swingOffset = Vector2.Zero;
     private bool willOrbit = false;
     private float pacifyTime = 0;
-    private Vector2 lightningPos = Vector2.Zero;
 
     public static Vector2 HandPos(NPC npc, bool left) 
     {
@@ -109,22 +108,13 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
     private void LightningAttack(NPC npc, Player player, ref float timer, ref float state)
     {
-        if (timer == 1)
-            lightningPos = player.Center + Main.rand.NextVector2CircularEdge(400, 400) * Main.rand.NextFloat(0.8f, 1f);
-        else if (timer == 180)
+        if (timer > 0 && timer % 60 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                Vector2 vel = lightningPos.DirectionTo(player.Center) * 8;
-                Projectile.NewProjectile(npc.GetSource_FromAI(), lightningPos, vel, ProjectileID.CultistBossLightningOrbArc, 40, 0, Main.myPlayer);
-            }
+            var lightningPos = player.Center + Main.rand.NextVector2CircularEdge(400, 400) * Main.rand.NextFloat(0.8f, 1f);
+            Projectile.NewProjectile(npc.GetSource_FromAI(), lightningPos, Vector2.Zero, ModContent.ProjectileType<LightningPredictorProjectile>(), 0, 0, Main.myPlayer);
         }
         else if (timer > 180)
-        {
             SetState(ref timer, ref state);
-        }
-
-        Dust.NewDust(lightningPos, 1, 1, DustID.Electric);
     }
 
     private void SwingAttack(NPC npc, Player player, ref float timer, ref float swingPlayer, ref float state)
@@ -196,44 +186,5 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         barProgress = pacifyTime;
         barMax = 1000;
         return npc.life >= npc.lifeMax;
-    }
-}
-
-internal class CultistRitualProjectile : GlobalProjectile
-{
-    public override bool InstancePerEntity => true;
-
-    private int _timer = 0;
-
-    public override bool AppliesToEntity(Projectile entity, bool lateInstantiation) => entity.type == ProjectileID.CultistRitual;
-
-    public override void AI(Projectile projectile)
-    {
-        bool anyOneNearby = false;
-
-        foreach (var plr in Main.ActivePlayers)
-        {
-            if (plr.DistanceSQ(projectile.Center) < 20 * 20)
-            {
-                Vector2 pos = plr.position + new Vector2(Main.rand.Next(plr.width), Main.rand.Next(plr.height));
-                Dust.NewDustPerfect(pos, DustID.GoldFlame, new Vector2(0, Main.rand.NextFloat(-8, -4)), Scale: Main.rand.NextFloat(1.5f, 2f));
-
-                if (_timer++ > 5 * 60)
-                {
-                    int cultist = NPC.FindFirstNPC(NPCID.CultistBoss);
-
-                    if (cultist != -1)
-                    {
-                        Main.npc[cultist].GetGlobalNPC<CultistPacificationNPC>().enraged = true;
-                        Main.npc[cultist].ai[0] = 0;
-                    }
-                }
-
-                anyOneNearby = true;
-            }
-        }
-
-        if (anyOneNearby)
-            projectile.ai[0]--;
     }
 }

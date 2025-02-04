@@ -21,6 +21,8 @@ Projectiles: {
 	PrismLensProj.DisplayName: Prism Lens
 	PrismLight.DisplayName: Prism Light
 	MimicBellProj.DisplayName: Mimic Bell
+	LightningPredictorProjectile.DisplayName: Lightning Predictor Projectile
+	AdjustedLightningProjectile.DisplayName: Adjusted Lightning Projectile
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."
