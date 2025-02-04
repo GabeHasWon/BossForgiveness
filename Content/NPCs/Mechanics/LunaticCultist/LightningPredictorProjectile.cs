@@ -42,9 +42,4 @@ internal class AdjustedLightningProjectile : ModProjectile
 
         AIType = ProjectileID.CultistBossLightningOrbArc;
     }
-
-    public override void AI()
-    {
-        
-    }
 }

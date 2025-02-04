@@ -1,5 +1,4 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
-using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
@@ -10,12 +9,15 @@ namespace BossForgiveness.Content.NPCs.Mechanics.LunaticCultist;
 
 internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 {
+    public const int MaxPacify = 1000;
+
     public override bool InstancePerEntity => true;
 
     public bool enraged = false;
 
     private bool initialized = false;
     private Vector2 swingOffset = Vector2.Zero;
+    private bool swingClockwise = true;
     private bool willOrbit = false;
     private float pacifyTime = 0;
 
@@ -64,7 +66,6 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
             initialized = true;
         }
 
-
         if (timer == 0 && state != 1)
             willOrbit = Main.rand.NextBool(3);
         else if (state == 1)
@@ -79,11 +80,11 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
         pacifyTime += MathF.Max((300 - player.Distance(npc.Center)) / 150f, 0);
 
-        if (pacifyTime > 1000)
-        {
-            npc.Pacify<CultistPacified>();
-            return;
-        }
+        //if (pacifyTime > 1000)
+        //{
+        //    npc.Pacify<CultistPacified>();
+        //    return;
+        //}
 
         if (willOrbit || state == 1 && Main.rand.NextBool(2, 3))
         {
@@ -95,6 +96,9 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         npc.damage = 0;
         npc.velocity += npc.DirectionTo(player.Center) * 0.4f;
 
+        if (npc.DistanceSQ(player.Center) > 700 * 700)
+            npc.velocity += npc.DirectionTo(player.Center) * 0.6f;
+
         if (npc.velocity.LengthSquared() > 14 * 14)
             npc.velocity = Vector2.Normalize(npc.velocity) * 14;
 
@@ -103,18 +107,59 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         else if (state == 1)
             SwingAttack(npc, player, ref timer, ref swingPlayer, ref state);
         else if (state == 2)
-            LightningAttack(npc, player, ref timer, ref state);
+            LightningAttack(npc, ref timer, ref state);
+        else if (state == 3)
+            TeleportAttack(npc, player, ref timer, ref state);
     }
 
-    private void LightningAttack(NPC npc, Player player, ref float timer, ref float state)
+    private void TeleportAttack(NPC npc, Player player, ref float timer, ref float state)
     {
+        for (int i = 0; i < 2; ++i)
+        {
+            Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
+            Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+        }
+
+        if (timer == 40)
+        {
+            for (int i = 0; i < 12; ++i)
+            {
+                Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
+                Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+            }
+
+            Vector2 playerOffset = player.Center - npc.Center;
+            npc.Center = player.Center + playerOffset;
+            npc.netOffset = Vector2.Zero;
+            npc.netUpdate = true;
+
+            for (int i = 0; i < 12; ++i)
+            {
+                Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
+                Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+            }
+        }
+        else if (timer == 80)
+            SetState(npc, ref timer, ref state);
+    }
+
+    private void LightningAttack(NPC npc, ref float timer, ref float state)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
+            Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.Electric, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+        }
+
         if (timer > 0 && timer % 60 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            var lightningPos = player.Center + Main.rand.NextVector2CircularEdge(400, 400) * Main.rand.NextFloat(0.8f, 1f);
+            var lightningPos = npc.Center + Main.rand.NextVector2CircularEdge(60, 60) * Main.rand.NextFloat(0.8f, 1f);
             Projectile.NewProjectile(npc.GetSource_FromAI(), lightningPos, Vector2.Zero, ModContent.ProjectileType<LightningPredictorProjectile>(), 0, 0, Main.myPlayer);
+
+            Dust.NewDust(lightningPos, 1, 1, DustID.Electric, 0, 0, Scale: Main.rand.NextFloat(2, 3));
         }
         else if (timer > 180)
-            SetState(ref timer, ref state);
+            SetState(npc, ref timer, ref state);
     }
 
     private void SwingAttack(NPC npc, Player player, ref float timer, ref float swingPlayer, ref float state)
@@ -125,11 +170,15 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         {
             swingPlayer = player.whoAmI;
             swingOffset = player.Center - npc.Center;
+            swingClockwise = MathF.Sign(npc.velocity.X) == 0;
         }
         else if (timer < 200f)
         {
+            swingOffset = Vector2.Lerp(swingOffset, Vector2.Normalize(swingOffset) * 450, 0.02f);
+
+            float rotation = (timer - 1) * SwingSpeed * (swingClockwise ? 1 : -1);
             npc.velocity = Vector2.Zero;
-            npc.Center = Vector2.Lerp(npc.Center, Main.player[(int)swingPlayer].Center - swingOffset.RotatedBy((timer - 1) * SwingSpeed), MathF.Min(timer / 120f, 1));
+            npc.Center = Vector2.Lerp(npc.Center, Main.player[(int)swingPlayer].Center - swingOffset.RotatedBy(rotation), MathF.Min(timer / 120f, 1));
 
             if (timer > 60 && timer % 30 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, npc.DirectionTo(player.Center) * 7, ProjectileID.CultistBossIceMist, 30, 0);
@@ -137,7 +186,7 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         else
         {
             npc.velocity = swingOffset.RotatedBy((timer - 1) * SwingSpeed) - swingOffset.RotatedBy(timer * SwingSpeed);
-            SetState(ref timer, ref state);
+            SetState(npc, ref timer, ref state);
         }
     }
 
@@ -155,7 +204,7 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
             npc.velocity -= vel * 2;
 
-            SetState(ref timer, ref state);
+            SetState(npc, ref timer, ref state);
         }
         else if (timer > 100)
         {
@@ -169,10 +218,19 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         }
     }
 
-    private void SetState(ref float timer, ref float state)
+    private void SetState(NPC npc, ref float timer, ref float state)
     {
         timer = 0;
-        state = Main.rand.NextBool() ? 0 : 2;
+
+        if (npc.life < npc.lifeMax / 2 && pacifyTime < MaxPacify / 2)
+            state = Main.rand.NextBool() ? 0 : 2;
+        else
+            state = Main.rand.Next(3) switch
+            {
+                0 => 0,
+                1 => 2, 
+                _ => 3,
+            };
 
         if (willOrbit)
         {
@@ -184,7 +242,7 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
     {
         barProgress = pacifyTime;
-        barMax = 1000;
+        barMax = MaxPacify;
         return npc.life >= npc.lifeMax;
     }
 }
