@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Steamworks;
 using System;
 using Terraria;
@@ -12,6 +13,8 @@ namespace BossForgiveness.Content.NPCs.Vanilla;
 [AutoloadHead]
 public class CultistPacified : ModNPC
 {
+    private static float drawResetTimer = 0;
+
     public override string Texture => $"Terraria/Images/NPC_{NPCID.CultistBoss}";
     public override string HeadTexture => "Terraria/Images/NPC_Head_Boss_24";
 
@@ -117,4 +120,13 @@ public class CultistPacified : ModNPC
     public override void SetChatButtons(ref string button, ref string button2) => button = "";
     public override string GetChat() => Language.GetTextValue("Mods.BossForgiveness.Dialogue.Cultist." + Main.rand.Next(4));
     public override ITownNPCProfile TownNPCProfile() => this.DefaultProfile();
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        drawResetTimer = Timer;
+        Timer = 0;
+        return true;
+    }
+
+    public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => Timer = drawResetTimer;
 }

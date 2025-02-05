@@ -1,9 +1,13 @@
-﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+﻿using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.LunaticCultist;
 
@@ -13,6 +17,8 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override bool InstancePerEntity => true;
 
+    private static float drawResetTimer = 0;
+
     public bool enraged = false;
 
     private bool initialized = false;
@@ -20,6 +26,7 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
     private bool swingClockwise = true;
     private bool willOrbit = false;
     private float pacifyTime = 0;
+    private float dustCounter = 0;
 
     public static Vector2 HandPos(NPC npc, bool left) 
     {
@@ -67,7 +74,11 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         }
 
         if (timer == 0 && state != 1)
+        {
             willOrbit = Main.rand.NextBool(3);
+
+            npc.netUpdate = true;
+        }
         else if (state == 1)
             willOrbit = false;
 
@@ -78,19 +89,31 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
         Player player = Main.player[npc.target];
 
-        pacifyTime += MathF.Max((300 - player.Distance(npc.Center)) / 150f, 0);
+        float increase = MathF.Max((450f - player.Distance(npc.Center)) / 300f, 0);
+        pacifyTime += increase;
+        dustCounter += increase;
 
-        //if (pacifyTime > 1000)
-        //{
-        //    npc.Pacify<CultistPacified>();
-        //    return;
-        //}
+        while (dustCounter > 1)
+        {
+            Vector2 pos = player.position + new Vector2(Main.rand.Next(player.width), Main.rand.Next(player.height));
+            Dust.NewDustPerfect(pos, DustID.GoldFlame, new Vector2(0, Main.rand.NextFloat(-8, -4)), Scale: Main.rand.NextFloat(1.5f, 2f));
+
+            dustCounter--;
+        }
+
+        if (pacifyTime > 1000)
+        {
+            npc.Pacify<CultistPacified>();
+            return;
+        }
 
         if (willOrbit || state == 1 && Main.rand.NextBool(2, 3))
         {
-            for (int i = 0; i < 8; ++i)
+            float reps = willOrbit ? 8 : 14;
+
+            for (int i = 0; i < reps; ++i)
                 if (Main.rand.NextBool())
-                    Dust.NewDustPerfect(Vector2.Lerp(npc.Center, player.Center, i / 8f + (Main.rand.NextFloat(0.1f) - 0.05f)), DustID.Shadowflame);
+                    Dust.NewDustPerfect(Vector2.Lerp(npc.Center, player.Center, i / reps + (Main.rand.NextFloat(0.1f) - 0.05f)), DustID.Shadowflame);
         }
 
         npc.damage = 0;
@@ -114,29 +137,38 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
     private void TeleportAttack(NPC npc, Player player, ref float timer, ref float state)
     {
-        for (int i = 0; i < 2; ++i)
+        if (timer < 40)
         {
-            Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
-            Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+            for (int i = 0; i < 3; ++i)
+            {
+                Vector2 pos = npc.Center + Main.rand.NextVector2CircularEdge(120, 120);
+                Vector2 vel = pos.DirectionTo(npc.Center) * 14;
+                Dust.NewDustPerfect(pos, DustID.ShadowbeamStaff, vel, Scale: Main.rand.NextFloat(0.5f, 1.8f));
+            }
         }
 
         if (timer == 40)
         {
-            for (int i = 0; i < 12; ++i)
+            for (int i = 0; i < 40; ++i)
             {
-                Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
-                Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+                Vector2 pos = npc.Center + Main.rand.NextVector2CircularEdge(60, 60);
+                Vector2 vel = pos.DirectionFrom(npc.Center) * Main.rand.NextFloat(12, 26);
+                Dust.NewDustPerfect(pos, DustID.ShadowbeamStaff, vel, Scale: Main.rand.NextFloat(0.9f, 2.2f));
             }
+
+            if (npc.life < npc.lifeMax / 4 || pacifyTime > MaxPacify * 0.75f && Main.netMode != NetmodeID.MultiplayerClient)
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.AncientDoom, 0, npc.whoAmI);
 
             Vector2 playerOffset = player.Center - npc.Center;
             npc.Center = player.Center + playerOffset;
             npc.netOffset = Vector2.Zero;
             npc.netUpdate = true;
 
-            for (int i = 0; i < 12; ++i)
+            for (int i = 0; i < 40; ++i)
             {
-                Vector2 vel = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.8f, 1);
-                Dust.NewDust(HandPos(npc, i == 0), 1, 1, DustID.DemonTorch, vel.X, vel.Y, Scale: Main.rand.NextFloat(2, 3) * (timer % 60 / 240f));
+                Vector2 pos = npc.Center + Main.rand.NextVector2CircularEdge(60, 60);
+                Vector2 vel = pos.DirectionFrom(npc.Center) * Main.rand.NextFloat(12, 26);
+                Dust.NewDustPerfect(pos, DustID.ShadowbeamStaff, vel, Scale: Main.rand.NextFloat(0.9f, 2.2f));
             }
         }
         else if (timer == 80)
@@ -185,7 +217,7 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         }
         else
         {
-            npc.velocity = swingOffset.RotatedBy((timer - 1) * SwingSpeed) - swingOffset.RotatedBy(timer * SwingSpeed);
+            npc.velocity = swingOffset.RotatedBy((timer - 1) * SwingSpeed) - swingOffset.RotatedBy(timer * SwingSpeed) + player.velocity;
             SetState(npc, ref timer, ref state);
         }
     }
@@ -238,6 +270,40 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
             willOrbit = false;
         }
     }
+
+    public override Color? GetAlpha(NPC npc, Color drawColor)
+    {
+        if (npc.GetGlobalNPC<CultistPacificationNPC>().enraged)
+        {
+            float pacify = npc.GetGlobalNPC<CultistPacificationNPC>().pacifyTime / MaxPacify;
+            float health = 1 - npc.life / (float)npc.lifeMax;
+            return Color.Lerp(drawColor, Color.Purple, MathF.Max(pacify, health));
+        }
+
+        return null;
+    }
+
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        bitWriter.WriteBit(willOrbit);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        willOrbit = bitReader.ReadBit();
+    }
+
+    public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        drawResetTimer = npc.ai[0];
+
+        if (npc.GetGlobalNPC<CultistPacificationNPC>().enraged)
+            npc.ai[0] = 1;
+
+        return true;
+    }
+
+    public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => npc.ai[0] = drawResetTimer;
 
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
     {
