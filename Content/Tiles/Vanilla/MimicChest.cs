@@ -25,6 +25,7 @@ internal class MimicChest : ModTile
 
         TileID.Sets.HasOutlines[Type] = true;
         TileID.Sets.BasicChest[Type] = true;
+        TileID.Sets.DisableSmartCursor[Type] = true;
 
         TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
         TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -42,7 +43,6 @@ internal class MimicChest : ModTile
 
         DustType = DustID.t_BorealWood;
         HitSound = SoundID.Dig;
-        TileID.Sets.DisableSmartCursor[Type] = true;
         AdjTiles = [TileID.Containers];
     }
 

@@ -106,6 +106,7 @@ public class MimicPacified : ModNPC
             if (Main.player[_hasBell.Value].Hitbox.Intersects(NPC.Hitbox))
             {
                 Main.player[_hasBell.Value].QuickSpawnItem(NPC.GetSource_GiftOrReward(), ModContent.ItemType<MimicBell>());
+                Main.player[_hasBell.Value].QuickSpawnItem(NPC.GetSource_GiftOrReward(), ItemID.SilverCoin, 5);
 
                 NPC.netUpdate = true;
                 _hasBell = null;
@@ -152,7 +153,7 @@ public class MimicPacified : ModNPC
 
         if (closest is not null)
         {
-            speed = 1.5f;
+            speed = 1.2f;
             _bell = closest;
             return closest.Center.X < NPC.Center.X;
         }

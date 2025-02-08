@@ -1,5 +1,4 @@
 ﻿using BossForgiveness.Content.Items.ForVanilla;
-using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using BossForgiveness.Content.NPCs.Misc;
 using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
@@ -34,18 +33,21 @@ internal class DukePacificationNPC : GlobalNPC, ICustomBarNPC
                 npc.rotation -= MathHelper.Pi;
             }
 
+            if (npc.DistanceSQ(Main.npc[omnileech].Center) < 40 * 40)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    Main.npc[omnileech].StrikeInstantKill();
+
+                npc.Pacify<DukePacified>();
+                return false;
+            }
+
             return false;
         }
         else
             npc.localAI[3] = 2;
 
         return true;
-    }
-
-    public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
-    {
-        if (target.type == ModContent.NPCType<Omnileech>() && target.life <= 0 && npc.life == npc.lifeMax)
-            npc.Pacify<DukePacified>();
     }
 
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)

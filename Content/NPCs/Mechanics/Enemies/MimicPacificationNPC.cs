@@ -183,8 +183,8 @@ internal class MimicPacificationNPC : GlobalNPC
             }
         }
 
-        chestLoc = Point16.NegativeOne;
-        npc.GetGlobalNPC<MimicPacificationNPC>().chestLoc = chestLoc;
+        chestLoc = Point16.Zero;
+        npc.GetGlobalNPC<MimicPacificationNPC>().chestLoc = null;
         return false;
     }
 }

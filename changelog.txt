@@ -1,3 +1,2 @@
-v1.0.3.5
-- Fixed issue where pacified Cultist would "blink" occasionally
-- Added Cultist fight and pacification mechanic
+v1.0.3.7
+- Add in pacifist option to spawn the Cultist; stand under the Mysterious Tablet and the other Cultists will disappear

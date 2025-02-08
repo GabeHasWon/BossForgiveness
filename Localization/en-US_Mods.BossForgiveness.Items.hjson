@@ -114,8 +114,13 @@ PrismLens: {
 }
 
 MimicChestItem: {
-	DisplayName: Mimic Chest Item
-	Tooltip: ""
+	DisplayName: Chest Mimic
+	Tooltip:
+		'''
+		Can be used to trick a mimic
+		Placing this near a mimic and repeatedly opening and closing it will pacify the mimic
+		'Safe for all mimics above the age of 1!'
+		'''
 }
 
 MimicBell: {

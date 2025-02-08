@@ -36,9 +36,11 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.CultistBoss;
 
-    public override bool PreAI(NPC npc)
+    public override void SetStaticDefaults() => PrioritizePreAINPC.PreAIHooks.Add(NPCID.CultistBoss, PriorityPreAI);
+
+    public static bool PriorityPreAI(NPC npc)
     {
-        if (enraged)
+        if (npc.GetGlobalNPC<CultistPacificationNPC>().enraged)
         {
             NewAI(npc);
             return false;
@@ -47,13 +49,15 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         return true;
     }
 
-    private void NewAI(NPC npc)
+    private static void NewAI(NPC npc)
     {
         ref float timer = ref npc.ai[0];
         ref float state = ref npc.ai[1];
         ref float swingPlayer = ref npc.ai[2];
 
-        if (!initialized)
+        CultistPacificationNPC cultistNPC = npc.GetGlobalNPC<CultistPacificationNPC>();
+
+        if (!cultistNPC.initialized)
         {
             foreach (var other in Main.ActiveNPCs)
             {
@@ -70,17 +74,17 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
             state = 0;
             timer = 0;
 
-            initialized = true;
+            cultistNPC.initialized = true;
         }
 
         if (timer == 0 && state != 1)
         {
-            willOrbit = Main.rand.NextBool(3);
+            cultistNPC.willOrbit = Main.rand.NextBool(3);
 
             npc.netUpdate = true;
         }
         else if (state == 1)
-            willOrbit = false;
+            cultistNPC.willOrbit = false;
 
         timer++;
 
@@ -90,26 +94,26 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
         Player player = Main.player[npc.target];
 
         float increase = MathF.Max((450f - player.Distance(npc.Center)) / 300f, 0);
-        pacifyTime += increase;
-        dustCounter += increase;
+        cultistNPC.pacifyTime += increase;
+        cultistNPC.dustCounter += increase;
 
-        while (dustCounter > 1)
+        while (cultistNPC.dustCounter > 1)
         {
             Vector2 pos = player.position + new Vector2(Main.rand.Next(player.width), Main.rand.Next(player.height));
             Dust.NewDustPerfect(pos, DustID.GoldFlame, new Vector2(0, Main.rand.NextFloat(-8, -4)), Scale: Main.rand.NextFloat(1.5f, 2f));
 
-            dustCounter--;
+            cultistNPC.dustCounter--;
         }
 
-        if (pacifyTime > 1000)
+        if (cultistNPC.pacifyTime > 1000)
         {
             npc.Pacify<CultistPacified>();
             return;
         }
 
-        if (willOrbit || state == 1 && Main.rand.NextBool(2, 3))
+        if (cultistNPC.willOrbit || state == 1 && Main.rand.NextBool(2, 3))
         {
-            float reps = willOrbit ? 8 : 14;
+            float reps = cultistNPC.willOrbit ? 8 : 14;
 
             for (int i = 0; i < reps; ++i)
                 if (Main.rand.NextBool())
@@ -126,13 +130,13 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
             npc.velocity = Vector2.Normalize(npc.velocity) * 14;
 
         if (state == 0)
-            FireballAttack(npc, player, ref timer, ref state);
+            cultistNPC.FireballAttack(npc, player, ref timer, ref state);
         else if (state == 1)
-            SwingAttack(npc, player, ref timer, ref swingPlayer, ref state);
+            cultistNPC.SwingAttack(npc, player, ref timer, ref swingPlayer, ref state);
         else if (state == 2)
-            LightningAttack(npc, ref timer, ref state);
+            cultistNPC.LightningAttack(npc, ref timer, ref state);
         else if (state == 3)
-            TeleportAttack(npc, player, ref timer, ref state);
+            cultistNPC.TeleportAttack(npc, player, ref timer, ref state);
     }
 
     private void TeleportAttack(NPC npc, Player player, ref float timer, ref float state)
@@ -224,14 +228,17 @@ internal class CultistPacificationNPC : GlobalNPC, ICustomBarNPC
 
     private void FireballAttack(NPC npc, Player player, ref float timer, ref float state)
     {
-        if (timer > 150 && Main.netMode != NetmodeID.MultiplayerClient)
+        if (timer > 150)
         {
             Vector2 vel = npc.DirectionTo(player.Center) * 8;
 
-            for (int i = 0; i < 3; ++i)
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                Vector2 velocity = vel.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.7f, 1f);
-                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, ProjectileID.CultistBossFireBall, 20, 2f, Main.myPlayer);
+                for (int i = 0; i < 3; ++i)
+                {
+                    Vector2 velocity = vel.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.7f, 1f);
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity, ProjectileID.CultistBossFireBall, 20, 2f, Main.myPlayer);
+                }
             }
 
             npc.velocity -= vel * 2;
