@@ -36,5 +36,6 @@ PinkyPacified.DisplayName: "{$NPCName.Pinky}"
 LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"
 TimPacified.DisplayName: "{$NPCName.Tim}"
 SkeleMinerPacified.DisplayName: "{$NPCName.UndeadMiner}"
-EmpressPacified.DisplayName: Empress Pacified
-MimicPacified.DisplayName: Mimic Pacified
+EmpressPacified.DisplayName: "{$NPCName.HallowBoss}"
+MimicPacified.DisplayName: "{$NPCName.Mimic}"
+RainbowSlimePacified.DisplayName: "{$NPCName.RainbowSlime}"

@@ -212,3 +212,10 @@ Mimic: {
 	2: "[c/999999:(the sounds of metal clashing)]"
 	3: "[c/999999:(the soft clatter of coins)]"
 }
+
+RainbowSlime: {
+	0: "[c/{0}:(you faintly hear an oddly melodic bubbling)]"
+	1: "[c/{0}:(you barel hear a soft, muffled trill)]"
+	2: "[c/{0}:(what sounds like a hum emenates from the slime)]"
+	3: "[c/{0}:(the slime wiggles as if to dance again)]"
+}

@@ -1,2 +1,3 @@
 v1.0.3.7
-- Add in pacifist option to spawn the Cultist; stand under the Mysterious Tablet and the other Cultists will disappear
+- Update localization for Mimic, Empress
+- Add in Rainbow Slime pacification dance
