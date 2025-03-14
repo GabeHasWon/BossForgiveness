@@ -130,6 +130,12 @@ internal class RainbowSlimePacificationNPC : GlobalNPC
         }
     }
 
+    public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
+    {
+        if (pacifying)
+            modifiers.FinalDamage *= 0.5f;
+    }
+
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
         if (pacifying)
@@ -139,11 +145,11 @@ internal class RainbowSlimePacificationNPC : GlobalNPC
             Texture2D tex = TextureAssets.Npc[npc.type].Value;
             Vector2 position = npc.Center - screenPos + new Vector2(0, 26);
             Color color = Lighting.GetColor(npc.Center.ToTileCoordinates(), npc.color) with { A = (byte)npc.alpha };
-            Color faceColor = color * (npc.ai[0] / MaxDismay);
+            Color faceColor = color with { A = 220 } * (npc.ai[0] / MaxDismay);
             SpriteEffects effect = npc.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             Main.EntitySpriteDraw(tex, position, npc.frame, color, 0f, npc.frame.Size() / new Vector2(2, 1), _visualScale, SpriteEffects.None);
-            Main.EntitySpriteDraw(Face.Value, position, npc.frame, faceColor with { A = 220 }, 0f, npc.frame.Size() / new Vector2(2, 1), _visualScale, effect);
+            Main.EntitySpriteDraw(Face.Value, position, npc.frame, faceColor, 0f, npc.frame.Size() / new Vector2(2, 1), _visualScale, effect);
             return false;
         }
 
