@@ -23,6 +23,7 @@ Projectiles: {
 	MimicBellProj.DisplayName: Mimic Bell
 	LightningPredictorProjectile.DisplayName: Lightning Predictor Projectile
 	AdjustedLightningProjectile.DisplayName: Adjusted Lightning Projectile
+	SpikeAura.DisplayName: Spike Aura
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."

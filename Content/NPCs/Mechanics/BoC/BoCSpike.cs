@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using System;
 using System.IO;
 using BossForgiveness.Content.Systems.Syncing;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
@@ -13,6 +15,8 @@ public class BoCSpike : ModProjectile
     public ref float Parent => ref Projectile.ai[0];
     public ref float Time => ref Projectile.ai[1];
     public ref float ConnectedNPC => ref Projectile.ai[2];
+
+    private ref float _spikeIn => ref Projectile.localAI[0];
 
     private Vector2 _offset = Vector2.Zero;
 
@@ -112,5 +116,20 @@ public class BoCSpike : ModProjectile
     {
         Projectile.rotation = reader.ReadSingle();
         _offset = reader.ReadVector2();
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        float factor = 1f;
+
+        if (_spikeIn++ < 60)
+            factor = (_spikeIn / 60f);
+
+        Texture2D tex = TextureAssets.Projectile[Type].Value;
+        int height = tex.Height / Main.projFrames[Type];
+        var src = new Rectangle(0, (int)(height * factor), tex.Width, height);
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, src, lightColor, Projectile.rotation, src.Size() / new Vector2(2f, 1f), 1f, SpriteEffects.None, 0);
+
+        return true;
     }
 }
