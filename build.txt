@@ -1,4 +1,4 @@
 displayName = Pacifist Route
 author = GabeHasWon, Sivaexo
-version = 1.0.3.8
+version = 1.0.3.9
 dllReferences = NetEasy_v0.1.8, NetSerializer, NPCUtils

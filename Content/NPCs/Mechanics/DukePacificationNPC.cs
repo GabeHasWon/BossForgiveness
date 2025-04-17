@@ -33,15 +33,6 @@ internal class DukePacificationNPC : GlobalNPC, ICustomBarNPC
                 npc.rotation -= MathHelper.Pi;
             }
 
-            if (npc.DistanceSQ(Main.npc[omnileech].Center) < 40 * 40)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    Main.npc[omnileech].StrikeInstantKill();
-
-                npc.Pacify<DukePacified>();
-                return false;
-            }
-
             return false;
         }
         else
@@ -57,5 +48,11 @@ internal class DukePacificationNPC : GlobalNPC, ICustomBarNPC
 
         CustomBarEdit.OverrideText = Language.GetText("Mods.BossForgiveness.BarLines.Duke").Format(ModContent.ItemType<OmnileechItem>());
         return npc.life == npc.lifeMax;
+    }
+
+    public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
+    {
+        if (target.type == ModContent.NPCType<Omnileech>())
+            npc.Pacify<DukePacified>();
     }
 }

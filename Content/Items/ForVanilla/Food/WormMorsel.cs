@@ -38,7 +38,8 @@ public class WormMorsel : FoodItem
         return true;
     }
 
-    public override void AddRecipes() => CreateRecipe(7).AddIngredient(ItemID.RottenChunk, 6).Register();
+    public override void AddRecipes() => CreateRecipe(10).AddIngredient(ItemID.RottenChunk, 4)
+        .AddIngredient(ItemID.VileMushroom).Register();
 
     private class WormMorselProj : ModProjectile
     {

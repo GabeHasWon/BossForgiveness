@@ -41,4 +41,6 @@ Tiles: {
 		MapEntry: Mimic Chest
 		ChestName: Mimic Chest
 	}
+
+	RottenGrowth.MapEntry: Rotten Growth
 }

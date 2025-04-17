@@ -171,6 +171,7 @@ public class SpazmatismPacified : ModNPC, IAdditionalHoverboxes
 
     public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        Main.instance.LoadNPC(NPCID.Retinazer);
         var tex = TextureAssets.Npc[NPCID.Retinazer].Value;
         var col = Lighting.GetColor(_retinazerDummy.Center.ToTileCoordinates());
         Main.EntitySpriteDraw(tex, _retinazerDummy.Center - screenPos, NPC.frame, col, _retinazerDummy.rotation, NPC.frame.Size() / 2f, 1f, 0, 0);

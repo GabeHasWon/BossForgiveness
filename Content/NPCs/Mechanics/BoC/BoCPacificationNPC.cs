@@ -16,7 +16,7 @@ namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
 internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
 {
-    public const int MaxSleepy = 40;
+    public const int MaxSleepy = 60;
 
     private static Asset<Texture2D> zzzTex;
 
@@ -42,7 +42,7 @@ internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
     {
         npc.position -= npc.velocity * Math.Max(sleepyness / (float)MaxSleepy, 0);
 
-        if (anyCreepersHurt)
+        if (anyCreepersHurt || npc.life < npc.lifeMax)
         {
             if (sleepyTime > 0)
                 sleepyness--;
@@ -98,7 +98,7 @@ internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
         return true;
     }
 
-    private bool TooManySpikes()
+    private static bool TooManySpikes()
     {
         int count = 0;
 
@@ -214,64 +214,6 @@ internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
                 return;
             }
         }
-    }
-
-    private static void SpamSpikes(NPC npc, IEntitySource source)
-    {
-        Player plr = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
-        int x = (int)(plr.Center.X / 16f);
-        int y = (int)(plr.Center.Y / 16f);
-
-        var points = new HashSet<Vector3>();
-
-        for (int i = -100; i < 100; ++i)
-        {
-            for (int j = -100; j < 100; j++)
-            {
-                if (Collision.CanHit(plr.Center, plr.width, plr.height, new Vector2(x + i, y + j).ToWorldCoordinates(0, 0), 16, 16) && CanConnect(x + i, y + j, out float rot))
-                    points.Add(new(x + i, y + j, rot));
-            }
-        }
-
-        foreach (var item in points)
-        {
-            if (Main.rand.NextBool(4))
-            {
-                int type = ModContent.ProjectileType<BoCSpike>();
-                var pos = new Vector2(item.X, item.Y).ToWorldCoordinates();
-                int p = Projectile.NewProjectile(source, pos, Vector2.Zero, type, 20, 0f, Main.myPlayer);
-                Projectile proj = Main.projectile[p];
-                proj.rotation = item.Z - MathHelper.PiOver2;
-                proj.frame = Main.rand.Next(3);
-                proj.ai[2] = -1;
-                (proj.ModProjectile as BoCSpike).Parent = npc.whoAmI;
-
-                if (Main.netMode == NetmodeID.Server)
-                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
-            }
-        }
-    }
-
-    private static bool CanConnect(int x, int y, out float rot)
-    {
-        rot = 0f;
-
-        for (int i = -1; i <= 1; ++i)
-        {
-            for (int j = -1; j <= 1; ++j)
-            {
-                if (i == 0 && j == 0)
-                    continue;
-
-                if (WorldGen.SolidTile(x + i, y + j))
-                {
-                    rot = new Vector2(x, y).AngleTo(new Vector2(x + i, y + j));
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

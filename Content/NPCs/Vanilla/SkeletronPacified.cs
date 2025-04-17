@@ -77,6 +77,9 @@ public class SkeletronPacified : ModNPC
                 NPC.velocity *= 1.02f;
             }
 
+            if (NPC.velocity == Vector2.Zero)
+                NPC.velocity = new Vector2(0, -2);
+
             if (dist < MaxDist * 4 && !NPC.homeless)
                 MoveSpeed = MathHelper.Lerp(MoveSpeed, 5, 0.05f);
             else if (dist < MaxDist * 40)
@@ -144,6 +147,7 @@ public class SkeletronPacified : ModNPC
 
         public void Draw(Vector2 screenPos)
         {
+            Main.instance.LoadNPC(NPCID.SkeletronHand);
             var tex = TextureAssets.Npc[NPCID.SkeletronHand].Value;
 
             Main.spriteBatch.Draw(tex, Center - screenPos, null, Lighting.GetColor(Center.ToTileCoordinates()), _rotation, tex.Size() / 2f, 1f, 0, 0);

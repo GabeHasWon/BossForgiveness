@@ -16,6 +16,11 @@ internal class EmpressPacificationNPC : GlobalNPC, ICustomBarNPC
 
     private int light = 0;
 
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
+    {
+        return entity.type == NPCID.HallowBoss;
+    }
+
     public void AddLight() => light++;
 
     public override bool PreAI(NPC npc)

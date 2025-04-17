@@ -159,6 +159,9 @@ public class DestroyerPacified : ModNPC, IAdditionalHoverboxes
     {
         if (!NPC.IsABestiaryIconDummy && NPC.DistanceSQ(Main.LocalPlayer.Center) < MathF.Pow(80 * 80, 2))
         {
+            Main.instance.LoadNPC(NPCID.TheDestroyerBody);
+            Main.instance.LoadNPC(NPCID.TheDestroyerTail);
+
             foreach (var segment in segments)
                 segment.Draw(screenPos);
         }

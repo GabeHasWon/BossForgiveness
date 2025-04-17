@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria.DataStructures;
 using Terraria.Graphics;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.BoC;
 
@@ -26,6 +28,11 @@ public class SpikeAura : ModProjectile
 
     private ref float ScaleVelocity => ref Projectile.localAI[0];
 
+    public override void SetStaticDefaults()
+    {
+        Main.projFrames[Type] = 3;
+    }
+
     public override void SetDefaults()
     {
         Projectile.Size = new(96);
@@ -43,13 +50,15 @@ public class SpikeAura : ModProjectile
     {
         Projectile.scale = MathHelper.Lerp(Projectile.scale, ScaleVelocity, 0.05f);
 
-        if (Projectile.scale > 1f)
+        if (Projectile.scale > 1f || NPC.crimsonBoss == -1)
         {
             ScaledUpAlready = true;
 
             if (!SpawnedSpikes)
             {
-                SpamSpikes(Projectile, Projectile.GetSource_FromAI(), (int)Owner);
+                if (Main.netMode != NetmodeID.MultiplayerClient && NPC.crimsonBoss != -1) 
+                    SpamSpikes(Projectile, Projectile.GetSource_FromAI(), (int)Owner);
+                
                 SpawnedSpikes = true;
             }
         }
@@ -71,7 +80,7 @@ public class SpikeAura : ModProjectile
 
     private static void SpamSpikes(Projectile projectile, IEntitySource source, int owner)
     {
-        const int SpikeDist = 3;
+        const int SpikeDist = 6;
 
         int x = (int)(projectile.Center.X / 16f);
         int y = (int)(projectile.Center.Y / 16f);
@@ -134,4 +143,23 @@ public class SpikeAura : ModProjectile
 
     public override bool OnTileCollide(Vector2 oldVelocity) => false;
     public override Color? GetAlpha(Color lightColor) => Color.White * Projectile.Opacity;
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = TextureAssets.Projectile[Type].Value;
+        Vector2 position = Projectile.Center - Main.screenPosition;
+        Color color = Projectile.GetAlpha(lightColor);
+        int height = tex.Height / 3;
+        Rectangle baseFrame = new(0, 0, tex.Width, height);
+
+        for (int i = 0; i < 4; ++i)
+        {
+            Rectangle frame = baseFrame with { Y = height * (int)(Main.timeForVisualEffects / 8f % 3) };
+            Vector2 off = Main.rand.NextVector2Circular(2, 2);
+            float factor = (i / 3f);
+            Main.EntitySpriteDraw(tex, position + off, frame, color * factor, 0f, frame.Size() / 2f, Projectile.scale * (factor * 0.5f + 0.5f), SpriteEffects.None, 0);
+        }
+
+        return false;
+    }
 }

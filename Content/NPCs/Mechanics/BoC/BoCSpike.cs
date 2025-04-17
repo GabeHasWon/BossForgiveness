@@ -40,7 +40,7 @@ public class BoCSpike : ModProjectile
         if (Main.CurrentFrameFlags.AnyActiveBossNPC)
             Projectile.timeLeft++;
 
-        Lighting.AddLight(Projectile.Center, new Vector3(0.2f + MathF.Pow(MathF.Sin(Time++ * 0.03f + Projectile.whoAmI), 2) * 0.3f, 0, 0));
+        Lighting.AddLight(Projectile.Center, new Vector3(0.3f + MathF.Pow(MathF.Sin(Time++ * 0.03f + Projectile.whoAmI), 2) * 0.3f, 0.1f, 0.1f));
         NPC parent = Main.npc[(int)Parent];
 
         if (!parent.active || parent.type != NPCID.BrainofCthulhu || parent.life < parent.lifeMax)
@@ -127,9 +127,9 @@ public class BoCSpike : ModProjectile
 
         Texture2D tex = TextureAssets.Projectile[Type].Value;
         int height = tex.Height / Main.projFrames[Type];
-        var src = new Rectangle(0, (int)(height * factor), tex.Width, height);
-        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, src, lightColor, Projectile.rotation, src.Size() / new Vector2(2f, 1f), 1f, SpriteEffects.None, 0);
+        var src = new Rectangle(0, (int)(height * factor), tex.Width, (int)(height * factor));
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, src, lightColor, Projectile.rotation, src.Size() / new Vector2(2f, 5f), 1f, SpriteEffects.None, 0);
 
-        return true;
+        return false;
     }
 }

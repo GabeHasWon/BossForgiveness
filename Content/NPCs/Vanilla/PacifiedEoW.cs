@@ -174,6 +174,9 @@ public class PacifiedEoW : ModNPC, IAdditionalHoverboxes
         foreach (var segment in segments)
             segment.Draw(screenPos);
 
+        Main.instance.LoadNPC(NPCID.EaterofWorldsHead);
+        Main.instance.LoadNPC(NPCID.EaterofWorldsBody);
+        Main.instance.LoadNPC(NPCID.EaterofWorldsTail);
         var tex = TextureAssets.Npc[NPCID.EaterofWorldsHead].Value;
         Main.EntitySpriteDraw(tex, NPC.Center - screenPos, null, drawColor, NPC.rotation, tex.Size() / 2f, 1f, SpriteEffects.None, 0);
         return false;
