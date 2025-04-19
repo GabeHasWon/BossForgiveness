@@ -127,3 +127,8 @@ MimicBell: {
 	DisplayName: Mimic Bell
 	Tooltip: "'A Domesticated Mimic's Favorite Toy!'"
 }
+
+Tracemap: {
+	DisplayName: Tracemap
+	Tooltip: ""
+}

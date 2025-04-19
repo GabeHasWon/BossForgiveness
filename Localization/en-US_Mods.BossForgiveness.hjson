@@ -43,4 +43,5 @@ Tiles: {
 	}
 
 	RottenGrowth.MapEntry: Rotten Growth
+	StardustPieces.MapEntry: Stardust Pieces
 }
