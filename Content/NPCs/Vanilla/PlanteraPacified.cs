@@ -91,33 +91,30 @@ public class PlanteraPacified : ModNPC
         internal void Draw(int plantera)
         {
             Vector2 drawPos = dummy.Center;
-            float num15 = Main.npc[plantera].Center.X - drawPos.X;
-            float num16 = Main.npc[plantera].Center.Y - drawPos.Y;
-            float rotation2 = (float)Math.Atan2(num16, num15) - 1.57f;
-            bool flag3 = true;
+            Vector2 offset = Main.npc[plantera].Center - drawPos;
+            float rotation2 = offset.ToRotation() - 1.57f;
+            bool repeat = true;
 
-            while (flag3)
+            while (repeat)
             {
-                int num17 = 16;
-                int num2 = 32;
-                float num3 = (float)Math.Sqrt(num15 * num15 + num16 * num16);
+                int texHeight = 16;
+                int heightOffset = 32;
+                float distance = offset.Length();
 
-                if (num3 < (float)num2)
+                if (distance < heightOffset || float.IsNaN(distance))
                 {
-                    num17 = (int)num3 - num2 + num17;
-                    flag3 = false;
+                    texHeight = (int)distance - heightOffset + texHeight;
+                    repeat = false;
                 }
 
-                num3 = num17 / num3;
-                num15 *= num3;
-                num16 *= num3;
-                drawPos.X += num15;
-                drawPos.Y += num16;
-                num15 = Main.npc[plantera].Center.X - drawPos.X + Main.npc[plantera].netOffset.X;
-                num16 = Main.npc[plantera].Center.Y - drawPos.Y + Main.npc[plantera].netOffset.Y;
+                distance = texHeight / distance;
+                offset *= distance;
+                drawPos.X += offset.X;
+                drawPos.Y += offset.Y;
+                offset = Main.npc[plantera].Center - drawPos + Main.npc[plantera].netOffset;
 
                 Color col = Lighting.GetColor(drawPos.ToTileCoordinates());
-                var src = new Rectangle(0, 0, TextureAssets.Chain26.Width(), num17);
+                var src = new Rectangle(0, 0, TextureAssets.Chain26.Width(), texHeight);
                 Main.spriteBatch.Draw(TextureAssets.Chain26.Value, drawPos - Main.screenPosition, src, col, rotation2, TextureAssets.Chain26.Size() / 2f, 1f, 0, 0f);
             }
 
@@ -169,8 +166,20 @@ public class PlanteraPacified : ModNPC
     {
         const float FocusDistance = 600;
 
-        Timer++;
+        if (NPC.position.HasNaNs())
+        {
+            if (!NPC.homeless)
+                NPC.position = new Vector2(NPC.homeTileX, NPC.homeTileY) * 16;
+            else
+                NPC.position = new Vector2(Main.spawnTileX, Main.spawnTileY) * 16;
+        }
+
+        if (NPC.velocity.HasNaNs())
+            NPC.velocity = Vector2.Zero;
+
         Lighting.AddLight(NPC.Center, new Vector3(0.3f, 0.1f, 0.1f));
+
+        Timer++;
         NPC.TargetClosest();
         NPC.netUpdate = true;
 

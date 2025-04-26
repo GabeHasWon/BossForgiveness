@@ -30,6 +30,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
     private Point16 size = new Point16();
 
+    public override bool IsLoadingEnabled(Mod mod) => false;
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.LunarTowerStardust;
 
     public override void AI(NPC npc)

@@ -15,6 +15,8 @@ internal abstract class StardustItem : ModItem
 {
     protected override bool CloneNewInstances => true;
 
+    public override bool IsLoadingEnabled(Mod mod) => false;
+
     private float Opacity
     {
         get => 1 - Item.alpha / 255f;
