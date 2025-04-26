@@ -1,9 +1,2 @@
-v1.0.3.9
-- Fixed Duke Fishron's pacification not working properly
-- Added grounded frame to the True Truffle Treat
-- Fixed the Empress of Light's boss bar showing on everything
-- Made the Brain of Cthulhu's spike spawning method be a mid-fight optional attack instead of on-spawn spam
-- Added Neuron Spike spawn animation
-- Changed Worm Morsel recipe from 6 Rotten Chunk (7 output) to 2 Rotten Chunk + 1 Vile/Vicious Mushroom (6 output)
-- Increased BoC's pacification requirement from 40 spikes to 60
-- Added naturally spawning, regrowable Rotten Growth tiles in the Corruption to farm Rotten Chunks without killing
+v1.0.3.10
+- Fixed issue where Plantera rendering would hang indefinitely, effectively breaking worlds
