@@ -2,14 +2,14 @@
 
 namespace BossForgiveness.Content.Items.ForVanilla.Stardust;
 
-internal class Tracemap : StardustItem
+internal class Flowlink : StardustItem
 {
-    internal override int PlaceStyle => 0;
+    internal override int PlaceStyle => 4;
 
     public override void SetDefaults()
     {
         base.SetDefaults();
-        Item.Size = new Vector2(36, 30);
+        Item.Size = new Vector2(38, 30);
         Item.value = 0;
     }
 }

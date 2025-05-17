@@ -10,8 +10,6 @@ namespace BossForgiveness.Content.Tiles.Vanilla;
 
 internal class StardustPieces : ModTile
 {
-    public override bool IsLoadingEnabled(Mod mod) => false;
-
     public override void SetStaticDefaults()
     {
         Main.tileFrameImportant[Type] = true;

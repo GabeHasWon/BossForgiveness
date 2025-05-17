@@ -1,10 +1,9 @@
-﻿using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
+﻿using BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,9 +12,9 @@ namespace BossForgiveness.Content.Items.ForVanilla.Stardust;
 
 internal abstract class StardustItem : ModItem
 {
-    protected override bool CloneNewInstances => true;
+    internal abstract int PlaceStyle { get; }
 
-    public override bool IsLoadingEnabled(Mod mod) => false;
+    protected override bool CloneNewInstances => true;
 
     private float Opacity
     {
@@ -33,6 +32,15 @@ internal abstract class StardustItem : ModItem
         item.originalVel = originalVel;
         item.maxLifeTime = maxLifeTime;
         return item;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.rare = ItemRarityID.Cyan;
+        Item.useTime = 20;
+        Item.useAnimation = 20;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.consumable = true;
     }
 
     public override void Update(ref float gravity, ref float maxFallSpeed)
@@ -66,9 +74,35 @@ internal abstract class StardustItem : ModItem
             Opacity = Math.Max(1 - (lifeTime - maxLifeTime * 0.67f) / (maxLifeTime * 0.33f), 0);
 
         if (lifeTime > maxLifeTime)
+        {
             Item.active = false;
+
+            for (int i = 0; i < 18; ++i)
+            {
+                Vector2 pos = Item.position + new Vector2(Main.rand.NextFloat(Item.width), Main.rand.NextFloat(Item.height));
+                Dust.NewDustPerfect(pos, DustID.Wet, originalVel + Main.rand.NextVector2Circular(6, 6), Scale: Main.rand.NextFloat(1, 3)).noGravity = true;
+            }
+        }
     }
 
+    public override void HoldItem(Player player) => StardustPillarPacificationNPC.CheckComponents(static (comp, _) => comp.Hover = true);
+    public override bool? UseItem(Player player) => StardustPillarPacificationNPC.CheckComponents(CheckPlace);
+
+    private bool CheckPlace(Component comp, NPC npc)
+    {
+        if (comp.Style == PlaceStyle)
+        {
+            comp.Placed = true;
+            comp.PlacedRotation = CompRotation.Up;
+
+            StardustPillarPlayer.CheckCompletion(npc);
+            return true;
+        }
+
+        return false;
+    }
+
+    public override void UpdateInventory(Player player) => Opacity = MathHelper.Lerp(Opacity, 1f, 0.05f);
     public override void NetSend(BinaryWriter writer) => writer.Write((Half)maxLifeTime);
     public override void NetReceive(BinaryReader reader) => maxLifeTime = (float)reader.ReadHalf();
 

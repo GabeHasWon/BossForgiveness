@@ -2,14 +2,14 @@
 
 namespace BossForgiveness.Content.Items.ForVanilla.Stardust;
 
-internal class Tracemap : StardustItem
+internal class ClaspCell : StardustItem
 {
-    internal override int PlaceStyle => 0;
+    internal override int PlaceStyle => 3;
 
     public override void SetDefaults()
     {
         base.SetDefaults();
-        Item.Size = new Vector2(36, 30);
+        Item.Size = new Vector2(32, 18);
         Item.value = 0;
     }
 }

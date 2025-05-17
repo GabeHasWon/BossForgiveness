@@ -130,5 +130,29 @@ MimicBell: {
 
 Tracemap: {
 	DisplayName: Tracemap
-	Tooltip: ""
+	Tooltip:
+		'''
+		A mysterious device used to contact a distant planet
+		Place according to the Stardust Pillar's construct
+		'''
+}
+
+ClaspCell: {
+	DisplayName: Clasp Cell
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+Flowlink: {
+	DisplayName: Flowlink
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+SkywardAntennae: {
+	DisplayName: Skyward Antennae
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+Starshot: {
+	DisplayName: Starshot
+	Tooltip: "{$Tracemap.Tooltip}"
 }
