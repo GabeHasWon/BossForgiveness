@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.Syncing;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,7 +23,13 @@ internal class StardustPillarPlayer : ModPlayer
                     if (comp.PlacedRotation > CompRotation.Down)
                         comp.PlacedRotation = CompRotation.Up;
 
-                    CheckCompletion(npc);
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        CheckCompletion(npc);
+                    else
+                        new CheckCompleteStardustModule(npc.whoAmI).Send();
+
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        new SendComponentModule(npc.whoAmI, comp.Position.ToPoint(), true, comp.PlacedRotation).Send();
                 }
                 
                 return false;
@@ -34,6 +41,9 @@ internal class StardustPillarPlayer : ModPlayer
 
     internal static void CheckCompletion(NPC npc)
     {
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
         StardustPillarPacificationNPC pac = npc.GetGlobalNPC<StardustPillarPacificationNPC>();
         bool finished = true;
 
@@ -48,13 +58,15 @@ internal class StardustPillarPlayer : ModPlayer
 
         if (finished)
         {
-            for (int i = 0; i < 30; ++i)
+            for (int i = 0; i < 40; ++i)
             {
                 Vector2 pos = npc.position + new Vector2(Main.rand.NextFloat(npc.width), Main.rand.NextFloat(npc.height));
                 Dust.NewDustPerfect(pos, DustID.Wet, Main.rand.NextVector2Circular(6, 6), Scale: Main.rand.NextFloat(1, 3)).noGravity = true;
             }
 
+            pac.won = true;
             npc.active = false;
+            npc.netUpdate = true;
 
             foreach (var other in Main.ActiveNPCs)
             {
@@ -62,6 +74,7 @@ internal class StardustPillarPlayer : ModPlayer
                     or NPCID.StardustSpiderBig or NPCID.StardustSpiderSmall or NPCID.StardustWormBody or NPCID.StardustWormHead or NPCID.StardustWormTail)
                 {
                     other.active = false;
+                    other.netUpdate = true;
 
                     for (int i = 0; i < 12; ++i)
                     {

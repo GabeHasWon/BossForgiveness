@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -22,9 +23,10 @@ internal abstract class StardustItem : ModItem
         set => Item.alpha = 255 - (byte)(value * 255f);
     }
 
+    Vector2 originalVel = Vector2.Zero;
+
     float lifeTime = 0;
     float maxLifeTime = 0;
-    Vector2 originalVel = Vector2.Zero;
 
     public override ModItem Clone(Item newEntity)
     {
@@ -45,9 +47,10 @@ internal abstract class StardustItem : ModItem
 
     public override void Update(ref float gravity, ref float maxFallSpeed)
     {
-        if (originalVel == Vector2.Zero)
+        if (originalVel == Vector2.Zero && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            originalVel = Vector2.Normalize(Item.velocity) * Main.rand.NextFloat(1.5f, 2.5f);
+            Vector2 copyVel = Item.velocity == Vector2.Zero ? Main.rand.NextVector2CircularEdge(1, 1) : Vector2.Normalize(Item.velocity);
+            originalVel = copyVel * Main.rand.NextFloat(1.5f, 2.5f);
         }
 
         Item.velocity = Vector2.Zero;
@@ -96,6 +99,10 @@ internal abstract class StardustItem : ModItem
             comp.PlacedRotation = CompRotation.Up;
 
             StardustPillarPlayer.CheckCompletion(npc);
+
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                new SendComponentModule(npc.whoAmI, comp.Position.ToPoint(), true, comp.PlacedRotation).Send();
+
             return true;
         }
 
@@ -103,8 +110,18 @@ internal abstract class StardustItem : ModItem
     }
 
     public override void UpdateInventory(Player player) => Opacity = MathHelper.Lerp(Opacity, 1f, 0.05f);
-    public override void NetSend(BinaryWriter writer) => writer.Write((Half)maxLifeTime);
-    public override void NetReceive(BinaryReader reader) => maxLifeTime = (float)reader.ReadHalf();
+
+    public override void NetSend(BinaryWriter writer)
+    {
+        writer.Write((Half)maxLifeTime);
+        writer.WriteVector2(originalVel);
+    }
+
+    public override void NetReceive(BinaryReader reader)
+    {
+        maxLifeTime = (float)reader.ReadHalf();
+        originalVel = reader.ReadVector2();
+    }
 
     public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
     {

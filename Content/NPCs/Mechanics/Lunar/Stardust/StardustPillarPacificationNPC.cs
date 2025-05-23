@@ -4,12 +4,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria;
+using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
@@ -32,10 +36,31 @@ public class Component(Point16 Position, CompRotation Rotation, int Style, bool 
     public bool Placed = Placed;
     public CompRotation PlacedRotation = PlacedRotation;
     public bool Hover = Hover;
+
+    public void Write(BinaryWriter writer)
+    {
+        writer.Write((sbyte)Position.X);
+        writer.Write((sbyte)Position.Y);
+        writer.Write((byte)Style);
+        writer.Write((byte)Rotation);
+        writer.Write((byte)PlacedRotation);
+        writer.Write(Placed);
+    }
+
+    public void Read(BinaryReader reader)
+    {
+        Position = new Point16(reader.ReadSByte(), reader.ReadSByte());
+        Style = reader.ReadByte();
+        Rotation = (CompRotation)reader.ReadByte();
+        PlacedRotation = (CompRotation)reader.ReadByte();
+        Placed = reader.ReadBoolean();
+    }
 }
 
 internal class StardustPillarPacificationNPC : GlobalNPC
 {
+    const int ComponentCount = 12;
+
     public override bool InstancePerEntity => true;
 
     private static readonly WeightedRandom<int> stardustItemPool = new();
@@ -50,7 +75,8 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
     internal readonly Dictionary<Point16, Component> components = [];
 
-    private Point16 size = new();
+    internal bool won = false;
+
     private int timer = 0;
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.LunarTowerStardust;
@@ -66,12 +92,12 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
     public override void AI(NPC npc)
     {
-        if (npc.life < npc.lifeMax)
+        if (npc.life < npc.lifeMax || won)
             return;
 
-        if (components.Count == 0)
+        if (components.Count == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            for (int i = 0; i < 15; ++i)
+            for (int i = 0; i < ComponentCount; ++i)
             {
                 Point16 pos;
 
@@ -91,12 +117,12 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
             int width = components.MaxBy(x => x.Value.Position.X).Value.Position.X - components.MinBy(x => x.Value.Position.X).Value.Position.X;
             int height = components.MaxBy(x => x.Value.Position.Y).Value.Position.Y - components.MinBy(x => x.Value.Position.Y).Value.Position.Y;
-            size = new Point16(width * 32, height * 32);
         }
 
         timer++;
-
-        if (timer % 480 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
+        
+        //480
+        if (timer % 60 == 0 && Main.netMode != NetmodeID.MultiplayerClient && !won)
         {
             Vector2 position = npc.Center + new Vector2(0, Main.rand.NextFloat(-600, -250)).RotatedByRandom(MathHelper.PiOver2);
             int id;
@@ -108,12 +134,31 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
             int item = Item.NewItem(npc.GetSource_FromAI(), position, id);
             Main.item[item].velocity = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.6f, 1);
-
-            if (Main.dedServ)
-            {
-                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item);
-            }
         }
+    }
+
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        foreach (var comp in components)
+        {
+            comp.Value.Write(binaryWriter);
+        }
+
+        bitWriter.WriteBit(won);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        components.Clear();
+
+        for (int i = 0; i < 12; ++i)
+        {
+            Component comp = new(default, default, default);
+            comp.Read(binaryReader);
+            components.Add(comp.Position, comp);
+        }
+
+        won = bitReader.ReadBit();
     }
 
     private static int CountSides(Dictionary<Point16, Component> components, Point16 pos)
@@ -145,6 +190,9 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
     public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        if (npc.life > npc.lifeMax)
+            return;
+
         Texture2D tile = TextureAssets.Tile[ModContent.TileType<StardustPieces>()].Value;
 
         foreach (Component comp in components.Values)
