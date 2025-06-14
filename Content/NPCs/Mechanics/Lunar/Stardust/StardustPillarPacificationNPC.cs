@@ -121,8 +121,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
         timer++;
         
-        //480
-        if (timer % 60 == 0 && Main.netMode != NetmodeID.MultiplayerClient && !won)
+        if (timer % 480 == 0 && Main.netMode != NetmodeID.MultiplayerClient && !won)
         {
             Vector2 position = npc.Center + new Vector2(0, Main.rand.NextFloat(-600, -250)).RotatedByRandom(MathHelper.PiOver2);
             int id;
@@ -130,7 +129,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
             do
             {
                 id = stardustItemPool;
-            } while (!components.Values.Any(x => (ContentSamples.ItemsByType[id].ModItem as StardustItem).PlaceStyle == x.Style && !x.Finished));
+            } while (!components.Values.Any(x => (ContentSamples.ItemsByType[id].ModItem as StardustItem).PlaceStyle == x.Style && !x.Placed));
 
             int item = Item.NewItem(npc.GetSource_FromAI(), position, id);
             Main.item[item].velocity = Main.rand.NextVector2CircularEdge(6, 6) * Main.rand.NextFloat(0.6f, 1);

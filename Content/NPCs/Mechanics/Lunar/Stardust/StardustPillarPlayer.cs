@@ -70,7 +70,7 @@ internal class StardustPillarPlayer : ModPlayer
 
             foreach (var other in Main.ActiveNPCs)
             {
-                if (npc.type is NPCID.StardustCellBig or NPCID.StardustCellSmall or NPCID.StardustJellyfishBig or NPCID.StardustJellyfishSmall or NPCID.StardustSoldier
+                if (other.type is NPCID.StardustCellBig or NPCID.StardustCellSmall or NPCID.StardustJellyfishBig or NPCID.StardustJellyfishSmall or NPCID.StardustSoldier
                     or NPCID.StardustSpiderBig or NPCID.StardustSpiderSmall or NPCID.StardustWormBody or NPCID.StardustWormHead or NPCID.StardustWormTail)
                 {
                     other.active = false;
@@ -83,6 +83,8 @@ internal class StardustPillarPlayer : ModPlayer
                     }
                 }
             }
+
+            Projectile.NewProjectile(npc.GetSource_Death(), npc.Center, Vector2.Zero, ModContent.ProjectileType<StardustPortal>(), 0, 0, Main.myPlayer);
         }
     }
 }

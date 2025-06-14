@@ -32,12 +32,6 @@ internal class BoCPacificationNPC : GlobalNPC, ICustomBarNPC
     public override void SetStaticDefaults() => zzzTex = ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/BoC/Zzzz");
     public override void Unload() => zzzTex = null;
 
-    //public override void OnSpawn(NPC npc, IEntitySource source)
-    //{
-    //    if (Main.netMode != NetmodeID.MultiplayerClient)
-    //        SpamSpikes(npc, source);
-    //}
-
     public override bool PreAI(NPC npc)
     {
         npc.position -= npc.velocity * Math.Max(sleepyness / (float)MaxSleepy, 0);

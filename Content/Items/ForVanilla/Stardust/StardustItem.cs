@@ -93,7 +93,7 @@ internal abstract class StardustItem : ModItem
 
     private bool CheckPlace(Component comp, NPC npc)
     {
-        if (comp.Style == PlaceStyle)
+        if (comp.Style == PlaceStyle && !comp.Placed)
         {
             comp.Placed = true;
             comp.PlacedRotation = CompRotation.Up;

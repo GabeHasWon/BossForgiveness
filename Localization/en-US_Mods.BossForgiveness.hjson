@@ -24,6 +24,8 @@ Projectiles: {
 	LightningPredictorProjectile.DisplayName: Lightning Predictor Projectile
 	AdjustedLightningProjectile.DisplayName: Adjusted Lightning Projectile
 	SpikeAura.DisplayName: Spike Aura
+	StardustPortal.DisplayName: Stardust Portal
+	NebulaPortal.DisplayName: Nebula Portal
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."

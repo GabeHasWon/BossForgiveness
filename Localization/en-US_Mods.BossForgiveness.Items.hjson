@@ -156,3 +156,13 @@ Starshot: {
 	DisplayName: Starshot
 	Tooltip: "{$Tracemap.Tooltip}"
 }
+
+Telelink: {
+	DisplayName: Telelink
+	Tooltip:
+		'''
+		Allows you to communicate with the Nebula
+		You must link to the Pillar in order to link with other creatures
+
+		'''
+}
