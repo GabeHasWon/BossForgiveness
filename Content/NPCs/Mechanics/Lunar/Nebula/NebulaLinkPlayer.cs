@@ -2,26 +2,28 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.UI.ModBrowser;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Nebula;
 
 internal class NebulaLinkPlayer : ModPlayer
 {
     public const int LinkDistance = 600;
+    public const int MaxTimer = 60 * 30;
+
+    private readonly HashSet<short> _connections = [];
 
     public int LinkCount => _connections.Count;
 
+    internal bool lastCanLink = false;
     internal bool canLink = false;
+    internal bool hovering = false;
 
     private bool _lastMouseLeft = false;
     private bool _mouseLeft = false;
     private short? _hasPillar = null;
-    private HashSet<short> _connections = [];
     private int _timeLeft = 0;
 
     public override void PreUpdateMovement()
@@ -35,9 +37,19 @@ internal class NebulaLinkPlayer : ModPlayer
         }
     }
 
+    public override void UpdateDead()
+    {
+        lastCanLink = canLink;
+        canLink = false;
+
+        if (_connections.Count > 0)
+            ClearConnections();
+    }
+
     public override void ResetEffects()
     {
-        canLink = true;
+        lastCanLink = canLink;
+        canLink = false;
 
         _lastMouseLeft = _mouseLeft;
         _mouseLeft = Main.mouseLeft;
@@ -46,7 +58,12 @@ internal class NebulaLinkPlayer : ModPlayer
         {
             _timeLeft++;
 
-            if (_timeLeft > 60 * 10)
+            if (Main.rand.NextFloat() < _timeLeft / (float)MaxTimer)
+            {
+                SpawnDust(Player);
+            }
+
+            if (_timeLeft > MaxTimer)
             {
                 NPC pillar = Main.npc[_hasPillar.Value];
                 pillar.active = false;
@@ -63,8 +80,7 @@ internal class NebulaLinkPlayer : ModPlayer
 
                         for (int i = 0; i < 12; ++i)
                         {
-                            Vector2 pos = other.position + new Vector2(Main.rand.NextFloat(other.width), Main.rand.NextFloat(other.height));
-                            Dust.NewDustPerfect(pos, DustID.PurpleTorch, Main.rand.NextVector2Circular(6, 6), Scale: Main.rand.NextFloat(1, 3)).noGravity = true;
+                            SpawnDust(other);
                         }
                     }
                 }
@@ -103,6 +119,12 @@ internal class NebulaLinkPlayer : ModPlayer
         }
     }
 
+    private static void SpawnDust(Entity entity)
+    {
+        Vector2 pos = entity.position + new Vector2(Main.rand.NextFloat(entity.width), Main.rand.NextFloat(entity.height));
+        Dust.NewDustPerfect(pos, DustID.PurpleTorch, Main.rand.NextVector2Circular(6, 6), Scale: Main.rand.NextFloat(1, 3)).noGravity = true;
+    }
+
     private void ClearConnections()
     {
         Main.npc[_hasPillar.Value].GetGlobalNPC<NebulaLinkNPC>().linkedTo = null;
@@ -116,21 +138,38 @@ internal class NebulaLinkPlayer : ModPlayer
 
     public override void UpdateEquips()
     {
-        if (Main.netMode != NetmodeID.Server && canLink && _mouseLeft && !_lastMouseLeft)
+        hovering = false;
+
+        if (Main.netMode != NetmodeID.Server && lastCanLink)
         {
+            bool clicked = _mouseLeft && !_lastMouseLeft;
+
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                bool inHitbox = npc.Hitbox.Contains(Main.MouseWorld.ToPoint());
+                if (_connections.Contains((short)npc.whoAmI))
+                    continue;
+
+                Rectangle hitbox = npc.Hitbox;
+                hitbox.Inflate(30, 30);
+
+                bool inHitbox = hitbox.Contains(Main.MouseWorld.ToPoint());
                 bool isPillar = npc.type == NPCID.LunarTowerNebula;
-                bool validOrPillar = _hasPillar.HasValue || isPillar;
                 bool close = npc.DistanceSQ(Player.Center) < MathF.Pow(isPillar ? LinkDistance * 2 : LinkDistance, 2);
-                
-                if (close && npc.TryGetGlobalNPC(out NebulaLinkNPC neb) && inHitbox && validOrPillar && !neb.invalid)
+                bool validOrPillar = _hasPillar.HasValue || isPillar;
+
+                if (!hovering && close && validOrPillar)
+                    hovering = inHitbox;
+
+                if (clicked)
                 {
-                    if (Main.netMode == NetmodeID.SinglePlayer)
-                        AddConnection(npc, neb);
-                    else
-                        new SyncNebulaLink((byte)Player.whoAmI, (short)npc.whoAmI).Send();
+
+                    if (close && npc.TryGetGlobalNPC(out NebulaLinkNPC neb) && inHitbox && validOrPillar && !neb.invalid)
+                    {
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            AddConnection(npc, neb);
+                        else if (Main.netMode == NetmodeID.MultiplayerClient)
+                            new SyncNebulaLink((byte)Player.whoAmI, (short)npc.whoAmI).Send();
+                    }
                 }
             }
         }

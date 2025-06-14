@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 using System.Runtime.CompilerServices;
 using Terraria.ModLoader.IO;
 using System.IO;
+using BossForgiveness.Content.Items.ForVanilla;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Nebula;
 
@@ -21,6 +22,11 @@ internal class NebulaLinkNPC : GlobalNPC
 
     public int? linkedTo = null;
     public bool invalid = false;
+
+    /// <summary>
+    /// For the Pillar.
+    /// </summary>
+    public int heldItem = -1;
 
     private int _timer = 0;
 
@@ -72,6 +78,8 @@ internal class NebulaLinkNPC : GlobalNPC
 
     public override bool PreAI(NPC npc)
     {
+        _timer++;
+
         if (npc.type == NPCID.NebulaHeadcrab)
         {
             if (_thrownOffTimer > 0)
@@ -112,6 +120,23 @@ internal class NebulaLinkNPC : GlobalNPC
                 }
             }
         }
+        else if (npc.type == NPCID.LunarTowerNebula)
+        {
+            if (heldItem == -1)
+                heldItem = Item.NewItem(npc.GetSource_FromAI(), new Vector2(npc.Center.X, npc.Center.Y - 500), ModContent.ItemType<Telelink>());
+            else
+            {
+                Item item = Main.item[heldItem];
+
+                if (!item.active || item.type != ModContent.ItemType<Telelink>())
+                    heldItem = -1;
+                else
+                {
+                    item.velocity = Vector2.Zero;
+                    item.position.Y = npc.Center.Y - 500 + MathF.Sin(_timer * 0.05f) * 20;
+                }
+            }
+        }
 
         if (invalid)
             return true;
@@ -123,12 +148,12 @@ internal class NebulaLinkNPC : GlobalNPC
 
     private void UpdateLinking(NPC npc)
     {
-        _timer++;
-
         if (linkedTo.HasValue)
         {
             if (npc.type != NPCID.LunarTowerNebula && npc.DistanceSQ(Link.Center) > NebulaLinkPlayer.LinkDistance * NebulaLinkPlayer.LinkDistance)
                 npc.Center = Link.Center + Link.DirectionTo(npc.Center) * NebulaLinkPlayer.LinkDistance;
+
+            npc.netUpdate = true;
         }
     }
 
@@ -145,7 +170,7 @@ internal class NebulaLinkNPC : GlobalNPC
     {
         private static readonly VertexStrip _vertexStrip = new();
 
-        public static void Draw(NPC npc, Player link, int timer, float maxDistance, bool fromPillar)
+        public static void Draw(NPC npc, Entity link, int timer, float maxDistance, bool fromPillar)
         {
             float opacity = MathF.Min(1f, maxDistance / 400f);
             MiscShaderData miscShaderData = GameShaders.Misc["FlameLash"];
@@ -172,12 +197,12 @@ internal class NebulaLinkNPC : GlobalNPC
             }
 
             _vertexStrip.PrepareStripWithProceduralPadding(positions, angles, progress => StripColors(progress, fromPillar ? maxDistance : 0), 
-                progress => StripWidth(progress, fromPillar ? maxDistance : 0), -Main.screenPosition);
+                progress => StripWidth(fromPillar ? maxDistance : 0), -Main.screenPosition);
             _vertexStrip.DrawTrail();
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
         }
 
-        private static Vector2 GetPosition(NPC npc, Player link, int timer, float maxDistance, int i, int count)
+        private static Vector2 GetPosition(NPC npc, Entity link, int timer, float maxDistance, int i, int count)
         {
             var pos = Vector2.Lerp(npc.Center, link.Center, i / (float)(count - 1));
             Vector2 sineOff = npc.DirectionTo(link.Center).RotatedBy(MathHelper.PiOver2) * MathF.Sin(timer * 0.1f + i) * 50 * pos.Distance(link.Center) / maxDistance;
@@ -194,6 +219,6 @@ internal class NebulaLinkNPC : GlobalNPC
             return result;
         }
 
-        private static float StripWidth(float progress, float pillarDistance) => 20 * (1 - pillarDistance / (NebulaLinkPlayer.LinkDistance * 2)) + 5;
+        private static float StripWidth(float pillarDistance) => 20 * (1 - pillarDistance / (NebulaLinkPlayer.LinkDistance * 2)) + 5;
     }
 }
