@@ -12,8 +12,6 @@ public class SyncNebulaLink(byte who, short npcWho) : Module
     {
         NPC npc = Main.npc[npcWho];
 
-        mod.Logger.Debug("Got link. " + Main.netMode);
-
         if (npc.TryGetGlobalNPC(out NebulaLinkNPC neb))
             Main.player[who].GetModPlayer<NebulaLinkPlayer>().AddConnection(npc, neb);
 

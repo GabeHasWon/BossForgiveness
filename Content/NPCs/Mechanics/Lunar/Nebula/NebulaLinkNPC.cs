@@ -55,6 +55,9 @@ internal class NebulaLinkNPC : GlobalNPC
             binaryWriter.Write((short)_throwOffTimer);
             binaryWriter.Write((short)_thrownOffTimer);
         }
+
+        if (npc.type == NPCID.LunarTowerNebula)
+            binaryWriter.Write((short)heldItem);
     }
 
     public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
@@ -74,6 +77,9 @@ internal class NebulaLinkNPC : GlobalNPC
             _throwOffTimer = binaryReader.ReadInt16();
             _thrownOffTimer = binaryReader.ReadInt16();
         }
+
+        if (npc.type == NPCID.LunarTowerNebula)
+            heldItem = binaryReader.ReadInt16();
     }
 
     public override bool PreAI(NPC npc)
@@ -122,8 +128,44 @@ internal class NebulaLinkNPC : GlobalNPC
         }
         else if (npc.type == NPCID.LunarTowerNebula)
         {
+            foreach (NPC other in Main.ActiveNPCs)
+            {
+                if (other.type is NPCID.NebulaBeast or NPCID.NebulaBrain or NPCID.NebulaHeadcrab or NPCID.NebulaSoldier)
+                {
+                    if (other.life < other.lifeMax * 0.3f)
+                    {
+                        invalid = true;
+                    }
+                    else if (other.life < other.lifeMax)
+                    {
+                        other.life++;
+                    }
+                }
+            }
+
+            if (invalid)
+            {
+                if (heldItem != -1 && Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Main.item[heldItem].active = false;
+
+                    if (Main.netMode == NetmodeID.Server)
+                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, heldItem);
+
+                    heldItem = -1;
+                }
+
+                return true;
+            }
+
             if (heldItem == -1)
-                heldItem = Item.NewItem(npc.GetSource_FromAI(), new Vector2(npc.Center.X, npc.Center.Y - 500), ModContent.ItemType<Telelink>());
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    heldItem = Item.NewItem(npc.GetSource_FromAI(), new Vector2(npc.Center.X, npc.Center.Y - 500), ModContent.ItemType<Telelink>());
+                    npc.netUpdate = true;
+                }
+            }
             else
             {
                 Item item = Main.item[heldItem];

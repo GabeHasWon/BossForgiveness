@@ -15,10 +15,8 @@ internal class NebulaPortal : ModProjectile
         Projectile.hide = true;
     }
 
-    public override void DrawBehind(int index, List<int> bNPCAndTiles, List<int> behindNPCs, List<int> bP, List<int> overPlayers, List<int> overWiresUI)
-    {
-        behindNPCs.Add(index);
-    }
+    public override void DrawBehind(int index, List<int> bNPCAndTiles, List<int> behindNPCs, List<int> bP, List<int> overPlayers, List<int> overWiresUI) 
+        => behindNPCs.Add(index);
 
     public override void AI() => Projectile.rotation += 0.06f;
 

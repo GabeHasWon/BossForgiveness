@@ -2,18 +2,17 @@
 using BossForgiveness.Content.Tiles.Vanilla;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Terraria;
-using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.UI.Chat;
 using Terraria.Utilities;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
@@ -78,6 +77,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
     internal bool won = false;
 
     private int timer = 0;
+    private bool invalid = false;
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.LunarTowerStardust;
 
@@ -92,8 +92,24 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
     public override void AI(NPC npc)
     {
-        if (npc.life < npc.lifeMax || won)
+        if (npc.life < npc.lifeMax || won || invalid)
             return;
+
+        foreach (NPC other in Main.ActiveNPCs)
+        {
+            if (other.type is NPCID.StardustCellBig or NPCID.StardustCellSmall or NPCID.StardustJellyfishBig or NPCID.StardustJellyfishSmall or NPCID.StardustSoldier 
+                or NPCID.StardustSpiderBig or NPCID.StardustSpiderSmall or NPCID.StardustWormHead or NPCID.StardustWormBody or NPCID.StardustWormTail)
+            {
+                if (other.life < other.lifeMax * 0.3f)
+                {
+                    invalid = true;
+                }
+                else if (other.life < other.lifeMax)
+                {
+                    npc.life++;
+                }
+            }
+        }
 
         if (components.Count == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
@@ -144,6 +160,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
         }
 
         bitWriter.WriteBit(won);
+        bitWriter.WriteBit(invalid);
     }
 
     public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
@@ -158,6 +175,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
         }
 
         won = bitReader.ReadBit();
+        invalid = bitReader.ReadBit();
     }
 
     private static int CountSides(Dictionary<Point16, Component> components, Point16 pos)

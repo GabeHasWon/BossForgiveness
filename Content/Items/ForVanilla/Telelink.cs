@@ -80,6 +80,18 @@ internal class Telelink : ModItem
         Item.rare = ItemRarityID.Lime;
     }
 
-    public override void HoldItem(Player player) => player.GetModPlayer<NebulaLinkPlayer>().canLink = true;
+    public override void HoldItem(Player player)
+    {
+        player.GetModPlayer<NebulaLinkPlayer>().canLink = true;
+    }
+
+    public override void UpdateInventory(Player player)
+    {
+        int tower = NPC.FindFirstNPC(NPCID.LunarTowerNebula);
+
+        if (tower == -1 || Main.npc[tower].GetGlobalNPC<NebulaLinkNPC>().invalid)
+            Item.TurnToAir();
+    }
+
     public override bool CanPickup(Player player) => !player.HasItem(Type) && player.trashItem.type != Type;
 }
