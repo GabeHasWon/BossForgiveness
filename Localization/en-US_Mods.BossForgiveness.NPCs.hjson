@@ -39,3 +39,4 @@ SkeleMinerPacified.DisplayName: "{$NPCName.UndeadMiner}"
 EmpressPacified.DisplayName: "{$NPCName.HallowBoss}"
 MimicPacified.DisplayName: "{$NPCName.Mimic}"
 RainbowSlimePacified.DisplayName: "{$NPCName.RainbowSlime}"
+Vortoid.DisplayName: Vortoid
