@@ -1,4 +1,5 @@
-﻿using BossForgiveness.Content.Systems.Syncing;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -67,6 +68,8 @@ internal class StardustPillarPlayer : ModPlayer
             pac.won = true;
             npc.active = false;
             npc.netUpdate = true;
+
+            MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerStardust);
 
             foreach (var other in Main.ActiveNPCs)
             {

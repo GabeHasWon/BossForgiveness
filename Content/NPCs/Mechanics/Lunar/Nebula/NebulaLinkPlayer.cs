@@ -1,4 +1,5 @@
-﻿using BossForgiveness.Content.Systems.Syncing;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ internal class NebulaLinkPlayer : ModPlayer
                 pillar.active = false;
                 pillar.netUpdate = true;
 
-                Projectile.NewProjectile(pillar.GetSource_Death(), pillar.Center, Vector2.Zero, ModContent.ProjectileType<NebulaPortal>(), 0, 0, Main.myPlayer);
+                MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerNebula);
 
                 foreach (var other in Main.ActiveNPCs)
                 {

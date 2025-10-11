@@ -26,6 +26,7 @@ Projectiles: {
 	SpikeAura.DisplayName: Spike Aura
 	StardustPortal.DisplayName: Stardust Portal
 	NebulaPortal.DisplayName: Nebula Portal
+	ShimmerPortal.DisplayName: Shimmer Portal
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."

@@ -19,5 +19,8 @@
     <Reference Include="NPCUtils">
       <HintPath>lib\NPCUtils.dll</HintPath>
     </Reference>
+    <Reference Include="SubworldLibrary">
+      <HintPath>lib\SubworldLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

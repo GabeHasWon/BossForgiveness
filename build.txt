@@ -2,3 +2,4 @@ displayName = Pacifist Route
 author = GabeHasWon, Sivaexo
 version = 1.0.3.10
 dllReferences = NetEasy_v0.1.8, NetSerializer, NPCUtils
+modReferences = SubworldLibrary

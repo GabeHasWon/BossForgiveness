@@ -1,4 +1,5 @@
-﻿using BossForgiveness.Content.Systems.Syncing;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
+using BossForgiveness.Content.Systems.Syncing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -172,7 +173,10 @@ internal class SolarPlayer : ModPlayer
         if (notifyInvalid)
             pac.Invalid = true;
         else if (pac.Count++ > SolarPillarPacificationNPC.MaxPacification)
+        {
             pillar.active = false;
+            MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerSolar);
+        }
 
         pillar.netUpdate = true;
     }

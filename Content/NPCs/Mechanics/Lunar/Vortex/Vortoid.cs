@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Common;
+using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 using Microsoft.Xna.Framework;
 using System;
 using System.IO;
@@ -69,6 +70,8 @@ internal class Vortoid : ModNPC
                     NPC.active = false;
                     PillarNPC.active = false;
                     PillarNPC.netUpdate = true;
+
+                    MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerVortex);
 
                     SpawnGoreForNPC(NPC);
                     SpawnGoreForNPC(PillarNPC);
