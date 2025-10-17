@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
+using Microsoft.Xna.Framework;
 using SubworldLibrary;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 internal class MoonLordPacificationTracker : ModSystem
 {
-    internal const int MaxTeleportTimer = 10 * 60;
+    internal const int MaxTeleportTimer = 10 * 40;
 
     public static HashSet<int> LunarTowersPacified = [];
     public static int TeleportTimer = 0;
@@ -19,7 +20,30 @@ internal class MoonLordPacificationTracker : ModSystem
     public override void Load()
     {
         On_LegacyPlayerRenderer.DrawPlayerFull += DrawPlayerFullMod;
-        On_Main.Draw += DrawBlackout;
+        On_Main.Draw += DrawWhiteout;
+        On_Main.Update += Timer;
+    }
+
+    private void Timer(On_Main.orig_Update orig, Main self, GameTime gameTime)
+    {
+        if (Main.mouseRight && Main.mouseMiddle && Main.mouseLeft)
+            TeleportTimer = 1;
+
+        if (TeleportTimer > 0 && SubworldSystem.Current is null)
+        {
+            TeleportTimer++;
+
+            if (TeleportTimer == 2)
+            {
+                foreach (Player plr in Main.ActivePlayers)
+                {
+                    if (plr.mount.Active)
+                        plr.QuickMount();
+                }
+            }
+        }
+
+        orig(self, gameTime);
     }
 
     private void DrawPlayerFullMod(On_LegacyPlayerRenderer.orig_DrawPlayerFull orig, LegacyPlayerRenderer self, Camera camera, Player drawPlayer)
@@ -30,13 +54,13 @@ internal class MoonLordPacificationTracker : ModSystem
         orig(self, camera, drawPlayer);
     }
 
-    private void DrawBlackout(On_Main.orig_Draw orig, Main self, GameTime gameTime)
+    private void DrawWhiteout(On_Main.orig_Draw orig, Main self, GameTime gameTime)
     {
         orig(self, gameTime);
 
         const float HalfMax = MaxTeleportTimer / 2f;
 
-        if (TeleportTimer > HalfMax)
+        if (TeleportTimer > HalfMax && !Main.gameMenu)
         {
             Main.spriteBatch.Begin();
 
@@ -57,15 +81,6 @@ internal class MoonLordPacificationTracker : ModSystem
         if (LunarTowersPacified.Count == 4)
             TeleportTimer++;
     }
-
-    public override void PreUpdatePlayers()
-    {
-        if (Main.mouseRight && Main.mouseMiddle && Main.mouseLeft)
-            TeleportTimer = 1;
-
-        if (TeleportTimer > 0)
-            TeleportTimer++;
-    }
 }
 
 public class MoonLordEmptyPlayer : ModPlayer
@@ -77,8 +92,11 @@ public class MoonLordEmptyPlayer : ModPlayer
 
         if (MoonLordPacificationTracker.TeleportTimer >= MoonLordPacificationTracker.MaxTeleportTimer && SubworldSystem.Current is null)
         {
-            MoonLordPacificationTracker.TeleportTimer = 0;
             SubworldSystem.Enter<MoonLordPacificationSubworld>();
+        }
+        else if (SubworldSystem.Current is MoonLordPacificationSubworld)
+        {
+            MoonLordPacificationTracker.TeleportTimer -= 8;
         }
     }
 }

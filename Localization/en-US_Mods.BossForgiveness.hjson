@@ -54,3 +54,8 @@ VortexDeaths: {
 	1: "{0} couldn't handle the warping."
 	2: "{0}, {0}, and {0} lost themselves."
 }
+
+Generation: {
+	Basics: Generating basics
+	Wait: (Wait...)
+}
