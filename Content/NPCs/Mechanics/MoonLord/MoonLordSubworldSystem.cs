@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Cil;
-using ReLogic.Content;
 using SubworldLibrary;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -10,7 +8,7 @@ namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 internal class MoonLordSubworldSystem : ModSystem
 {
-    public const float MaxFadeTime = 10 * 60;
+    public const float MaxFadeTime = 7 * 60;
 
     public static bool InSubworld => SubworldSystem.Current is MoonLordPacificationSubworld;
 
@@ -18,7 +16,6 @@ internal class MoonLordSubworldSystem : ModSystem
 
     public override void Load()
     {
-        On_Main.DrawBlack += HijackDrawBlack;
         On_Lighting.AddLight_int_int_int_float += BlockLight_Torch;
         On_Player.QuickMount += HijackQuickMount;
         On_Main.DrawBG += DrawBG;
@@ -55,6 +52,7 @@ internal class MoonLordSubworldSystem : ModSystem
 
         if (InSubworld)
         {
+            MoonlordBackground.Draw();
             Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(-20, -20, Main.screenWidth + 40, Main.screenHeight + 40), Color.White * PlayerFadeEffect);
         }
     }
@@ -86,21 +84,30 @@ internal class MoonLordSubworldSystem : ModSystem
 
         orig(i, j, torchID, lightAmount);
     }
-
-    private void HijackDrawBlack(On_Main.orig_DrawBlack orig, Main self, bool force)
-    {
-        orig(self, force);
-    }
 }
 
 public class MoonlordDomainPlayer : ModPlayer
 {
     internal int FadeTimer = 0;
+    internal int DomainTimer = 0;
 
-    public override void OnEnterWorld() => FadeTimer = (int)MoonLordSubworldSystem.MaxFadeTime * 3;
+    public override void OnEnterWorld()
+    {
+        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
+        {
+            return;
+        }
+
+        FadeTimer = (int)MoonLordSubworldSystem.MaxFadeTime * 3;
+        MoonlordBackground.Elements.Clear();
+        MoonlordBackground.ElementCountsByName.Clear();
+    }
 
     public override void PreUpdate()
     {
         FadeTimer--;
+        DomainTimer++;
     }
+
+    public override bool CanUseItem(Item item) => FadeTimer <= 0;
 }

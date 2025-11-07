@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Common;
+using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -17,7 +18,7 @@ namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 internal class MoonLordPacificationSubworld : Subworld
 {
     public override int Width => 1500;
-    public override int Height => 800;
+    public override int Height => 1200;
 
     public override List<GenPass> Tasks => [new PassLegacy("Reset", ResetStep)];
 
@@ -26,7 +27,6 @@ internal class MoonLordPacificationSubworld : Subworld
     protected void ResetStep(GenerationProgress progress, GameConfiguration configuration)
     {
         WorldGenerator.CurrentGenerationProgress = progress;
-        Main.ActiveWorldFileData.SetSeedToRandom();
         GenVars.structures = new();
 
         Main.spawnTileX = Main.maxTilesX / 2;
@@ -34,7 +34,8 @@ internal class MoonLordPacificationSubworld : Subworld
 
         Main.worldSurface = Main.maxTilesY - 5;
         Main.rockLayer = Main.maxTilesY - 2;
-
+        
+        Main.rand = new();
         FastNoiseLite noise = new(Main.rand.Next());
         noise.SetFrequency(0.02f);
         noise.SetDomainWarpAmp(195f);
@@ -47,7 +48,7 @@ internal class MoonLordPacificationSubworld : Subworld
             for (int j = (int)(Main.spawnTileY + 4 + noise.GetNoise(i, 30) * 12); j < Main.maxTilesY; ++j)
             {
                 Tile tile = Main.tile[i, j];
-                tile.TileType = TileID.AncientBlueBrick;
+                tile.TileType = (ushort)ModContent.TileType<OffburnTile>();
                 tile.HasTile = true;
             }
 
@@ -88,7 +89,7 @@ internal class MoonLordPacificationSubworld : Subworld
                     if (canTile && (!tilesPlacedByX.TryGetValue(i, out int count) || count < 5))
                     {
                         tile.HasTile = true;
-                        tile.TileType = TileID.ActiveStoneBlock;
+                        tile.TileType = (ushort)ModContent.TileType<OffburnTile>();
                         tilesPlacedByX.TryAdd(i, 0);
                         tilesPlacedByX[i]++;
                     }
@@ -99,6 +100,17 @@ internal class MoonLordPacificationSubworld : Subworld
         }
 
         progress.Message = Language.GetTextValue("Mods.BossForgiveness.Generation.Wait");
+
+        for (int i = 1; i < Main.maxTilesX - 1; ++i)
+        {
+            for (int j = 1; j < Main.maxTilesY - 1; ++j)
+            {
+                if (Main.rand.NextBool())
+                    Tile.SmoothSlope(i, j, false);
+            }
+
+            progress.Set(i / (double)Main.maxTilesX);
+        }
     }
 
     public override void DrawMenu(GameTime gameTime)

@@ -48,7 +48,7 @@ internal class MoonLordPacificationTracker : ModSystem
 
     private void DrawPlayerFullMod(On_LegacyPlayerRenderer.orig_DrawPlayerFull orig, LegacyPlayerRenderer self, Camera camera, Player drawPlayer)
     {
-        if (TeleportTimer > 0)
+        if (TeleportTimer > 0 && SubworldSystem.Current is not MoonLordPacificationSubworld)
             return;
 
         orig(self, camera, drawPlayer);
@@ -85,9 +85,11 @@ internal class MoonLordPacificationTracker : ModSystem
 
 public class MoonLordEmptyPlayer : ModPlayer
 {
+    public override bool CanUseItem(Item item) => MoonLordPacificationTracker.TeleportTimer <= 0;
+
     public override void PreUpdateMovement()
     {
-        if (MoonLordPacificationTracker.TeleportTimer > 0)
+        if (MoonLordPacificationTracker.TeleportTimer > 0 && SubworldSystem.Current is not MoonLordPacificationSubworld)
             Player.velocity = Vector2.Zero;
 
         if (MoonLordPacificationTracker.TeleportTimer >= MoonLordPacificationTracker.MaxTeleportTimer && SubworldSystem.Current is null)
