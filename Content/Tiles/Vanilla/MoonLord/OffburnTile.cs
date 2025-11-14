@@ -32,7 +32,7 @@ internal class OffburnTile : ModTile
             ref bool spawning = ref IsSpawning(dust);
 
             if (!spawning)
-                dust.alpha += 12;
+                dust.alpha += 8;
             else
             {
                 dust.alpha -= 4;
@@ -60,7 +60,7 @@ internal class OffburnTile : ModTile
         Main.tileSolid[Type] = true;
         Main.tileBlockLight[Type] = true;
 
-        AddMapEntry(new Color(65, 54, 99));
+        AddMapEntry(new Color(43, 86, 196));
         
         DustType = DustID.Lead;
     }

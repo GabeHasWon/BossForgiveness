@@ -57,5 +57,9 @@ VortexDeaths: {
 
 Generation: {
 	Basics: Generating basics
-	Wait: (Wait...)
+	Wait:
+		'''
+		(Wait...)
+		Shaping offburn
+		'''
 }

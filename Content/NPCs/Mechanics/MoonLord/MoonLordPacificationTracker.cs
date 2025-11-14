@@ -67,7 +67,11 @@ internal class MoonLordPacificationTracker : ModSystem
             float adjTimer = (TeleportTimer - HalfMax) / HalfMax;
             Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(-10), new Rectangle(0, 0, 10000, 10000), Color.White * adjTimer);
 
+            if (SubworldSystem.Current is MoonLordPacificationSubworld)
+                MoonLordPacificationSubworld.DrawStatusText(false, adjTimer);
+
             Main.spriteBatch.End();
+
         }
     }
 

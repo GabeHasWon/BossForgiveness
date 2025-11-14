@@ -19,10 +19,22 @@ internal class MoonLordSubworldSystem : ModSystem
         On_Lighting.AddLight_int_int_int_float += BlockLight_Torch;
         On_Player.QuickMount += HijackQuickMount;
         On_Main.DrawBG += DrawBG;
+        On_Main.DrawStarsInBackground += On_Main_DrawStarsInBackground;
         On_DrawData.Draw_SpriteDrawBuffer += DrawSilhouette;
 
         IL_Main.DoDraw_Tiles_Solid += BlackenedTiles;
         IL_Main.DoDraw_WallsAndBlacks += HideWalls;
+    }
+
+    private void On_Main_DrawStarsInBackground(On_Main.orig_DrawStarsInBackground orig, Main self, Main.SceneArea sceneArea, bool artificial)
+    {
+        orig(self, sceneArea, artificial);
+
+        if (InSubworld && false)
+        {
+            MoonlordBackground.Draw();
+            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(-20, -20, Main.screenWidth + 40, Main.screenHeight + 40), Color.White * PlayerFadeEffect);
+        }
     }
 
     private void DrawSilhouette(On_DrawData.orig_Draw_SpriteDrawBuffer orig, ref DrawData self, SpriteDrawBuffer sb)
@@ -107,6 +119,11 @@ public class MoonlordDomainPlayer : ModPlayer
     {
         FadeTimer--;
         DomainTimer++;
+
+        if (SubworldSystem.Current is MoonLordPacificationSubworld)
+        {
+            Main.shimmerAlpha = Utils.GetLerpValue(Main.spawnTileY, Main.maxTilesY - 300, Player.Center.Y / 16f, true);
+        }
     }
 
     public override bool CanUseItem(Item item) => FadeTimer <= 0;
