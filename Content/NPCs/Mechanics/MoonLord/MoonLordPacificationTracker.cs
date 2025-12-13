@@ -26,12 +26,17 @@ internal class MoonLordPacificationTracker : ModSystem
 
     private void Timer(On_Main.orig_Update orig, Main self, GameTime gameTime)
     {
-        if (Main.mouseRight && Main.mouseMiddle && Main.mouseLeft)
+        if (Main.mouseRight && Main.mouseMiddle)
             TeleportTimer = 1;
 
         if (TeleportTimer > 0 && SubworldSystem.Current is null)
         {
-            TeleportTimer++;
+            TeleportTimer +=
+#if DEBUG
+                5;
+#else
+                1;
+#endif
 
             if (TeleportTimer == 2)
             {

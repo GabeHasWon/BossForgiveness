@@ -7,6 +7,7 @@ using SubworldLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
@@ -92,9 +93,11 @@ internal class MoonLordPacificationSubworld : Subworld
                 }
             }
 
-            if (Math.Abs(x - currentPillarX) > 5 && !WorldGen.genRand.NextBool(30))
+            int dif = Math.Abs(x - currentPillarX);
+
+            if (dif > 5 && !WorldGen.genRand.NextBool(30))
             {
-                if (Math.Abs(x - currentPillarX) == 5)
+                if (dif == 6) // needs to be changed, breaking through solid tiles atm
                     TryExpandPillar(x - 1, LowYByX[x - 1] - 1, false, false);
 
                 continue;
@@ -129,6 +132,25 @@ internal class MoonLordPacificationSubworld : Subworld
                 TryExpandPillar(x, LowYByX[x] - 1, false, true);
             }
         }
+
+        CleanWallsAboveBurnlayer();
+    }
+
+    private static void CleanWallsAboveBurnlayer()
+    {
+        for (int i = 0; i < Main.maxTilesX; ++i)
+        {
+            for (int j = 0; j < Main.maxTilesY; ++j)
+            {
+                Tile tile = Main.tile[i, j];
+                tile.WallType = WallID.None;
+
+                if (tile.HasTile && Main.tileSolid[tile.TileType])
+                {
+                    break;
+                }
+            }
+        }
     }
 
     private static void TryExpandPillar(int x, int y, bool places, bool left)
@@ -152,7 +174,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
             y--;
 
-            if (Math.Abs(y - origY) > 10 && WorldGen.genRand.NextBool(20) && !hasPlaced)
+            if (Math.Abs(y - origY) > 10 && WorldGen.genRand.NextBool(8) && !hasPlaced)
             {
                 TryExpandPillar(x + (left ? -1 : 1), y, true, left);
                 hasPlaced = true;
@@ -252,6 +274,35 @@ internal class MoonLordPacificationSubworld : Subworld
             }
 
             progress.Set(i / (double)Main.maxTilesX);
+        }
+
+        HashSet<Point16> vines = [];
+
+        for (int i = 0; i < Main.maxTilesX; ++i)
+        {
+            for (int j = OffburnLayer; j < Main.maxTilesY - 20; ++j)
+            {
+                Tile tile = Main.tile[i, j];
+                bool isOffburn = tile.TileType == ModContent.TileType<OffburnTile>() || tile.TileType == ModContent.TileType<CooledOffburnTile>();
+
+                if (tile.HasTile && isOffburn && Main.rand.NextBool(12) && !WorldGen.SolidTile(i, j + 1))
+                {
+                    int height = Main.rand.Next(2, 13);
+
+                    for (int y = j + 1; y < j + height; ++y)
+                    {
+                        Tile vine = Main.tile[i, y];
+                        vine.HasTile = true;
+                        vine.TileType = (ushort)ModContent.TileType<MoltenOffburn>();
+                        vines.Add(new Point16(i, y));
+                    }
+                }
+            }
+        }
+
+        foreach (Point16 pos in vines)
+        {
+            WorldGen.TileFrame(pos.X, pos.Y, true);
         }
     }
 

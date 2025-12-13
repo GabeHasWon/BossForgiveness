@@ -1,5 +1,6 @@
 global using Terraria.ModLoader;
 global using Terraria;
+global using Microsoft.Xna.Framework;
 
 using System.IO;
 

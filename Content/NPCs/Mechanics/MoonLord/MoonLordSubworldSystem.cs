@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using MonoMod.Cil;
+﻿using MonoMod.Cil;
 using SubworldLibrary;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -12,7 +11,7 @@ internal class MoonLordSubworldSystem : ModSystem
 
     public static bool InSubworld => SubworldSystem.Current is MoonLordPacificationSubworld;
 
-    private static float PlayerFadeEffect => MathHelper.Clamp(Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().FadeTimer / MaxFadeTime, 0, 1);
+    internal static float PlayerFadeEffect => MathHelper.Clamp(Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().FadeTimer / MaxFadeTime, 0, 1);
 
     public override void Load()
     {
@@ -117,8 +116,14 @@ public class MoonlordDomainPlayer : ModPlayer
 
     public override void PreUpdate()
     {
-        FadeTimer--;
-        DomainTimer++;
+#if DEBUG
+        const int Speed = 5;
+#else
+        const int Speed = 1;
+#endif
+
+        FadeTimer -= Speed;
+        DomainTimer += Speed;
 
         if (SubworldSystem.Current is MoonLordPacificationSubworld)
         {
