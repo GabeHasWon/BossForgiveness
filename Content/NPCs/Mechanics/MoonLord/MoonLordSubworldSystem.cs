@@ -1,7 +1,10 @@
-﻿using MonoMod.Cil;
+﻿using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Cil;
 using SubworldLibrary;
+using System.Reflection;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Drawing;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
@@ -9,9 +12,16 @@ internal class MoonLordSubworldSystem : ModSystem
 {
     public const float MaxFadeTime = 7 * 60;
 
+    private delegate void hook_PushSprite(SpriteBatch spriteBatch, Texture2D texture, float sourceX, float sourceY, float sourceW, float sourceH, float destinationX, float destinationY, 
+        float destinationW, float destinationH, Color color, float originX, float originY, float rotationSin, float rotationCos, float depth, byte effects);
+
+    private static bool Blackout = false;
+
     public static bool InSubworld => SubworldSystem.Current is MoonLordPacificationSubworld;
 
     internal static float PlayerFadeEffect => MathHelper.Clamp(Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().FadeTimer / MaxFadeTime, 0, 1);
+
+    public static Color Fade(Color color) => Color.Lerp(color, Color.Black, PlayerFadeEffect);
 
     public override void Load()
     {
@@ -20,9 +30,44 @@ internal class MoonLordSubworldSystem : ModSystem
         On_Main.DrawBG += DrawBG;
         On_Main.DrawStarsInBackground += On_Main_DrawStarsInBackground;
         On_DrawData.Draw_SpriteDrawBuffer += DrawSilhouette;
+        On_TileDrawing.Draw += AddCheck;
+        On_TileDrawing.PostDrawTiles += AddCheck;
+        On_Main.DrawDust += AddCheck;
+
+        MonoModHooks.Add(typeof(SpriteBatch).GetMethod("PushSprite", BindingFlags.Instance | BindingFlags.NonPublic), DetourPushSprite);
 
         IL_Main.DoDraw_Tiles_Solid += BlackenedTiles;
         IL_Main.DoDraw_WallsAndBlacks += HideWalls;
+    }
+
+    private void AddCheck(On_Main.orig_DrawDust orig, Main self)
+    {
+        Blackout = true;
+        orig(self);
+        Blackout = false;
+    }
+
+    private void AddCheck(On_TileDrawing.orig_PostDrawTiles orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
+    {
+        Blackout = true;
+        orig(self, solidLayer, forRenderTargets, intoRenderTargets);
+        Blackout = false;
+    }
+
+    private void AddCheck(On_TileDrawing.orig_Draw orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
+    {
+        Blackout = true;
+        orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
+        Blackout = false;
+    }
+
+    private static void DetourPushSprite(hook_PushSprite orig, SpriteBatch spriteBatch, Texture2D texture, float sourceX, float sourceY, float sourceW, float sourceH, float destinationX, 
+        float destinationY, float destinationW, float destinationH, Color color, float originX, float originY, float rotationSin, float rotationCos, float depth, byte effects)
+    {
+        if (Blackout)
+            color = Fade(color);
+
+        orig(spriteBatch, texture, sourceX, sourceY, sourceW, sourceH, destinationX, destinationY, destinationW, destinationH, color, originX, originY, rotationSin, rotationCos, depth, effects);
     }
 
     private void On_Main_DrawStarsInBackground(On_Main.orig_DrawStarsInBackground orig, Main self, Main.SceneArea sceneArea, bool artificial)
@@ -40,7 +85,7 @@ internal class MoonLordSubworldSystem : ModSystem
     {
         if (InSubworld)
         {
-            self.color = Color.Lerp(self.color, Color.Black, PlayerFadeEffect);
+            self.color = Fade(self.color);
         }
 
         orig(ref self, sb);

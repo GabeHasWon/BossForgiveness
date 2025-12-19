@@ -1,18 +1,19 @@
 ﻿using BossForgiveness.Common;
 using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
-using Microsoft.Xna.Framework;
+using BossForgiveness.Content.Walls;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
-using Terraria;
+using System.Runtime.CompilerServices;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.Localization;
+using Terraria.Utilities;
 using Terraria.WorldBuilding;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
@@ -21,6 +22,8 @@ internal class MoonLordPacificationSubworld : Subworld
 {
     private static int OffburnLayer => Main.maxTilesY - 300;
     private static int FalloutLayer => Main.maxTilesY - 600;
+
+    private static ref UnifiedRandom Random => ref Main._rand;
 
     public override int Width => 1500;
     public override int Height => 1200;
@@ -34,7 +37,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
     private void FalloutStep(GenerationProgress progress, GameConfiguration configuration)
     {
-        FastNoiseLite noise = new(Main.rand.Next());
+        FastNoiseLite noise = new(Random.Next());
         noise.SetFrequency(0.006f);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.Hybrid);
@@ -45,7 +48,6 @@ internal class MoonLordPacificationSubworld : Subworld
 
         float noiseAmp = 20;
         int tileId = TileID.ShimmerBlock;
-        int wallId = WallID.ShimmerBrickWall;
         int currentPillarX = 0;
         int currentPillarY = 0;
 
@@ -78,7 +80,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
                         if (value < 0f)
                         {
-                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? WallID.ShimmerBlockWall : (ushort)wallId;
+                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? WallID.ShimmerBlockWall : OffburnWallId();
                         }
                         else
                         {
@@ -122,7 +124,7 @@ internal class MoonLordPacificationSubworld : Subworld
             while (!WorldGen.SolidTile(x, startY))
             {
                 Tile tile = Main.tile[x, startY];
-                tile.WallType = WallID.LunarBrickWall;
+                tile.WallType = OffburnWallId();
 
                 startY--;
             }
@@ -169,7 +171,7 @@ internal class MoonLordPacificationSubworld : Subworld
             if (places)
             {
                 Tile tile = Main.tile[x, y];
-                tile.WallType = WallID.LunarBrickWall;
+                tile.WallType = OffburnWallId();
             }
 
             y--;
@@ -192,9 +194,9 @@ internal class MoonLordPacificationSubworld : Subworld
 
         Main.worldSurface = Main.maxTilesY - 5;
         Main.rockLayer = Main.maxTilesY - 2;
-        
-        Main.rand = new();
-        FastNoiseLite noise = new(Main.rand.Next());
+
+        Random = new UnifiedRandom((int)DateTime.Now.ToBinary());
+        FastNoiseLite noise = new(Random.Next());
         noise.SetFrequency(0.02f);
         noise.SetDomainWarpAmp(195f);
         noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2Reduced);
@@ -232,16 +234,16 @@ internal class MoonLordPacificationSubworld : Subworld
 
                     if (value > 0.3f)
                     {
-                        if (value > 0.9f)
+                        if (value > 0.8f)
                         {
                             tile.TileType = (ushort)ModContent.TileType<CooledOffburnTile>();
                             tile.HasTile = true;
                         }
                         else
-                            tile.WallType = WallID.ShimmerBlockWall;
+                            tile.WallType = OffburnWallId();
                     }
                     else if (noise.GetNoise(x + 500, y + 500) < -0.6f)
-                        tile.WallType = WallID.ShimmerBrickWall;
+                        tile.WallType = OffburnWallId();
                     else
                         canTile = false;
 
@@ -269,7 +271,7 @@ internal class MoonLordPacificationSubworld : Subworld
         {
             for (int j = 1; j < Main.maxTilesY - 1; ++j)
             {
-                if (!Main.rand.NextBool(3))
+                if (!Random.NextBool(3))
                     Tile.SmoothSlope(i, j, false);
             }
 
@@ -285,16 +287,23 @@ internal class MoonLordPacificationSubworld : Subworld
                 Tile tile = Main.tile[i, j];
                 bool isOffburn = tile.TileType == ModContent.TileType<OffburnTile>() || tile.TileType == ModContent.TileType<CooledOffburnTile>();
 
-                if (tile.HasTile && isOffburn && Main.rand.NextBool(12) && !WorldGen.SolidTile(i, j + 1))
+                if (tile.HasTile && isOffburn)
                 {
-                    int height = Main.rand.Next(2, 13);
-
-                    for (int y = j + 1; y < j + height; ++y)
+                    if (Random.NextBool(12) && !WorldGen.SolidTile(i, j + 1))
                     {
-                        Tile vine = Main.tile[i, y];
-                        vine.HasTile = true;
-                        vine.TileType = (ushort)ModContent.TileType<MoltenOffburn>();
-                        vines.Add(new Point16(i, y));
+                        int height = Random.Next(2, 13);
+
+                        for (int y = j + 1; y < j + height; ++y)
+                        {
+                            Tile vine = Main.tile[i, y];
+                            vine.HasTile = true;
+                            vine.TileType = (ushort)ModContent.TileType<MoltenOffburn>();
+                            vines.Add(new Point16(i, y));
+                        }
+                    }
+                    else if (Random.NextBool(6) && !WorldGen.SolidTile(i, j - 1))
+                    {
+                        WorldGen.PlaceTile(i, j - 1, ModContent.TileType<OddPlants>(), true, style: Main.rand.Next(3));
                     }
                 }
             }
@@ -305,6 +314,9 @@ internal class MoonLordPacificationSubworld : Subworld
             WorldGen.TileFrame(pos.X, pos.Y, true);
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ushort OffburnWallId() => (ushort)(Random.NextBool(12) ? ModContent.WallType<EmberOffburnWall>() : ModContent.WallType<OffburnWall>());
 
     public override void DrawMenu(GameTime gameTime)
     {
@@ -322,7 +334,7 @@ internal class MoonLordPacificationSubworld : Subworld
             status = progress.Message;
         }
 
-        foreach (var line in status.Split('\n'))
+        foreach (string line in status.Split('\n'))
         {
             if (addStatusText && !StatusTexts.Contains(line))
             {
