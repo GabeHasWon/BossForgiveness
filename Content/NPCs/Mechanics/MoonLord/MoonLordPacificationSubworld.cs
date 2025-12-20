@@ -136,6 +136,7 @@ internal class MoonLordPacificationSubworld : Subworld
         }
 
         CleanWallsAboveBurnlayer();
+        DecorateOffburn();
     }
 
     private static void CleanWallsAboveBurnlayer()
@@ -277,12 +278,15 @@ internal class MoonLordPacificationSubworld : Subworld
 
             progress.Set(i / (double)Main.maxTilesX);
         }
+    }
 
+    private static void DecorateOffburn()
+    {
         HashSet<Point16> vines = [];
 
         for (int i = 0; i < Main.maxTilesX; ++i)
         {
-            for (int j = OffburnLayer; j < Main.maxTilesY - 20; ++j)
+            for (int j = FalloutLayer; j < Main.maxTilesY - 20; ++j)
             {
                 Tile tile = Main.tile[i, j];
                 bool isOffburn = tile.TileType == ModContent.TileType<OffburnTile>() || tile.TileType == ModContent.TileType<CooledOffburnTile>();
@@ -296,6 +300,10 @@ internal class MoonLordPacificationSubworld : Subworld
                         for (int y = j + 1; y < j + height; ++y)
                         {
                             Tile vine = Main.tile[i, y];
+
+                            if (vine.HasTile)
+                                break;
+
                             vine.HasTile = true;
                             vine.TileType = (ushort)ModContent.TileType<MoltenOffburn>();
                             vines.Add(new Point16(i, y));
@@ -303,7 +311,18 @@ internal class MoonLordPacificationSubworld : Subworld
                     }
                     else if (Random.NextBool(6) && !WorldGen.SolidTile(i, j - 1))
                     {
-                        WorldGen.PlaceTile(i, j - 1, ModContent.TileType<OddPlants>(), true, style: Main.rand.Next(3));
+                        WorldGen.PlaceTile(i, j - 1, ModContent.TileType<OddPlants>(), true, style: Random.Next(3));
+                    }
+                }
+                else
+                {
+                    if (Random.NextBool(140))
+                    {
+                        WorldGen.PlaceObject(i, j, ModContent.TileType<WallFlowers2x2>(), true, Random.Next(4));
+                    }
+                    else if (Random.NextBool(110))
+                    {
+                        WorldGen.PlaceObject(i, j, ModContent.TileType<WallFlowers1x1>(), true, Random.Next(8));
                     }
                 }
             }

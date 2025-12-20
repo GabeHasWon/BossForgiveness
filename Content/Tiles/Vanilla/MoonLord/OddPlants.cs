@@ -24,7 +24,6 @@ internal class OddPlants : ModTile
         TileObjectData.newTile.CoordinateWidth = 28;
         TileObjectData.newTile.AnchorInvalidTiles = [127];
         TileObjectData.newTile.LavaDeath = false;
-        TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
         TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidBottom | AnchorType.AlternateTile, TileObjectData.newTile.Width, 0);
         TileObjectData.newTile.AnchorAlternateTiles = [Type];
         TileObjectData.newTile.DrawYOffset = -20;

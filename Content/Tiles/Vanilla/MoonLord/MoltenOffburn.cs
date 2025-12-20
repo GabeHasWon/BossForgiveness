@@ -1,7 +1,5 @@
 ﻿using BossForgiveness.Common;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.ComponentModel.DataAnnotations;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
@@ -53,31 +51,6 @@ internal class MoltenOffburn : ModTile
         return false;
     }
 
-    public override void EmitParticles(int i, int j, Tile tile, short tileFrameX, short tileFrameY, Color tileLight, bool visible)
-    {
-        if (Main.rand.NextBool(70))
-        {
-            TrySpawnDust(i, j - 1, new Vector2(0, -1), true);
-            TrySpawnDust(i, j + 1, new Vector2(0, 1), true);
-            TrySpawnDust(i + 1, j, new Vector2(1, 0), false);
-            TrySpawnDust(i - 1, j, new Vector2(-1, 0), false);
-        }
-    }
-
-    private static void TrySpawnDust(int i, int j, Vector2 direction, bool isUp)
-    {
-        if (WorldGen.SolidOrSlopedTile(i, j))
-            return;
-
-        float range = Main.rand.NextFloat(16);
-        Vector2 position = new Vector2(i, j).ToWorldCoordinates(isUp ? range : -direction.X * 8, !isUp ? range : -direction.Y * 8);
-        Vector2 velocity = new(RandomizeAxis(direction.X), RandomizeAxis(direction.Y));
-
-        Dust.NewDustPerfect(position, ModContent.DustType<OffburnTile.OffburnDust>(), velocity);
-    }
-
-    private static float RandomizeAxis(float x) => x == 0 ? Main.rand.NextFloat(-1, 1) : x * Main.rand.NextFloat(2, 6);
-
     public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
     {
         float xMod = 1f;
@@ -95,7 +68,7 @@ internal class MoltenOffburn : ModTile
         }
 
         Vector2 pos = TileExtensions.DrawPosition(i, j);
-        pos.X += StaticNoise.GetNoise(i, j * 2 + StaticNoise.GetNoise(i, j * 8 + 2500) + Main.GameUpdateCount * 0.5f, StaticNoise.NoiseType.WebCellular) * 16 * xMod;
+        pos.X += (StaticNoise.GetNoise(i * 50, j * 2 + StaticNoise.GetNoise(i, j * 8 + 2500) + Main.GameUpdateCount * 0.5f, StaticNoise.NoiseType.WebCellular) * 32 + 16) * xMod;
 
         Rectangle src = TileExtensions.BasicFrame(i, j);
         spriteBatch.Draw(TextureAssets.Tile[Type].Value, pos, src, TileExtensions.FadeLight(i, j));
