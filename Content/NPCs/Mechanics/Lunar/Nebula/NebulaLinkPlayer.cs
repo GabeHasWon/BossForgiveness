@@ -115,7 +115,9 @@ internal class NebulaLinkPlayer : ModPlayer
         }
         else
         {
-            Main.npc[_hasPillar.Value].GetGlobalNPC<NebulaLinkNPC>().invalid = true;
+            if (Main.npc[_hasPillar.Value].TryGetGlobalNPC(out NebulaLinkNPC neb))
+                neb.invalid = true;
+
             ClearConnections();
         }
     }
