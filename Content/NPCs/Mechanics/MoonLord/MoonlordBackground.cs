@@ -18,6 +18,7 @@ internal class MoonlordBackground : ModSystem
         public Rectangle? Source = src;
         public float Parallax = parallaxLevel;
         public PreDrawBackgroundElement OnDraw = onDraw;
+        public bool Flipped = Main.rand.NextBool(2);
     }
 
     public static Dictionary<string, Asset<Texture2D>> Textures = [];
@@ -51,25 +52,24 @@ internal class MoonlordBackground : ModSystem
 
             if (element.OnDraw?.Invoke(element, ref drawPosition, ref scale, ref origin, ref color) != false)
             {
-                Main.spriteBatch.Draw(Textures[element.Texture].Value, drawPosition, element.Source, color, 0f, origin, scale, SpriteEffects.None, 0);
+                SpriteEffects flip = element.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                Main.spriteBatch.Draw(Textures[element.Texture].Value, drawPosition, element.Source, color, 0f, origin, scale, flip, 0);
             }
         }
     }
 
     private static void PreDrawUpdate(Player player, int domainTimer)
     {
-        if (!MaxedElements("Object0", 450))
+        if (!MaxedElements("Object0", 1250))
         {
-            var pos = new Vector2(Main.rand.NextFloat(-160, Main.maxTilesX * 16 + 160), Main.rand.NextFloat(Main.maxTilesY * 0.5f, Main.maxTilesY * 0.7f) * 16);
-            var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
-
-            Rectangle src = Main.rand.Next(2) switch
+            for (int i = 0; i < 250; ++i)
             {
-                1 => new Rectangle(0, 0, 100, 80),
-                _ => new Rectangle(0, 82, 100, 58)
-            };
+                var pos = new Vector2(Main.rand.NextFloat(-160, Main.maxTilesX * 8 + 160), Main.rand.NextFloat(Main.maxTilesY * 0.5f, Main.maxTilesY * 0.7f) * 16);
+                var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
-            AddElement(new BackgroundElement("Object0", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
+                Rectangle src = new(0, 82 * Main.rand.Next(4), 100, 80);
+                AddElement(new BackgroundElement("Object0", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
+            }
         }
     }
 
