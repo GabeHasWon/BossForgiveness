@@ -22,11 +22,12 @@ internal class MoonLordPacificationSubworld : Subworld
 {
     private static int OffburnLayer => Main.maxTilesY - 300;
     private static int FalloutLayer => Main.maxTilesY - 600;
+    private static int PurityLayer => Main.maxTilesY - 900;
 
     private static ref UnifiedRandom Random => ref Main._rand;
 
     public override int Width => 1500;
-    public override int Height => 1200;
+    public override int Height => 1500;
 
     private static Dictionary<int, int> LowYByX = [];
 
@@ -47,7 +48,7 @@ internal class MoonLordPacificationSubworld : Subworld
         progress.Message = "(Can you see this?)\nGenerating burnlayer";
 
         float noiseAmp = 20;
-        int tileId = TileID.ShimmerBlock;
+        int tileId = ModContent.TileType<EmberTile>();
         int currentPillarX = 0;
         int currentPillarY = 0;
 
@@ -80,7 +81,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
                         if (value < 0f)
                         {
-                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? WallID.ShimmerBlockWall : OffburnWallId();
+                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? WallID.ShimmerBrickWall : OffburnWallId();
                         }
                         else
                         {
@@ -90,7 +91,7 @@ internal class MoonLordPacificationSubworld : Subworld
                     else if (y < warpedFloor + 5 || y < floorY + 160 * noise.GetNoise(x + 12000, y) || y < floorY + 15 + Math.Abs(noise.GetNoise(x, y + 3000)) * 5)
                     {
                         tile.HasTile = true;
-                        tile.TileType = (ushort)ModContent.TileType<CooledOffburnTile>();
+                        tile.TileType = (ushort)ModContent.TileType<CooledEmberTile>();
                     }
                 }
             }

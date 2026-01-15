@@ -64,7 +64,7 @@ internal class MoonlordBackground : ModSystem
         {
             for (int i = 0; i < 250; ++i)
             {
-                var pos = new Vector2(Main.rand.NextFloat(-160, Main.maxTilesX * 8 + 160), Main.rand.NextFloat(Main.maxTilesY * 0.5f, Main.maxTilesY * 0.7f) * 16);
+                var pos = new Vector2(Main.rand.NextFloat(-160, Main.maxTilesX * 8 + 160), Main.rand.NextFloat(Main.maxTilesY * 0.65f, Main.maxTilesY * 0.7f) * 16);
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
                 Rectangle src = new(0, 82 * Main.rand.Next(4), 100, 80);
