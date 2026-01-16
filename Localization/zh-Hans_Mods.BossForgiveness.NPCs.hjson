@@ -1,0 +1,42 @@
+KingSlimePacified.DisplayName: "{$NPCName.KingSlime}"
+EyePacified.DisplayName: "{$NPCName.EyeofCthulhu}"
+BoCPacified.DisplayName: "{$NPCName.BrainofCthulhu}"
+PacifiedEoW.DisplayName: "{$NPCName.EaterofWorldsTail}"
+PacifiedQueenBee.DisplayName: "{$NPCName.QueenBee}"
+SkeletronPacified.DisplayName: "{$NPCName.SkeletronHead}"
+PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
+QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
+SkelePrimePacified.DisplayName: "{$NPCName.SkeletronPrime}"
+DestroyerPacified.DisplayName: "{$NPCName.TheDestroyer}"
+SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
+RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
+PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
+GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
+
+TruffleLeechNPC: {
+	DisplayName: 松露水蛭
+	Entry: 一种猪龙常携带的小型水蛭，具有一定的攻击性，但威胁不大。味道怪怪的。
+}
+
+Omnileech: {
+	DisplayName: 皇家松露盛宴
+	Entry: 一种硕大到已经无法自行移动的传奇松露虫，被各界猪龙视为珍馐。
+}
+
+DukePacified.DisplayName: "{$NPCName.DukeFishron}"
+CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
+EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
+
+SpiritLeech: {
+	DisplayName: 爆裂血蛭
+	Entry: 一种会在短时间内爆炸的奇异血蛭变种。有时它们会以幽灵形态出现，原因不明。
+}
+
+PinkyPacified.DisplayName: "{$NPCName.Pinky}"
+LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"
+TimPacified.DisplayName: "{$NPCName.Tim}"
+SkeleMinerPacified.DisplayName: "{$NPCName.UndeadMiner}"
+EmpressPacified.DisplayName: "{$NPCName.HallowBoss}"
+MimicPacified.DisplayName: "{$NPCName.Mimic}"
+RainbowSlimePacified.DisplayName: "{$NPCName.RainbowSlime}"
+Vortoid.DisplayName: Vortoid

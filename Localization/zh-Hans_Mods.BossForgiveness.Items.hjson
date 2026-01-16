@@ -1,0 +1,168 @@
+EoCLeash: {
+	DisplayName: 克苏鲁之缰绳
+	Tooltip:
+		'''
+		扔向城镇克苏鲁之眼以进行骑乘
+		可随时按跳跃键结束骑乘
+		“原理？最好别问。”
+		'''
+}
+
+ChatItemIcon: {
+	DisplayName: Chat Item Icon
+	Tooltip: ""
+}
+
+GolemTaser: {
+	DisplayName: 丛林蜥蜴魔石
+	Tooltip:
+		'''
+		一块奇特的石砖，蕴含着丛林蜥蜴的古代魔法
+		命中石巨人时，加速它的移动，
+		但最终能使其停止运作。
+		“在你手中不断嗡鸣。”
+		'''
+}
+
+WormMorsel: {
+	DisplayName: 蠕虫小食
+	Tooltip:
+		'''
+		食用它会让你生病
+		右键以扔出
+		命中敌怪时可能使其中毒，小概率产生酸性毒液减益，持续一分钟
+		命中世界吞噬者时，逐渐使其变得友好
+		“湿漉漉、软趴趴，具备肉所不该有的一切品质”
+		'''
+}
+
+TruffleLeech: {
+	DisplayName: 松露水蛭
+	Tooltip:
+		'''
+		一种稀有生物，仅出现在猪龙鱼公爵的鲨鱼旋风中
+		捕获足够数量后，或许能让你与猪龙鱼公爵化敌为友
+		'''
+}
+
+OmnileechItem: {
+	DisplayName: 皇家松露盛宴
+	Tooltip:
+		'''
+		在猪龙鱼公爵附近时，抓准时机扔出
+		“举世猪龙皆无法抗拒的珍馐！”
+		'''
+}
+
+CrystalFisher: {
+	DisplayName: 水晶钓竿
+	Tooltip:
+		'''
+		可钓出史莱姆皇后内部的水晶核心
+		“经水晶强化的钓线，给予你飞钓的能力！”
+		'''
+}
+
+CrystalCore: {
+	DisplayName: 水晶核心
+	Tooltip: 目前没有用…
+}
+
+GuidesLocket: {
+	DisplayName: 向导的吊坠
+	Tooltip:
+		'''
+		来自向导的强大信物
+		丢弃或扔出时损毁
+		能够召唤血肉之墙，但同时也会激怒它
+		暴怒的血肉之墙移动速度显著加快，能够射出多种激光与更多血蛭
+		当你持有向导的吊坠时，爆裂血蛭的灵魂将不会对你造成伤害，并在触碰时被安抚
+		被安抚的血蛭会回到墙内，使其局部逐渐石化
+		“一股沉滞的力量在其中扰动，它仍静止如初。”
+		'''
+}
+
+CobaltOrb: {
+	DisplayName: 钴能量球
+	Tooltip:
+		'''
+		融合电能与魔法，释放一次大范围的强电磁脉冲爆炸
+		或许能对大型机械造成严重干扰
+		“三思。”
+		'''
+}
+
+PalladiumOrb: {
+	DisplayName: 钯金能量球
+	Tooltip:
+		'''
+		融合电能与魔法，释放一次大范围的强电磁脉冲爆炸
+		或许能对大型机械造成严重干扰
+		“三思。”
+		'''
+}
+
+PrismLens: {
+	DisplayName: 虹彩透镜
+	Tooltip:
+		'''
+		能够驾驭光明的力量
+		聚焦于光之女皇，可汲取她的光辉
+		光芒会扰乱你的视野，使闪避更加艰难
+		“于彩虹中燃烧”
+		'''
+}
+
+MimicChestItem: {
+	DisplayName: 怪宝箱
+	Tooltip:
+		'''
+		用于迷惑宝箱怪
+		将其放置在宝箱怪身边，反复开启以安抚宝箱怪
+		“适用于一岁以上的宝箱怪！”
+		'''
+}
+
+MimicBell: {
+	DisplayName: 宝箱铃球
+	Tooltip: "“家养宝箱怪最爱的玩具！”'"
+}
+
+Tracemap: {
+	DisplayName: Tracemap
+	Tooltip:
+		'''
+		A mysterious device used to contact a distant planet
+		Place according to the Stardust Pillar's construct
+		'''
+}
+
+ClaspCell: {
+	DisplayName: Clasp Cell
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+Flowlink: {
+	DisplayName: Flowlink
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+SkywardAntennae: {
+	DisplayName: Skyward Antennae
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+Starshot: {
+	DisplayName: Starshot
+	Tooltip: "{$Tracemap.Tooltip}"
+}
+
+Telelink: {
+	DisplayName: Telelink
+	Tooltip:
+		'''
+		Allows you to communicate with the Nebula
+		You must link to the Pillar in order to link with other creatures
+
+		'''
+}

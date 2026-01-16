@@ -1,0 +1,55 @@
+Projectiles: {
+	EoCLeashProj.DisplayName: Leash
+	GolemTaserProj.DisplayName: Golem Taser
+	WormMorselProj.DisplayName: Worm Morsel
+	SlimeSpikeball.DisplayName: Slime Spikeball
+	SlimePellet.DisplayName: Slime Pellet
+	CrystalBobber.DisplayName: Crystal Bobber
+	SkullLamp.DisplayName: Skull Lamp
+	BoCSpike.DisplayName: Neuron Spike
+	HayNeedle.DisplayName: Hay Needle
+	Splinter.DisplayName: Splinter
+	CobaltOrbProjectile.DisplayName: Cobalt Orb
+	PalladiumOrbProjectile.DisplayName: Palladium Orb
+	LilyProjectile.DisplayName: Lily
+	LilyPetalProjectile.DisplayName: Petal
+	PoppyProjectile.DisplayName: Poppy
+	GrowthProjectileFX.DisplayName: Growth
+	RoseProjectile.DisplayName: Rose
+	BlackPoppyProjectile.DisplayName: Black Poppy
+	TimRune.DisplayName: Tim Rune
+	PrismLensProj.DisplayName: Prism Lens
+	PrismLight.DisplayName: Prism Light
+	MimicBellProj.DisplayName: Mimic Bell
+	LightningPredictorProjectile.DisplayName: Lightning Predictor Projectile
+	AdjustedLightningProjectile.DisplayName: Adjusted Lightning Projectile
+	SpikeAura.DisplayName: Spike Aura
+	StardustPortal.DisplayName: Stardust Portal
+	NebulaPortal.DisplayName: Nebula Portal
+}
+
+TimLaserHurtReason: "{0} 没有躲开魔法射线。"
+PacifiedCondition: When pacified
+GuideLocketDialogue: 恐怕我大限将至，而你正面临着巨大的威胁。请允许我将这枚吊坠交给你。它会助你战胜血肉之墙——尽管这份馈赠也会激怒它。祝你好运，我的命运将取决于你的选择。
+
+BarLines: {
+	Duke: Throw a [i:{0}] True Truffle Treat
+	QueenBee: "Build a house with: "
+	Golem: Right-click Golem's head with a [i:1293] Lihzahrd Power Cell
+}
+
+Tiles: {
+	MimicChest: {
+		MapEntry: Mimic Chest
+		ChestName: Mimic Chest
+	}
+
+	RottenGrowth.MapEntry: Rotten Growth
+	StardustPieces.MapEntry: Stardust Pieces
+}
+
+VortexDeaths: {
+	0: "{0} 接触了虚空。"
+	1: "{0} 无法承受传送。"
+	2: "{0}, {0}, 和 {0} 解体了。"
+}
