@@ -7,6 +7,7 @@ using SubworldLibrary;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Generation;
@@ -21,8 +22,8 @@ namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 internal class MoonLordPacificationSubworld : Subworld
 {
     private static int OffburnLayer => Main.maxTilesY - 300;
-    private static int FalloutLayer => Main.maxTilesY - 600;
-    private static int PurityLayer => Main.maxTilesY - 900;
+    private static int EmberLayer => Main.maxTilesY - 600;
+    private static int StillnessLayer => Main.maxTilesY - 900;
 
     private static ref UnifiedRandom Random => ref Main._rand;
 
@@ -38,19 +39,21 @@ internal class MoonLordPacificationSubworld : Subworld
 
     private void FalloutStep(GenerationProgress progress, GameConfiguration configuration)
     {
-        FastNoiseLite noise = new(Random.Next());
+        FastNoiseLite noise = new((int)DateTime.Now.ToBinary());
         noise.SetFrequency(0.006f);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.Hybrid);
         noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
         noise.SetDomainWarpAmp(-500);
-
+        
         progress.Message = "(Can you see this?)\nGenerating burnlayer";
 
         float noiseAmp = 20;
         int tileId = ModContent.TileType<EmberTile>();
         int currentPillarX = 0;
         int currentPillarY = 0;
+
+        Dictionary<int, int> floorYAtX = [];
 
         for (int x = 0; x < Main.maxTilesX; x++)
         {
@@ -63,7 +66,7 @@ internal class MoonLordPacificationSubworld : Subworld
                 float warpedY = y;
                 noise.DomainWarp(ref warpedX, ref warpedY);
 
-                int floorY = (int)(FalloutLayer + (noise is null ? 0 : noise.GetNoise(warpedX, 0) * noiseAmp));
+                int floorY = (int)(EmberLayer + noise.GetNoise(warpedX, 0) * noiseAmp);
 
                 if (y <= floorY)
                     continue; // Stop tiles from being placed above the floor
@@ -74,6 +77,9 @@ internal class MoonLordPacificationSubworld : Subworld
                 {
                     if (y < warpedFloor || y < floorY + 120 * noise.GetNoise(x + 9000, y) || y < floorY + 5)
                     {
+                        floorYAtX.TryAdd(x, y);
+                        floorYAtX[x] = Math.Min(floorYAtX[x], y);
+
                         tile.HasTile = true;
                         tile.TileType = (ushort)tileId;
 
@@ -81,7 +87,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
                         if (value < 0f)
                         {
-                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? WallID.ShimmerBrickWall : OffburnWallId();
+                            tile.WallType = noise.GetNoise(warpedX * 1.4f + 3000, warpedY * 1.4f) < 0f ? (ushort)ModContent.WallType<EmberWall>() : OffburnWallId();
                         }
                         else
                         {
@@ -100,7 +106,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
             if (dif > 5 && !WorldGen.genRand.NextBool(30))
             {
-                if (dif == 6) // needs to be changed, breaking through solid tiles atm
+                if (dif == 6) // needs to be changed, breaking through solid tiles atm - update: idk bandaided lol
                     TryExpandPillar(x - 1, LowYByX[x - 1] - 1, false, false);
 
                 continue;
@@ -138,6 +144,84 @@ internal class MoonLordPacificationSubworld : Subworld
 
         CleanWallsAboveBurnlayer();
         DecorateOffburn();
+
+        for (int x = 0; x < Main.maxTilesX; x++)
+        {
+            for (int y = 0; y < Main.maxTilesY; y++)
+            {
+                progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
+                Tile tile = Main.tile[x, y];
+
+                float warpedX = x;
+                float warpedY = y;
+                noise.DomainWarp(ref warpedX, ref warpedY);
+
+                int floorY = (int)(EmberLayer + (noise is null ? 0 : noise.GetNoise(warpedX, 30000) * noiseAmp));
+
+                if (y <= floorY)
+                    continue; // Stop tiles from being placed above the floor
+
+                float warpedFloor = floorY + 80 * noise.GetNoise(warpedX + 300, warpedY + 30300);
+
+                if (y > floorY + 1 && y < warpedFloor || y < floorY + 120 * noise.GetNoise(x * 1.75f + 9000, y * 1.75f + 30000) || y < floorY + 5)
+                {
+                    float value = noise.GetNoise(warpedX, warpedY);
+
+                    if (value < 0f)
+                    {
+                        tile.WallType = (ushort)ModContent.WallType<EmberWall>();
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < Main.maxTilesX; x++)
+        {
+            for (int y = StillnessLayer; y < floorYAtX[x]; y++)
+            {
+                progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
+                Tile tile = Main.tile[x, y];
+
+                float warpedX = x;
+                float warpedY = y;
+                noise.DomainWarp(ref warpedX, ref warpedY);
+                float v = noise.GetNoise(warpedX, warpedY);
+
+                if (v > 0)
+                {
+                    tile.WallType = (ushort)ModContent.WallType<EmberWall>();
+                }
+
+                if (v > 0.3f)
+                {
+                    tile.TileType = (ushort)tileId;
+                }
+            }
+        }
+
+        DecorateEmbers(progress);
+    }
+
+    private void DecorateEmbers(GenerationProgress progress)
+    {
+        for (int x = 0; x < Main.maxTilesX; x++)
+        {
+            for (int y = StillnessLayer; y < OffburnLayer; y++)
+            {
+                progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
+
+                Tile tile = Main.tile[x, y];
+
+                if (tile.HasTile && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>()))
+                {
+                    if (Random.NextBool(120))
+                    {
+                        WorldGen.PlaceTile(x, y - 1, ModContent.TileType<SunPlant>());
+                        ModContent.GetInstance<SunPlant.SunPlantTE>().Place(x, y - 1);
+                    }
+                }
+            }
+        }
     }
 
     private static void CleanWallsAboveBurnlayer()
@@ -174,6 +258,16 @@ internal class MoonLordPacificationSubworld : Subworld
             {
                 Tile tile = Main.tile[x, y];
                 tile.WallType = OffburnWallId();
+
+                if (y < EmberLayer + 180)
+                {
+                    float placement = 1 - Utils.GetLerpValue(EmberLayer + 100, EmberLayer + 180, y, true);
+
+                    if (Random.NextFloat() < placement)
+                    {
+                        tile.WallType = (ushort)ModContent.WallType<EmberWall>();
+                    }
+                }
             }
 
             y--;
@@ -287,7 +381,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
         for (int i = 0; i < Main.maxTilesX; ++i)
         {
-            for (int j = FalloutLayer; j < Main.maxTilesY - 20; ++j)
+            for (int j = EmberLayer; j < Main.maxTilesY - 20; ++j)
             {
                 Tile tile = Main.tile[i, j];
                 bool isOffburn = tile.TileType == ModContent.TileType<OffburnTile>() || tile.TileType == ModContent.TileType<CooledOffburnTile>();
@@ -315,7 +409,7 @@ internal class MoonLordPacificationSubworld : Subworld
                         WorldGen.PlaceTile(i, j - 1, ModContent.TileType<OddPlants>(), true, style: Random.Next(3));
                     }
                 }
-                else
+                else if (tile.WallType == ModContent.WallType<OffburnWall>() || tile.WallType == ModContent.WallType<EmberOffburnWall>())
                 {
                     if (Random.NextBool(140))
                     {
@@ -337,6 +431,18 @@ internal class MoonLordPacificationSubworld : Subworld
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ushort OffburnWallId() => (ushort)(Random.NextBool(12) ? ModContent.WallType<EmberOffburnWall>() : ModContent.WallType<OffburnWall>());
+
+    public override void Update()
+    {
+        TileEntity.UpdateStart();
+
+        foreach (TileEntity te in TileEntity.ByID.Values)
+        {
+            te.Update();
+        }
+
+        TileEntity.UpdateEnd();
+    }
 
     public override void DrawMenu(GameTime gameTime)
     {

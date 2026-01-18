@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Tasks.Deployment.ManifestUtilities;
 using Microsoft.Xna.Framework;
 using SubworldLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.GameContent;
@@ -37,7 +38,6 @@ internal class MoonLordPacificationTracker : ModSystem
 #else
                 1;
 #endif
-
             if (TeleportTimer == 2)
             {
                 foreach (Player plr in Main.ActivePlayers)
@@ -49,6 +49,8 @@ internal class MoonLordPacificationTracker : ModSystem
         }
 
         orig(self, gameTime);
+
+        TeleportTimer = Math.Clamp(TeleportTimer, 0, MaxTeleportTimer);
     }
 
     private void DrawPlayerFullMod(On_LegacyPlayerRenderer.orig_DrawPlayerFull orig, LegacyPlayerRenderer self, Camera camera, Player drawPlayer)

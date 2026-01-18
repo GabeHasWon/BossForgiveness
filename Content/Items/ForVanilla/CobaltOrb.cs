@@ -26,14 +26,11 @@ public class CobaltOrb : ModItem
         Item.consumable = true;
     }
 
-    public override void AddRecipes() 
-    {
-        CreateRecipe(20)
-            .AddIngredient(ItemID.CobaltBar, 3)
-            .AddIngredient(ItemID.SoulofLight, 2)
-            .AddTile(TileID.MythrilAnvil)
-            .Register();
-    }
+    public override void AddRecipes() => CreateRecipe(20)
+        .AddIngredient(ItemID.CobaltBar, 3)
+        .AddIngredient(ItemID.SoulofLight, 2)
+        .AddTile(TileID.MythrilAnvil)
+        .Register();
 }
 
 public class CobaltOrbProjectile : ModProjectile
@@ -146,14 +143,11 @@ public class PalladiumOrb : CobaltOrb
         Item.shoot = ModContent.ProjectileType<PalladiumOrbProjectile>();
     }
 
-    public override void AddRecipes()
-    {
-        CreateRecipe(20)
-            .AddIngredient(ItemID.PalladiumBar, 3)
-            .AddIngredient(ItemID.SoulofLight, 2)
-            .AddTile(TileID.MythrilAnvil)
-            .Register();
-    }
+    public override void AddRecipes() => CreateRecipe(20)
+        .AddIngredient(ItemID.PalladiumBar, 3)
+        .AddIngredient(ItemID.SoulofLight, 2)
+        .AddTile(TileID.MythrilAnvil)
+        .Register();
 }
 
 public class PalladiumOrbProjectile : CobaltOrbProjectile

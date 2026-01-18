@@ -1,7 +1,9 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using BossForgiveness.Content.Systems.Syncing;
+using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,6 +26,12 @@ internal class GuidesLocket : ModItem
 
     public override bool? UseItem(Player player)
     {
+        Point16 pos = Main.MouseWorld.ToTileCoordinates16();
+        WorldGen.PlaceTile(pos.X, pos.Y, ModContent.TileType<SunPlant>());
+        ModContent.GetInstance<SunPlant.SunPlantTE>().Place(pos.X, pos.Y);
+
+        return true;
+
         if (NPC.AnyNPCs(NPCID.WallofFlesh) || !player.ZoneUnderworldHeight)
             return false;
 

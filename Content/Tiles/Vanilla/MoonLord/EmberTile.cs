@@ -12,17 +12,24 @@ internal class EmberTile : ModTile
         Main.tileBrick[Type] = true;
         Main.tileSolid[Type] = true;
         Main.tileBlockLight[Type] = true;
+        Main.tileLighted[Type] = true;
 
         AddMapEntry(new Color(158, 15, 25));
         
         DustType = DustID.Torch;
     }
 
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        if (WorldGen.TileIsExposedToAir(i, j))
+            (r, g, b) = (0.2f, 0.05f, 0.05f);
+    }
+
     public override void EmitParticles(int i, int j, Tile tile, short tileFrameX, short tileFrameY, Color tileLight, bool visible)
     {
         if (Main.rand.NextBool(10) && !WorldGen.SolidOrSlopedTile(i, j + 1))
         {
-            Dust.NewDustPerfect(new Vector2(i, j).ToWorldCoordinates(), ModContent.DustType<EmberDrip>(), new Vector2(Main.rand.NextFloat(-0.5f, 0.5f), 3), 0);
+            Dust.NewDustPerfect(new Vector2(i, j).ToWorldCoordinates(), ModContent.DustType<EmberDrip>(), new Vector2(Main.rand.NextFloat(-0.5f, 0.5f), 3), 0, Scale: Main.rand.NextFloat(1, 2));
         }
     }
 }
