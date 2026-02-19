@@ -27,8 +27,9 @@ internal class GuidesLocket : ModItem
     public override bool? UseItem(Player player)
     {
         Point16 pos = Main.MouseWorld.ToTileCoordinates16();
-        WorldGen.PlaceTile(pos.X, pos.Y, ModContent.TileType<SunPlant>());
-        ModContent.GetInstance<SunPlant.SunPlantTE>().Place(pos.X, pos.Y);
+        SkewTree.Grow(pos.X, pos.Y);
+        //WorldGen.PlaceTile(pos.X, pos.Y, ModContent.TileType<SunPlant>());
+        //ModContent.GetInstance<SunPlant.SunPlantTE>().Place(pos.X, pos.Y);
 
         return true;
 

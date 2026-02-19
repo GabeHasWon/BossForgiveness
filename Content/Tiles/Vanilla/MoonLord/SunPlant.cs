@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -81,6 +82,31 @@ internal class SunPlant : ModTile
             for (int i = 0; i < segments.Length; ++i)
             {
                 Segments.Add(((SunPlantSegment)segments[i], lengths[i]));
+            }
+        }
+
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write((byte)Segments.Count);
+            
+            foreach ((SunPlantSegment type, float length) in Segments)
+            {
+                writer.Write((byte)type);
+                writer.Write((Half)length);
+            }
+        }
+
+        public override void NetReceive(BinaryReader reader)
+        {
+            Segments.Clear();
+            int count = reader.ReadByte();
+
+            for (int i = 0; i < count; ++i)
+            {
+                var segment = (SunPlantSegment)reader.ReadByte();
+                float length = (float)reader.ReadHalf();
+
+                Segments.Add((segment, length));
             }
         }
     }
