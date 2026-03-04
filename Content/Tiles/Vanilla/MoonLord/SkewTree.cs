@@ -27,25 +27,6 @@ internal class SkewTree : ModTile
                 {
                     tile = Main.tile[i, j];
                     PlaceSkewTreeTile(random, i == x ? 72 : 90, tile);
-
-                    int kelpHeight = random.Next(15, 21);
-
-                    for (int k = j - 1; k > j - kelpHeight; k--)
-                    {
-                        int frame = 2;
-
-                        if (k < j - kelpHeight * 0.75f)
-                            frame = 0;
-                        else if (k < j - kelpHeight * 0.33f)
-                            frame = 1;
-
-                        IKelpTile.Place<ClimbingEmbers>(i, k, frame);
-                    }
-
-                    for (int k = j - 1; k > j - kelpHeight; k--)
-                    {
-                        WorldGen.TileFrame(i, k, true);
-                    }
                 }
 
                 return;
@@ -65,6 +46,9 @@ internal class SkewTree : ModTile
 
     private static void PlaceSkewTreeTile(UnifiedRandom random, int frameX, Tile tile)
     {
+        if (tile.HasTile)
+            return;
+
         tile.HasTile = true;
         tile.TileType = (ushort)ModContent.TileType<SkewTree>();
         tile.TileFrameX = (short)frameX;

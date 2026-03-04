@@ -7,7 +7,6 @@ using SubworldLibrary;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Generation;
@@ -175,26 +174,39 @@ internal class MoonLordPacificationSubworld : Subworld
             }
         }
 
+        FastNoiseLite flameNoise = new();
+        flameNoise.SetNoiseType(FastNoiseLite.NoiseType.ValueCubic);
+        flameNoise.SetFrequency(0.025f);
+        flameNoise.SetFractalType(FastNoiseLite.FractalType.PingPong);
+        flameNoise.SetFractalOctaves(2);
+        flameNoise.SetFractalLacunarity(1.73f);
+        flameNoise.SetFractalGain(-0.660f);
+        flameNoise.SetFractalWeightedStrength(5.750f);
+        flameNoise.SetFractalPingPongStrength(2f);
+
         for (int x = 0; x < Main.maxTilesX; x++)
         {
-            for (int y = StillnessLayer; y < floorYAtX[x]; y++)
+            if (!floorYAtX.TryGetValue(x, out int bottomY))
+                continue;
+
+            int y = (int)(StillnessLayer + flameNoise.GetNoise(x, 0) * 40);
+
+            for ( ; y < bottomY; y++)
             {
                 progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
                 Tile tile = Main.tile[x, y];
 
-                float warpedX = x;
-                float warpedY = y;
-                noise.DomainWarp(ref warpedX, ref warpedY);
-                float v = noise.GetNoise(warpedX, warpedY);
+                float v = flameNoise.GetNoise(x, y);
 
                 if (v > 0)
                 {
                     tile.WallType = (ushort)ModContent.WallType<EmberWall>();
                 }
 
-                if (v > 0.3f)
+                if (v > 0.5f)
                 {
                     tile.TileType = (ushort)tileId;
+                    tile.HasTile = true;
                 }
             }
         }
@@ -206,23 +218,66 @@ internal class MoonLordPacificationSubworld : Subworld
     {
         for (int x = 0; x < Main.maxTilesX; x++)
         {
-            for (int y = StillnessLayer; y < OffburnLayer; y++)
+            for (int y = OffburnLayer - 1; y >= StillnessLayer; y--)
             {
                 progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
 
                 Tile tile = Main.tile[x, y];
 
-                if (tile.HasTile && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>()))
+                if (tile.HasTile && !WorldGen.SolidTile(x, y - 1) 
+                    && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>() || SkewTreeTop(tile)))
                 {
                     if (Random.NextBool(120))
                     {
                         WorldGen.PlaceTile(x, y - 1, ModContent.TileType<SunPlant>());
-                        ModContent.GetInstance<SunPlant.SunPlantTE>().Place(x, y - 1);
+
+                        Tile sunPlant = Main.tile[x, y - 1];
+
+                        if (sunPlant.HasTile && sunPlant.TileType == ModContent.TileType<SunPlant>())
+                            ModContent.GetInstance<SunPlant.SunPlantTE>().Place(x, y - 1);
+                    }
+                    else if (Random.NextBool(140) && x > 50 && x <= Width - 50)
+                        SkewTree.Grow(x, y - 1, Random.Next(15, 30), Random);
+                    else if (Random.NextBool(3))
+                        WorldGen.PlaceObject(x, y - 1, ModContent.TileType<Flamegrass>(), true, Random.Next(6));
+                }
+            }
+        }
+
+        for (int x = 0; x < Main.maxTilesX; x++)
+        {
+            for (int y = OffburnLayer - 1; y >= StillnessLayer; y--)
+            {
+                progress.Set((y + x * Main.maxTilesY) / (float)(Main.maxTilesX * Main.maxTilesY));
+
+                Tile tile = Main.tile[x, y];
+
+                if (SkewTreeTop(tile))
+                {
+                    int kelpHeight = Random.Next(3, 21);
+
+                    for (int k = y - 1; k > y - kelpHeight; k--)
+                    {
+                        Tile kelp = Main.tile[x, k];
+
+                        if (kelp.HasTile)
+                            continue;
+
+                        int frame = 2;
+
+                        if (k < y - kelpHeight * 0.75f)
+                            frame = 0;
+                        else if (k < y - kelpHeight * 0.33f)
+                            frame = 1;
+
+                        IKelpTile.Place<ClimbingEmbers>(x, k, frame);
                     }
                 }
             }
         }
     }
+
+    private static bool SkewTreeTop(Tile tile) => tile.TileType == ModContent.TileType<SkewTree>() && tile.TileFrameX >= 90;
 
     private static void CleanWallsAboveBurnlayer()
     {

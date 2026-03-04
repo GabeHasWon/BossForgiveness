@@ -63,3 +63,10 @@ Generation: {
 		Shaping offburn
 		'''
 }
+
+Buffs: {
+	SunburnDebuff: {
+		DisplayName: Sunburn
+		Description: You feel a fraction of the power of the sun
+	}
+}

@@ -38,12 +38,9 @@ internal interface IKelpTile
 
 	public ushort Type { get; }
 
-	public static void Place<T>(int i, int j, int frame) where T : ModTile, IKelpTile
-	{
-		Place(i, j, frame, ModContent.TileType<T>());
-	}
+    public static void Place<T>(int i, int j, int frame) where T : ModTile, IKelpTile => Place(i, j, frame, ModContent.TileType<T>());
 
-	public static void Place(int i, int j, int frame, int type)
+    public static void Place(int i, int j, int frame, int type)
 	{
 		if (TileInvalid(i, j) && TileInvalid(i, j + 1))
 		{
@@ -55,7 +52,7 @@ internal interface IKelpTile
 		weed.HasTile = true;
 		weed.TileType = (ushort)type;
 		weed.TileFrameX = (short)(18 * frame);
-		weed.TileFrameNumber = Main.rand.NextBool(70) ? 1 : 0;
+		weed.TileFrameNumber = Main.rand.NextBool(50) ? 1 : 0;
 		WorldGen.TileFrame(i, j);
 
 		static bool TileInvalid(int i, int j)
@@ -89,12 +86,9 @@ internal interface IKelpTile
 		return new Vector2(MathF.Sin(i * 1.423f + j * 0.6f + Main.GameUpdateCount * 0.04f) * 4, 0) * (1 - (distance - j) / 3f);
 	}
 
-	public bool Frame(int i, int j)
-	{
-		return DefaultFraming(i, j);
-	}
+    public bool Frame(int i, int j) => DefaultFraming(i, j);
 
-	public void DrawAdditional(int i, int j, SpriteBatch spriteBatch)
+    public void DrawAdditional(int i, int j, SpriteBatch spriteBatch)
 	{
 		if (Main.tile[i, j].TileFrameNumber != 0)
 		{

@@ -2,9 +2,11 @@
 
 internal static class TileExtensions
 {
+    public static Vector2 TileDrawOffset => Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+
     public static Vector2 DrawPosition(int i, int j)
     {
-        Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+        Vector2 offScreen = TileDrawOffset;
         Vector2 position = new Vector2(i, j).ToWorldCoordinates(0, 0) - Main.screenPosition + offScreen;
         return position;
     }
