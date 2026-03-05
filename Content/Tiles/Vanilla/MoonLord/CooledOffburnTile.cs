@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria.ID;
+﻿using Terraria.ID;
 
 namespace BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 
-internal class CooledOffburnTile : ModTile
+internal class CooledOffburnTile : ModTile, IAutoloadTileItem
 {
     public override void SetStaticDefaults()
     {

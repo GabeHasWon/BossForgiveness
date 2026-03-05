@@ -35,24 +35,28 @@ internal class SkewTree : ModTile
             if (random.NextBool(2))
                 direction *= -1;
 
-            PlaceSkewTreeTile(random, direction == 1 ? 0 : 54, tile);
+            if (!PlaceSkewTreeTile(random, direction == 1 ? 0 : 54, tile))
+                break;
 
             x += direction;
 
             tile = Main.tile[x, j];
-            PlaceSkewTreeTile(random, direction == 1 ? 18 : 36, tile);
+
+            if (!PlaceSkewTreeTile(random, direction == 1 ? 18 : 36, tile))
+                break;
         }
     }
 
-    private static void PlaceSkewTreeTile(UnifiedRandom random, int frameX, Tile tile)
+    private static bool PlaceSkewTreeTile(UnifiedRandom random, int frameX, Tile tile)
     {
         if (tile.HasTile)
-            return;
+            return false;
 
         tile.HasTile = true;
         tile.TileType = (ushort)ModContent.TileType<SkewTree>();
         tile.TileFrameX = (short)frameX;
         tile.TileFrameY = (short)(random.Next(3) * 18);
+        return true;
     }
 
     public override void SetStaticDefaults()
@@ -63,6 +67,7 @@ internal class SkewTree : ModTile
         TileID.Sets.DrawsWalls[Type] = true;
 
         TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+        TileObjectData.newTile.AnchorBottom = Terraria.DataStructures.AnchorData.Empty;
         TileObjectData.addTile(Type);
 
         AddMapEntry(new Color(135, 83, 109));

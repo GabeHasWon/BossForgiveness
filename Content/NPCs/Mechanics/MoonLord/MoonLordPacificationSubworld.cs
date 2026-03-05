@@ -22,19 +22,47 @@ internal class MoonLordPacificationSubworld : Subworld
 {
     private static int OffburnLayer => Main.maxTilesY - 300;
     private static int EmberLayer => Main.maxTilesY - 600;
-    private static int StillnessLayer => Main.maxTilesY - 900;
+    private static int StillnessLayer => Main.maxTilesY - 1300;
 
     private static ref UnifiedRandom Random => ref Main._rand;
 
     public override int Width => 1500;
-    public override int Height => 1500;
+    public override int Height => 1900;
 
     private static Dictionary<int, int> LowYByX = [];
 
-    public override List<GenPass> Tasks => [new PassLegacy("Reset", ResetStep), new PassLegacy("FalloutLanding", FalloutStep)];
-
+    public override List<GenPass> Tasks => [new PassLegacy("Reset", ResetStep), new PassLegacy("Fallout", FalloutStep), new PassLegacy("Stillness", StillnessStep)];
 
     private static readonly List<string> StatusTexts = [];
+
+    private void StillnessStep(GenerationProgress progress, GameConfiguration configuration)
+    {
+        const int StillnessHeight = 30;
+
+        FastNoiseLite noise = new FastNoiseLite();
+        noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+
+        for (int i = 2; i < Main.maxTilesX - 2; ++i)
+        {
+            int sineHeight = (int)(MathF.Sin(i * 0.15f) * 8 + noise.GetNoise(i, 0) * 15) + StillnessHeight + 10;
+
+            for (int j = StillnessLayer; j < StillnessLayer + sineHeight; ++j)
+            {
+                Tile tile = Main.tile[i, j];
+                tile.HasTile = true;
+
+                float factor = MathHelper.Clamp(1 - Utils.GetLerpValue(StillnessLayer, StillnessLayer + sineHeight, j, true) + Random.NextFloat(-0.15f, 0.1f), 0, 1);
+
+                tile.TileType = factor switch
+                {
+                    < 0.33f => TileID.Dirt,
+                    < 0.5f => TileID.Stone, 
+                    < 0.75f => TileID.Ash,
+                    _ => TileID.ShimmerBlock
+                };
+            }
+        }
+    }
 
     private void FalloutStep(GenerationProgress progress, GameConfiguration configuration)
     {
@@ -189,7 +217,7 @@ internal class MoonLordPacificationSubworld : Subworld
             if (!floorYAtX.TryGetValue(x, out int bottomY))
                 continue;
 
-            int y = (int)(StillnessLayer + flameNoise.GetNoise(x, 0) * 40);
+            int y = (int)(StillnessLayer + flameNoise.GetNoise(x, 0) * 30 + 120);
 
             for ( ; y < bottomY; y++)
             {
@@ -234,12 +262,17 @@ internal class MoonLordPacificationSubworld : Subworld
                         Tile sunPlant = Main.tile[x, y - 1];
 
                         if (sunPlant.HasTile && sunPlant.TileType == ModContent.TileType<SunPlant>())
-                            ModContent.GetInstance<SunPlant.SunPlantTE>().Place(x, y - 1);
+                        {
+                            int te = ModContent.GetInstance<SunPlant.SunPlantTE>().Place(x, y - 1);
+                            (TileEntity.ByID[te] as SunPlant.SunPlantTE).Friendly = false;
+                        }
                     }
                     else if (Random.NextBool(140) && x > 50 && x <= Width - 50)
                         SkewTree.Grow(x, y - 1, Random.Next(15, 30), Random);
-                    else if (Random.NextBool(3))
-                        WorldGen.PlaceObject(x, y - 1, ModContent.TileType<Flamegrass>(), true, Random.Next(6));
+                    else if (Random.NextBool(170))
+                        GrowKelp(x, y);
+                    else if (Random.NextBool(3) && !Main.tile[x, y - 1].HasTile)
+                        WorldGen.PlaceObject(x, y - 1, Random.NextBool(3) ? ModContent.TileType<FlamegrassTall>() : ModContent.TileType<Flamegrass>(), true, Random.Next(6));
                 }
             }
         }
@@ -253,27 +286,30 @@ internal class MoonLordPacificationSubworld : Subworld
                 Tile tile = Main.tile[x, y];
 
                 if (SkewTreeTop(tile))
-                {
-                    int kelpHeight = Random.Next(3, 21);
-
-                    for (int k = y - 1; k > y - kelpHeight; k--)
-                    {
-                        Tile kelp = Main.tile[x, k];
-
-                        if (kelp.HasTile)
-                            continue;
-
-                        int frame = 2;
-
-                        if (k < y - kelpHeight * 0.75f)
-                            frame = 0;
-                        else if (k < y - kelpHeight * 0.33f)
-                            frame = 1;
-
-                        IKelpTile.Place<ClimbingEmbers>(x, k, frame);
-                    }
-                }
+                    GrowKelp(x, y);
             }
+        }
+    }
+
+    private static void GrowKelp(int x, int y)
+    {
+        int kelpHeight = Random.Next(2, 27);
+
+        for (int k = y - 1; k > y - kelpHeight; k--)
+        {
+            Tile kelp = Main.tile[x, k];
+
+            if (kelp.HasTile)
+                continue;
+
+            int frame = 2;
+
+            if (k < y - kelpHeight * 0.75f)
+                frame = 0;
+            else if (k < y - kelpHeight * 0.33f)
+                frame = 1;
+
+            IKelpTile.Place<ClimbingEmbers>(x, k, frame);
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 
-internal class EmberTile : ModTile
+internal class EmberTile : ModTile, IAutoloadTileItem
 {
     public override void SetStaticDefaults()
     {

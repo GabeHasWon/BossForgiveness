@@ -5,7 +5,7 @@ using Terraria.ID;
 
 namespace BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 
-internal class OffburnTile : ModTile
+internal class OffburnTile : ModTile, IAutoloadTileItem
 {
     public class OffburnDust : ModDust
     {

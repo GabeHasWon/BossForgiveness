@@ -14,11 +14,12 @@ using Terraria.ObjectData;
 
 namespace BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 
-internal class SunPlant : ModTile
+internal class SunPlant : ModTile, IAutoloadTileItem
 {
     public class SunPlantTE : ModTileEntity, IClientSideTE
     {
         public List<(SunPlantSegment segmentType, float length)> Segments = [];
+        public bool Friendly = true;
 
         public override bool IsTileValidForEntity(int x, int y) => Main.tile[x, y].HasTile && Main.tile[x, y].TileType == ModContent.TileType<SunPlant>();
 
@@ -83,16 +84,20 @@ internal class SunPlant : ModTile
                 if (segment == SunPlantSegment.Sun)
                 {
                     Vector2 worldPos = position + Main.screenPosition - TileExtensions.TileDrawOffset;
+                    Lighting.AddLight(worldPos, new Vector3(1.1f, 0.25f, 0.95f));
 
-                    foreach (Player player in Main.ActivePlayers)
+                    if (!Friendly)
                     {
-                        if (player.DistanceSQ(worldPos) < 90 * 90)
+                        foreach (Player player in Main.ActivePlayers)
                         {
-                            player.AddBuff(ModContent.BuffType<SunburnDebuff>(), 2);
+                            if (player.DistanceSQ(worldPos) < 90 * 90)
+                            {
+                                player.AddBuff(ModContent.BuffType<SunburnDebuff>(), 2);
+                            }
                         }
+
+                        break;
                     }
-                    
-                    break;
                 }
 
                 lastPosition = position;

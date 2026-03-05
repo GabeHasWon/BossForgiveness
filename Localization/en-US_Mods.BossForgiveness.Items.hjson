@@ -163,6 +163,35 @@ Telelink: {
 		'''
 		Allows you to communicate with the Nebula
 		You must link to the Pillar in order to link with other creatures
-
 		'''
+}
+
+CooledEmberTileItem: {
+	DisplayName: Cooling Embers
+	Tooltip: ""
+}
+
+CooledOffburnTileItem: {
+	DisplayName: Cooled Offburn
+	Tooltip: "'Lukewarm to the touch'"
+}
+
+EmberTileItem: {
+	DisplayName: Burning Embers
+	Tooltip: ""
+}
+
+OddPlantsItem: {
+	DisplayName: Odd Plant
+	Tooltip: "'What peculiar growths...'"
+}
+
+OffburnTileItem: {
+	DisplayName: Offburn
+	Tooltip: "'Still stings a bit'"
+}
+
+SunPlantItem: {
+	DisplayName: Chained Sun
+	Tooltip: "'Curious mix between deific and flora'"
 }
