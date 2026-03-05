@@ -39,24 +39,36 @@ internal class MoonLordPacificationSubworld : Subworld
     {
         const int StillnessHeight = 30;
 
-        FastNoiseLite noise = new FastNoiseLite();
+        FastNoiseLite noise = new(Random.Next());
         noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+
+        FastNoiseLite oreNoise = new(Random.Next());
+        oreNoise.SetFrequency(0.02f);
+
+        FastNoiseLite oreNoiseType = new(Random.Next());
 
         for (int i = 2; i < Main.maxTilesX - 2; ++i)
         {
-            int sineHeight = (int)(MathF.Sin(i * 0.15f) * 8 + noise.GetNoise(i, 0) * 15) + StillnessHeight + 10;
+            int sineHeight = (int)(noise.GetNoise(i * 1.25f, 0) * 75) + StillnessHeight + 60;
 
             for (int j = StillnessLayer; j < StillnessLayer + sineHeight; ++j)
             {
                 Tile tile = Main.tile[i, j];
                 tile.HasTile = true;
 
-                float factor = MathHelper.Clamp(1 - Utils.GetLerpValue(StillnessLayer, StillnessLayer + sineHeight, j, true) + Random.NextFloat(-0.15f, 0.1f), 0, 1);
+                float factor = MathHelper.Clamp(1 - Utils.GetLerpValue(StillnessLayer, StillnessLayer + sineHeight, j, true) + Random.NextFloat(-0.05f, 0.05f), 0, 1);
+                float ore = oreNoise.GetNoise(i, j);
 
                 tile.TileType = factor switch
                 {
                     < 0.33f => TileID.Dirt,
-                    < 0.5f => TileID.Stone, 
+                    < 0.5f => ore <= 0.4f ? TileID.Stone : oreNoiseType.GetNoise(i, j) switch
+                    {
+                        < -0.5f => TileID.Copper,
+                        < 0 => TileID.Iron,
+                        < 0.5f => TileID.Lead,
+                        _ => TileID.Tin
+                    }, 
                     < 0.75f => TileID.Ash,
                     _ => TileID.ShimmerBlock
                 };
