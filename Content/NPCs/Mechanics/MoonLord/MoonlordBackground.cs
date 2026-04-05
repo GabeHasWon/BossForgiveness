@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
+using Terraria.GameContent;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
@@ -31,16 +32,45 @@ internal class MoonlordBackground : ModSystem
         Add("Gradient");
         Add("Shinespot");
         Add("Object0");
+        Add("StillnessObject");
 
         static void Add(string tex) => Textures.Add(tex, Request(tex));
         static Asset<Texture2D> Request(string tex) => ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/MoonLord/" + tex);
     }
 
+    private static void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
+    {
+        firstTileX = (int)((screenPosition.X - offSet.X) / 16f - 1f);
+        lastTileX = (int)((screenPosition.X + (float)Main.screenWidth + offSet.X) / 16f) + 2;
+        firstTileY = (int)((screenPosition.Y - offSet.Y) / 16f - 1f);
+        lastTileY = (int)((screenPosition.Y + (float)Main.screenHeight + offSet.Y) / 16f) + 5;
+        if (firstTileX < 4)
+            firstTileX = 4;
+        if (lastTileX > Main.maxTilesX - 4)
+            lastTileX = Main.maxTilesX - 4;
+        if (firstTileY < 4)
+            firstTileY = 4;
+        if (lastTileY > Main.maxTilesY - 4)
+            lastTileY = Main.maxTilesY - 4;
+    }
+
     internal static void Draw()
     {
         PreDrawUpdate(Main.LocalPlayer, Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().DomainTimer);
+        GetScreenDrawArea(Main.screenPosition, Vector2.Zero, out int left, out int right, out int top, out int bottom);
+
+        Rectangle area = new(left * 16, top * 16, (right - left) * 16, (bottom - top) * 16);
 
         Main.spriteBatch.Draw(Textures["Gradient"].Value, new Rectangle(-20, -20, Main.screenWidth + 40, Main.screenHeight + 40), Color.White);
+
+        float yPos = Main.LocalPlayer.Center.Y / 16f;
+
+        if (yPos < MoonLordPacificationSubworld.StillnessLayer + 20)
+        {
+            float opacity = Utils.GetLerpValue(MoonLordPacificationSubworld.StillnessLayer + 20, MoonLordPacificationSubworld.StillnessLayer, yPos, true);
+
+            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(-20, -20, Main.screenWidth + 40, Main.screenHeight + 40), Color.Black * opacity);
+        }
 
         foreach (var element in Elements)
         {
@@ -49,11 +79,17 @@ internal class MoonlordBackground : ModSystem
             Vector2 scale = Vector2.One;
             Vector2 origin = Vector2.Zero;
             Color color = element.Color;
+            Texture2D texture = Textures[element.Texture].Value;
+            Rectangle box = new Rectangle((int)drawPosition.X - texture.Width * 2 + (int)Main.screenPosition.X, 
+                (int)drawPosition.Y - texture.Width * 2 + (int)Main.screenPosition.Y, texture.Width * 4, texture.Width * 4);
+
+            if (!area.Intersects(box))
+                continue;
 
             if (element.OnDraw?.Invoke(element, ref drawPosition, ref scale, ref origin, ref color) != false)
             {
                 SpriteEffects flip = element.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-                Main.spriteBatch.Draw(Textures[element.Texture].Value, drawPosition, element.Source, color, 0f, origin, scale, flip, 0);
+                Main.spriteBatch.Draw(texture, drawPosition, element.Source, color, 0f, origin, scale, flip, 0);
             }
         }
     }
@@ -64,11 +100,23 @@ internal class MoonlordBackground : ModSystem
         {
             for (int i = 0; i < 250; ++i)
             {
-                var pos = new Vector2(Main.rand.NextFloat(-160, Main.maxTilesX * 8 + 160), Main.rand.NextFloat(Main.maxTilesY * 0.65f, Main.maxTilesY * 0.7f) * 16);
+                var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.65f, Main.maxTilesY * 0.68f) * 16);
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
                 Rectangle src = new(0, 82 * Main.rand.Next(4), 100, 80);
                 AddElement(new BackgroundElement("Object0", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
+            }
+        }
+
+        if (!MaxedElements("StillnessObject", 1250))
+        {
+            for (int i = 0; i < 250; ++i)
+            {
+                var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.15f, Main.maxTilesY * 0.3f) * 16);
+                var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
+
+                Rectangle src = new(37 * Main.rand.Next(4), 37 * Main.rand.Next(4), 36, 36);
+                AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
             }
         }
     }

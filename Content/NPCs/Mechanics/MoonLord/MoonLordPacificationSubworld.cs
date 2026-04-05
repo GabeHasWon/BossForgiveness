@@ -20,9 +20,9 @@ namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 internal class MoonLordPacificationSubworld : Subworld
 {
-    private static int OffburnLayer => Main.maxTilesY - 300;
-    private static int EmberLayer => Main.maxTilesY - 600;
-    private static int StillnessLayer => Main.maxTilesY - 1300;
+    internal static int OffburnLayer => Main.maxTilesY - 300;
+    internal static int EmberLayer => Main.maxTilesY - 600;
+    internal static int StillnessLayer => Main.maxTilesY - 1300;
 
     private static ref UnifiedRandom Random => ref Main._rand;
 

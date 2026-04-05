@@ -173,6 +173,11 @@ public class MoonlordDomainPlayer : ModPlayer
         if (SubworldSystem.Current is MoonLordPacificationSubworld)
         {
             Main.shimmerAlpha = Utils.GetLerpValue(Main.spawnTileY, Main.maxTilesY - 300, Player.Center.Y / 16f, true);
+
+            float yPos = Main.LocalPlayer.Center.Y / 16f;
+
+            if (yPos < MoonLordPacificationSubworld.StillnessLayer + 20)
+                Main.shimmerAlpha = Utils.GetLerpValue(MoonLordPacificationSubworld.StillnessLayer, MoonLordPacificationSubworld.StillnessLayer + 20, yPos, true);
         }
     }
 
