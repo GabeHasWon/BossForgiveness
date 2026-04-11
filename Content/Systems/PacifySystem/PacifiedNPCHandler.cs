@@ -1,7 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.NPCs;
 using System.Collections.Generic;
-using Terraria;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Systems.PacifySystem;
 
@@ -9,6 +7,9 @@ internal abstract class PacifiedNPCHandler : ILoadable
 {
     public static Dictionary<int, PacifiedNPCHandler> Handlers = [];
 
+    /// <summary>
+    /// Value used to track if an NPC is being pacified right now. Only used for pacified drops at the moment.
+    /// </summary>
     public static bool TransformingNPC = false;
 
     public abstract int Type { get; }
@@ -20,19 +21,28 @@ internal abstract class PacifiedNPCHandler : ILoadable
     public abstract bool CanPacify(NPC npc);
     public abstract void OnPacify(NPC npc);
 
+    /// <summary>
+    /// Legacy method that simply calls <see cref="NPCs.NPCUtilities.Pacify{T}(NPC)"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="npc"></param>
+    /// <param name="offset"></param>
     public static void TransformInto<T>(NPC npc, Vector2? offset = null) where T : ModNPC
     {
-        offset ??= Vector2.Zero;
+        npc.Pacify<T>();
+        return;
 
-        TransformingNPC = true;
+        //offset ??= Vector2.Zero;
 
-        npc.playerInteraction[Main.myPlayer] = true;
-        npc.NPCLoot();
-        npc.Transform(ModContent.NPCType<T>());
-        npc.GivenName = string.Empty;
-        npc.life = npc.lifeMax;
-        npc.Center -= offset.Value;
+        //TransformingNPC = true;
 
-        TransformingNPC = false;
+        //npc.playerInteraction[Main.myPlayer] = true;
+        //npc.NPCLoot();
+        //npc.Transform(ModContent.NPCType<T>());
+        //npc.GivenName = string.Empty;
+        //npc.life = npc.lifeMax;
+        //npc.Center -= offset.Value;
+
+        //TransformingNPC = false;
     }
 }

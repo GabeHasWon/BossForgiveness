@@ -1,5 +1,4 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -126,7 +125,7 @@ internal class RainbowSlimePacificationNPC : GlobalNPC
             state++;
 
             if (state > 8)
-                npc.Pacify<RainbowSlimePacified>();
+                npc.Pacify<RainbowSlimePacified>(PacificationTracker.PacificationType.Enemy);
         }
     }
 

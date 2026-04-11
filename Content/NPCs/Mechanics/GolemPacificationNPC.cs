@@ -1,14 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using System;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria;
 using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
-using BossForgiveness.Content.Items.ForVanilla;
 using Terraria.Localization;
+using BossForgiveness.Content.NPCs.Vanilla;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
@@ -57,10 +54,7 @@ public class GolemPacificationNPC : GlobalNPC, ICustomBarNPC
                 if (Main.netMode != NetmodeID.Server)
                     SoundEngine.PlaySound(SoundID.Item14, npc.Center);
 
-                npc.SimpleStrikeNPC(1, 0, false, 0, null, false, 0, true);
-                npc.NPCLoot();
-                npc.active = false;
-                npc.netUpdate = true;
+                npc.Pacify<GolemHeadPacified>();
 
                 for (int i = 0; i < 80; ++i)
                     SpawnGoldFlames(npc);

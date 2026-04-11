@@ -1,9 +1,6 @@
 ﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
-using Microsoft.Xna.Framework;
 using System.IO;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Plantera;

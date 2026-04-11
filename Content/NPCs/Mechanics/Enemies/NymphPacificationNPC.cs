@@ -1,7 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Enemies;
 
@@ -15,7 +13,7 @@ internal class NymphPacificationNPC : GlobalNPC
         {
             if (proj.type == ProjectileID.PurificationPowder && npc.Hitbox.Intersects(proj.Hitbox))
             {
-                npc.Pacify<LostGirlPacified>();
+                npc.Pacify<LostGirlPacified>(PacificationTracker.PacificationType.Enemy);
                 return false;
             }
         }

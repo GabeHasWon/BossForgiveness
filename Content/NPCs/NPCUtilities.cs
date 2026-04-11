@@ -1,14 +1,12 @@
-﻿using BossForgiveness.Content.Systems.PacifySystem;
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
+using BossForgiveness.Content.Systems.PacifySystem;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs;
 
-public static class NPCUtils
+public static class NPCUtilities
 {
     public static int GetFloor(this NPC npc, int maxDist = 40, bool checkWater = false)
     {
@@ -101,14 +99,20 @@ public static class NPCUtils
             npc.PlayerInteraction(item.whoAmI);
     }
 
-    public static void Pacify<T>(this NPC npc) where T : ModNPC
+    /// <summary>
+    /// Pacifies an NPC - all players get drops, which drop immediately, the NPC is transformed and the boss is marked as pacified.
+    /// </summary>
+    public static void Pacify<T>(this NPC npc, PacificationTracker.PacificationType type = PacificationTracker.PacificationType.Boss) where T : ModNPC
     {
         PacifiedNPCHandler.TransformingNPC = true;
+        PacificationTracker.AddBoss(npc.type, type);
 
         npc.SetAllPlayerInteraction();
         npc.NPCLoot();
         npc.Transform(ModContent.NPCType<T>());
         npc.boss = false;
+        npc.GivenName = string.Empty;
+        npc.lifeMax = npc.life;
 
         PacifiedNPCHandler.TransformingNPC = false;
     }

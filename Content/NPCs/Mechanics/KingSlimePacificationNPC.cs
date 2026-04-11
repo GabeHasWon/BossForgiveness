@@ -130,6 +130,7 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
             Projectile.aiStyle = -1;
             Projectile.hostile = true;
             Projectile.friendly = false;
+            Projectile.Opacity = 0.5f;
         }
 
         public override void AI()
@@ -166,6 +167,7 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
             Projectile.hostile = true;
             Projectile.friendly = false;
             Projectile.tileCollide = false;
+            Projectile.Opacity = 0.5f;
         }
 
         public override void AI()

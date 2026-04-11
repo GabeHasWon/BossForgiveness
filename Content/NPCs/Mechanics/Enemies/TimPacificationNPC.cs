@@ -1,13 +1,10 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Enemies;
 
@@ -37,7 +34,7 @@ internal class TimPacificationNPC : GlobalNPC
 
         if (runesCaught > 2)
         {
-            npc.Pacify<TimPacified>();
+            npc.Pacify<TimPacified>(PacificationTracker.PacificationType.Enemy);
             return false;
         }
 

@@ -1,11 +1,8 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
 using BossForgiveness.Content.Tiles.Vanilla;
-using Microsoft.Xna.Framework;
 using System;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Enemies;
 
@@ -37,7 +34,7 @@ internal class MimicPacificationNPC : GlobalNPC
         if (_convincing > MaxConvince)
         {
             float type = npc.ai[3];
-            npc.Pacify<MimicPacified>();
+            npc.Pacify<MimicPacified>(PacificationTracker.PacificationType.Enemy);
             npc.ai[3] = type;
             return false;
         }

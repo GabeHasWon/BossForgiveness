@@ -1,8 +1,6 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Enemies;
 
@@ -21,7 +19,7 @@ internal class PinkyPacificationNPC : GlobalNPC
         {
             if (npc.Hitbox.Intersects(item.Hitbox) && (ValidGrabItems.Contains(item.type) || ItemID.Sets.IsFood[item.type]))
             {
-                npc.Pacify<PinkyPacified>();
+                npc.Pacify<PinkyPacified>(PacificationTracker.PacificationType.Enemy);
                 item.active = false;
                 return false;
             }

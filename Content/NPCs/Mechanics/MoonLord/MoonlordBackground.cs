@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria.GameContent;
@@ -41,9 +40,10 @@ internal class MoonlordBackground : ModSystem
     private static void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
     {
         firstTileX = (int)((screenPosition.X - offSet.X) / 16f - 1f);
-        lastTileX = (int)((screenPosition.X + (float)Main.screenWidth + offSet.X) / 16f) + 2;
+        lastTileX = (int)((screenPosition.X + Main.screenWidth + offSet.X) / 16f) + 2;
         firstTileY = (int)((screenPosition.Y - offSet.Y) / 16f - 1f);
-        lastTileY = (int)((screenPosition.Y + (float)Main.screenHeight + offSet.Y) / 16f) + 5;
+        lastTileY = (int)((screenPosition.Y + Main.screenHeight + offSet.Y) / 16f) + 5;
+
         if (firstTileX < 4)
             firstTileX = 4;
         if (lastTileX > Main.maxTilesX - 4)
@@ -96,6 +96,9 @@ internal class MoonlordBackground : ModSystem
 
     private static void PreDrawUpdate(Player player, int domainTimer)
     {
+        //Elements.Clear();
+        //ElementCountsByName.Clear();
+
         if (!MaxedElements("Object0", 1250))
         {
             for (int i = 0; i < 250; ++i)
@@ -108,15 +111,20 @@ internal class MoonlordBackground : ModSystem
             }
         }
 
-        if (!MaxedElements("StillnessObject", 1250))
+        if (!MaxedElements("StillnessObject", 3010))
         {
+            float bossFactor = PacificationTracker.MoonLordBeatFactor;
+
             for (int i = 0; i < 250; ++i)
             {
-                var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.15f, Main.maxTilesY * 0.3f) * 16);
+                float parallax = Main.rand.NextFloat(1f);
+                var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.05f, Main.maxTilesY * 0.15f) * 16);
+                pos *= MathHelper.Lerp(1, 1.8f, 1 - parallax);
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
                 Rectangle src = new(37 * Main.rand.Next(4), 37 * Main.rand.Next(4), 36, 36);
-                AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
+                Color topRange = Color.Lerp(Color.White, Main.hslToRgb(new Vector3(Main.rand.NextFloat(1f), 1, 0.5f)), bossFactor);
+                AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.Lerp(topRange, Color.Gray * 0.5f, parallax), src, parallax, PreDrawMiscObject));
             }
         }
     }

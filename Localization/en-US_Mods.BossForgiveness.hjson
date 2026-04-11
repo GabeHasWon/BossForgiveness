@@ -70,3 +70,10 @@ Buffs: {
 		Description: You feel a fraction of the power of the sun
 	}
 }
+
+Biomes: {
+	MoonLordDomainBiome: {
+		DisplayName: Moon Lord Domain Biome
+		TownNPCDialogueName: the Moon Lord Domain Biome
+	}
+}

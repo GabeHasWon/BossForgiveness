@@ -1,7 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.Plantera;
 using BossForgiveness.Content.NPCs.Vanilla;
-using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 
 namespace BossForgiveness.Content.Systems.PacifySystem.Handlers;

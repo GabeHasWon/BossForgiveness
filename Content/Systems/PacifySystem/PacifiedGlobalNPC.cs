@@ -1,5 +1,4 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
 
 namespace BossForgiveness.Content.Systems.PacifySystem;
 
@@ -8,6 +7,8 @@ internal class PacifiedGlobalNPC : GlobalNPC
     public override bool InstancePerEntity => true;
 
     public int unhitTime = 0;
+
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => PacifiedNPCHandler.Handlers.ContainsKey(entity.type);
 
     public override bool PreAI(NPC npc)
     {
@@ -18,6 +19,7 @@ internal class PacifiedGlobalNPC : GlobalNPC
             handler.OnPacify(npc);
             return false;
         }
+
         return true;
     }
 

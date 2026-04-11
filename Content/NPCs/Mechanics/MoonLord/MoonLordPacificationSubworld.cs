@@ -6,6 +6,7 @@ using ReLogic.Graphics;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -35,6 +36,27 @@ internal class MoonLordPacificationSubworld : Subworld
 
     private static readonly List<string> StatusTexts = [];
 
+    public override void CopyMainWorldData()
+    {
+        var bosses = ModContent.GetInstance<PacificationTracker>().PacifiedBosses;
+        int[] ids = [.. bosses.Select(x => x.Key)];
+        byte[] types = [.. bosses.Select(x => (byte)x.Value)];
+
+        SubworldSystem.CopyWorldData("pacIDs", ids);
+        SubworldSystem.CopyWorldData("pacTypes", types);
+    }
+
+    public override void ReadCopiedMainWorldData()
+    {
+        int[] ids = SubworldSystem.ReadCopiedWorldData<int[]>("pacIDs");
+        byte[] types = SubworldSystem.ReadCopiedWorldData<byte[]>("pacTypes");
+
+        ModContent.GetInstance<PacificationTracker>().PacifiedBosses.Clear();
+        
+        for (int i = 0; i < ids.Length; ++i)
+            ModContent.GetInstance<PacificationTracker>().PacifiedBosses.Add(ids[i], (PacificationTracker.PacificationType)types[i]);
+    }
+
     private void StillnessStep(GenerationProgress progress, GameConfiguration configuration)
     {
         const int StillnessHeight = 30;
@@ -49,7 +71,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
         for (int i = 2; i < Main.maxTilesX - 2; ++i)
         {
-            int sineHeight = (int)(noise.GetNoise(i * 1.25f, 0) * 75) + StillnessHeight + 60;
+            int sineHeight = (int)(noise.GetNoise(i * 1.25f, 0) * 75) + StillnessHeight + 100;
 
             for (int j = StillnessLayer; j < StillnessLayer + sineHeight; ++j)
             {

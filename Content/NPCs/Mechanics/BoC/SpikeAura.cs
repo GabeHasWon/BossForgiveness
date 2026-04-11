@@ -154,7 +154,7 @@ public class SpikeAura : ModProjectile
 
         for (int i = 0; i < 4; ++i)
         {
-            Rectangle frame = baseFrame with { Y = height * (int)(Main.timeForVisualEffects / 8f % 3) };
+            Rectangle frame = baseFrame with { Y = height * (int)(Main.timeForVisualEffects / 6f % 3) };
             Vector2 off = Main.rand.NextVector2Circular(2, 2);
             float factor = (i / 3f);
             Main.EntitySpriteDraw(tex, position + off, frame, color * factor, 0f, frame.Size() / 2f, Projectile.scale * (factor * 0.5f + 0.5f), SpriteEffects.None, 0);

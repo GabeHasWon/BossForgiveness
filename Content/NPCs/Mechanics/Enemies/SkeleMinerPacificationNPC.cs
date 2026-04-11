@@ -1,8 +1,6 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla.Enemies;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Enemies;
 
@@ -18,7 +16,7 @@ internal class SkeleMinerPacificationNPC : GlobalNPC
         {
             if (npc.Hitbox.Intersects(item.Hitbox) && ValidGrabItems.Contains(item.type))
             {
-                npc.Pacify<SkeleMinerPacified>();
+                npc.Pacify<SkeleMinerPacified>(PacificationTracker.PacificationType.Enemy);
                 item.active = false;
                 return false;
             }

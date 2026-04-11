@@ -1,2 +1,6 @@
-v1.0.3.10
-- Fixed issue where Plantera rendering would hang indefinitely, effectively breaking worlds
+v1.1
+- Added pacification method for all lunar pillars
+- Added subworld for Moon Lord's pacification
+- Improved a lot of the backend, minor optimizations
+- Stopped King Slime from taking damage from his own projectiles
+- Significantly improved Brain of Cthulhu spikes mechanic

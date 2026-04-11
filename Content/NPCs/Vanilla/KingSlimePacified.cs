@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.NPCs.Mechanics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
@@ -39,6 +40,9 @@ public class KingSlimePacified : ModNPC
         Music = -1;
         AnimationType = -1;
     }
+
+    public override bool? CanBeHitByProjectile(Projectile projectile) => projectile.type == ModContent.ProjectileType<KingSlimePacificationNPC.SlimePellet>() 
+        || projectile.type == ModContent.ProjectileType<KingSlimePacificationNPC.SlimeSpikeball>() ? false : null;
 
     public override void FindFrame(int frameHeight)
     {

@@ -46,11 +46,7 @@ internal class SkeletronPacificationNPC : GlobalNPC, ICustomBarNPC
             Lighting.AddLight(npc.Center, new Vector3(r, g, b) * lampFinishes / 5f);
 
             if (lampFinishes >= MaxLamps)
-            {
-                npc.playerInteraction[npc.target] = true;
-                npc.NPCLoot();
-                npc.Transform(ModContent.NPCType<SkeletronPacified>());
-            }
+                npc.Pacify<SkeletronPacified>();
         }
 
         lampTimer++;
