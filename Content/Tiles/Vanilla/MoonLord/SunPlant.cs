@@ -247,7 +247,6 @@ internal class SunPlant : ModTile, IAutoloadTileItem
 
         return false;
 
-
         static void DrawSunExtras(int i, int j, SpriteBatch spriteBatch, Texture2D tex, Vector2 position, Rectangle src)
         {
             float sine = GetSine(i, j) / 5f * 0.1f + 1f;

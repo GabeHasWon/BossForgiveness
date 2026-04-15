@@ -107,7 +107,7 @@ internal class MoonLordPacificationSubworld : Subworld
         noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
         noise.SetDomainWarpAmp(-500);
         
-        progress.Message = "(Can you see this?)\nGenerating burnlayer";
+        progress.Message = "Generating burnlayer";
 
         float noiseAmp = 20;
         int tileId = ModContent.TileType<EmberTile>();
@@ -278,6 +278,8 @@ internal class MoonLordPacificationSubworld : Subworld
 
     private void DecorateEmbers(GenerationProgress progress)
     {
+        PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue = new();
+
         for (int x = 0; x < Main.maxTilesX; x++)
         {
             for (int y = OffburnLayer - 1; y >= StillnessLayer; y--)
@@ -301,12 +303,34 @@ internal class MoonLordPacificationSubworld : Subworld
                             (TileEntity.ByID[te] as SunPlant.SunPlantTE).Friendly = false;
                         }
                     }
+                    else if (PacificationTracker.HasBoss(NPCID.EyeofCthulhu) && Random.NextBool(80))
+                    {
+                        WorldGen.PlaceTile(x, y - 1, ModContent.TileType<VolatileWatcher>());
+
+                        Tile watcher = Main.tile[x, y - 1];
+
+                        if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
+                        {
+                            SetWatcherValues(queue, x, y);
+                        }
+                    }
                     else if (Random.NextBool(140) && x > 50 && x <= Width - 50)
                         SkewTree.Grow(x, y - 1, Random.Next(15, 30), Random);
                     else if (Random.NextBool(170))
                         GrowKelp(x, y);
                     else if (Random.NextBool(3) && !Main.tile[x, y - 1].HasTile)
                         WorldGen.PlaceObject(x, y - 1, Random.NextBool(3) ? ModContent.TileType<FlamegrassTall>() : ModContent.TileType<Flamegrass>(), true, Random.Next(6));
+                }
+                else if (tile.HasTile && !WorldGen.SolidTile(x, y + 1) && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>()))
+                {
+                    WorldGen.PlaceTile(x, y - 1, ModContent.TileType<VolatileWatcher>());
+
+                    Tile watcher = Main.tile[x, y - 1];
+
+                    if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
+                    {
+                        SetWatcherValues(queue, x, y);
+                    }
                 }
             }
         }
@@ -323,6 +347,24 @@ internal class MoonLordPacificationSubworld : Subworld
                     GrowKelp(x, y);
             }
         }
+    }
+
+    private static void SetWatcherValues(PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue, int x, int y)
+    {
+        int id = ModContent.GetInstance<VolatileWatcher.VolatileWatcherTE>().Place(x, y - 1);
+        var ent = (VolatileWatcher.VolatileWatcherTE)TileEntity.ByID[id];
+        queue.Clear();
+
+        if (WorldGen.SolidTile(x - 1, y))
+            queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Left, Random.NextFloat());
+        else if (WorldGen.SolidTile(x + 1, y))
+            queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Right, Random.NextFloat());
+        else if (WorldGen.SolidTile(x, y - 1))
+            queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Up, Random.NextFloat());
+        else if (WorldGen.SolidTile(x, y + 1))
+            queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Down, Random.NextFloat());
+
+        ent.Dir = queue.Dequeue();
     }
 
     private static void GrowKelp(int x, int y)

@@ -18,7 +18,7 @@ internal class EoCPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override bool InstancePerEntity => true;
 
-    public bool IsContent => _discontentness == 0;
+    public bool IsContent => _discontentness <= 0;
 
     private float _discontentness = 5;
     private bool _wet = false;

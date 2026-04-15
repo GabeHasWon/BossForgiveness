@@ -4,3 +4,4 @@ v1.1
 - Improved a lot of the backend, minor optimizations
 - Stopped King Slime from taking damage from his own projectiles
 - Significantly improved Brain of Cthulhu spikes mechanic
+- Fixed niche issue with EoC skipping pacification

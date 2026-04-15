@@ -33,11 +33,27 @@ internal class MoonLordSubworldSystem : ModSystem
         On_TileDrawing.Draw += AddCheck;
         On_TileDrawing.PostDrawTiles += AddCheck;
         On_Main.DrawDust += AddCheck;
+        On_TileDrawing.DrawGrass += AddCheck;
+        On_TileDrawing.DrawCustom += AddCheck;
 
         MonoModHooks.Add(typeof(SpriteBatch).GetMethod("PushSprite", BindingFlags.Instance | BindingFlags.NonPublic), DetourPushSprite);
 
         IL_Main.DoDraw_Tiles_Solid += BlackenedTiles;
         IL_Main.DoDraw_WallsAndBlacks += HideWalls;
+    }
+
+    private void AddCheck(On_TileDrawing.orig_DrawCustom orig, TileDrawing self, bool solidLayer)
+    {
+        Blackout = true;
+        orig(self, solidLayer);
+        Blackout = false;
+    }
+
+    private void AddCheck(On_TileDrawing.orig_DrawGrass orig, TileDrawing self)
+    {
+        Blackout = true;
+        orig(self);
+        Blackout = false;
     }
 
     private void AddCheck(On_Main.orig_DrawDust orig, Main self)
