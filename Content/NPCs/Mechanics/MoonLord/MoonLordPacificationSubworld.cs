@@ -311,7 +311,8 @@ internal class MoonLordPacificationSubworld : Subworld
 
                         if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
                         {
-                            SetWatcherValues(queue, x, y);
+                            queue.Clear();
+                            SetWatcherValues(queue, x, y - 1);
                         }
                     }
                     else if (Random.NextBool(140) && x > 50 && x <= Width - 50)
@@ -329,7 +330,8 @@ internal class MoonLordPacificationSubworld : Subworld
 
                     if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
                     {
-                        SetWatcherValues(queue, x, y);
+                        queue.Clear();
+                        SetWatcherValues(queue, x, y - 1);
                     }
                 }
             }
@@ -349,20 +351,31 @@ internal class MoonLordPacificationSubworld : Subworld
         }
     }
 
-    private static void SetWatcherValues(PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue, int x, int y)
+    internal static void SetWatcherValues(PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue, int x, int y)
     {
-        int id = ModContent.GetInstance<VolatileWatcher.VolatileWatcherTE>().Place(x, y - 1);
+        int id = ModContent.GetInstance<VolatileWatcher.VolatileWatcherTE>().Place(x, y);
         var ent = (VolatileWatcher.VolatileWatcherTE)TileEntity.ByID[id];
         queue.Clear();
 
-        if (WorldGen.SolidTile(x - 1, y))
+        if (!WorldGen.SolidTile(x - 1, y))
             queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Left, Random.NextFloat());
-        else if (WorldGen.SolidTile(x + 1, y))
+        
+        if (!WorldGen.SolidTile(x + 1, y))
             queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Right, Random.NextFloat());
-        else if (WorldGen.SolidTile(x, y - 1))
+        
+        if (!WorldGen.SolidTile(x, y - 1))
             queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Up, Random.NextFloat());
-        else if (WorldGen.SolidTile(x, y + 1))
+        
+        if (!WorldGen.SolidTile(x, y + 1))
             queue.Enqueue(VolatileWatcher.VolatileWatcherTE.Direction.Down, Random.NextFloat());
+
+        if (queue.Count == 0)
+        {
+            ModContent.GetInstance<VolatileWatcher.VolatileWatcherTE>().Kill(x, y);
+            Tile tile = Main.tile[x, y];
+            tile.HasTile = false;
+            return;
+        }
 
         ent.Dir = queue.Dequeue();
     }

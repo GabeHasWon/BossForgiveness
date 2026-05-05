@@ -12,9 +12,12 @@ internal class ClimbingEmbers : ModTile, IKelpTile
 		Main.tileLighted[Type] = true;
 
 		DustType = DustID.Torch;
+		HitSound = SoundID.Grass;
 
 		AddMapEntry(new Color(255, 97, 58));
 	}
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = 2;
 
 	public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
 	{

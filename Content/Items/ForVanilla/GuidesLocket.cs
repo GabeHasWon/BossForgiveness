@@ -1,7 +1,9 @@
-﻿using BossForgiveness.Content.NPCs.Mechanics.WoF;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
+using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using BossForgiveness.Content.Systems.Syncing;
 using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -26,12 +28,20 @@ internal class GuidesLocket : ModItem
 
     public override bool? UseItem(Player player)
     {
-        Point16 pos = Main.MouseWorld.ToTileCoordinates16();
-        SkewTree.Grow(pos.X, pos.Y);
-        //WorldGen.PlaceTile(pos.X, pos.Y, ModContent.TileType<SunPlant>());
-        //ModContent.GetInstance<SunPlant.SunPlantTE>().Place(pos.X, pos.Y);
+        //int x = (int)(Main.MouseWorld.X / 16f);
+        //int y = (int)(Main.MouseWorld.Y / 16f);
+        //WorldGen.PlaceTile(x, y, ModContent.TileType<VolatileWatcher>());
 
-        return true;
+        //Tile watcher = Main.tile[x, y];
+
+        //if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
+        //{
+        //    PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue = new();
+
+        //    MoonLordPacificationSubworld.SetWatcherValues(queue, x, y);
+        //}
+
+        //return true;
 
         if (NPC.AnyNPCs(NPCID.WallofFlesh) || !player.ZoneUnderworldHeight)
             return false;

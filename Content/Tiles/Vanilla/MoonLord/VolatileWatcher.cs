@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.IO;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -62,6 +63,12 @@ internal class VolatileWatcher : ModTile
         TileObjectData.newTile.AnchorAlternateTiles = [ModContent.TileType<EmberTile>(), ModContent.TileType<CooledEmberTile>()];
         TileObjectData.newTile.StyleHorizontal = false;
         TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(VolatileWatcherTE.AfterPlacement, -1, 0, false);
+
+        TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+        TileObjectData.newAlternate.AnchorTop = new AnchorData(AnchorType.SolidTile | AnchorType.SolidBottom | AnchorType.AlternateTile, TileObjectData.newTile.Width, 0);
+        TileObjectData.newAlternate.AnchorBottom = AnchorData.Empty;
+        TileObjectData.addAlternate(1);
+
         TileObjectData.addTile(Type);
 
         AddMapEntry(new Color(255, 222, 91));
@@ -74,9 +81,22 @@ internal class VolatileWatcher : ModTile
         if (TileEntity.ByPosition[new Point16(i, j)] is VolatileWatcherTE te)
         {
             Texture2D tex = TextureAssets.Tile[Type].Value;
-            float rotation = (float)te.Dir * MathHelper.PiOver2;
+            float rotation = te.Dir switch
+            {
+                VolatileWatcherTE.Direction.Down => 0,
+                VolatileWatcherTE.Direction.Up => MathHelper.Pi,
+                VolatileWatcherTE.Direction.Left => MathHelper.PiOver2, 
+                VolatileWatcherTE.Direction.Right => -MathHelper.PiOver2, 
+                _ => 0
+            };
 
-            spriteBatch.Draw(tex, TileExtensions.DrawPosition(i, j) + new Vector2(8), null, Lighting.GetColor(i, j), rotation, new Vector2(18), 1f, SpriteEffects.None, 0);
+            Vector2 drawPos = TileExtensions.DrawPosition(i, j) + new Vector2(8);
+
+            var lightSrc = new Rectangle(38, 0, 28, 36);
+            Vector2 scale = new(1f + MathF.Sin(Main.GameUpdateCount * 0.02f + i + j) * 0.2f, 8f - MathF.Sin(Main.GameUpdateCount * 0.02f + i + j));
+            Color color = Lighting.GetColor(i, j) * (MathF.Sin(Main.GameUpdateCount * 0.02f + i + j) * 0.25f + 0.5f);
+            spriteBatch.Draw(tex, drawPos, lightSrc, color, rotation - MathHelper.Pi, new Vector2(14, 34), scale, SpriteEffects.None, 0); // Sight
+            spriteBatch.Draw(tex, drawPos, new Rectangle(0, 0, 36, 36), Lighting.GetColor(i, j), rotation, new Vector2(18), 1f, SpriteEffects.None, 0);
         }
 
         return false;

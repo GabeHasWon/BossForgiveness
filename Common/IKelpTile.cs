@@ -72,6 +72,11 @@ internal interface IKelpTile
 		else
 			tile.TileFrameY = (short)(18 * Main.rand.Next(3));
 
+		Tile below = Main.tile[i, j + 1];
+
+		if (!below.HasTile || !Main.tileSolid[below.TileType] && ModContent.GetModTile(below.TileType) is not IKelpTile)
+			WorldGen.KillTile(i, j);
+
 		return false;
 	}
 
@@ -100,7 +105,21 @@ internal interface IKelpTile
 	public bool Draw(int i, int j, SpriteBatch spriteBatch)
 	{
 		Tile tile = Main.tile[i, j];
-		Vector2 position = TileExtensions.DrawPosition(i, j) + TileOffset(i, j);
+		int dist = 1;
+
+		while (!WorldGen.SolidTile(i, j + dist) && dist < 4)
+		{
+			dist++;
+		}
+		
+		dist--;
+		Vector2 position = TileExtensions.DrawPosition(i, j);
+
+		if (dist > 0)
+		{
+			position += TileOffset(i, j) * (dist / 4f);
+        }
+
 		spriteBatch.Draw(TextureAssets.Tile[Type].Value, position.Floor(), new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Lighting.GetColor(i, j));
 		return false;
 	}
