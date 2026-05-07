@@ -26,4 +26,7 @@
   <ItemGroup>
     <Folder Include="Assets\Effects\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Tiles\Vanilla\MoonLord\CondolenceFlowers.cs" />
+  </ItemGroup>
 </Project>

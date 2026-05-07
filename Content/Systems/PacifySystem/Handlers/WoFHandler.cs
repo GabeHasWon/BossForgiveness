@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs;
+using BossForgiveness.Content.NPCs.Mechanics;
 using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using Microsoft.Xna.Framework;
 using System;
@@ -15,7 +16,7 @@ internal class WoFHandler : PacifiedNPCHandler
 
     public override int Type => NPCID.WallofFlesh;
 
-    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WoFPacificationNPC>().petrifyCount >= WoFPacificationNPC.MaxPetrify && !Main.hardMode;
+    public override bool CanPacify(NPC npc) => npc.GetGlobalNPC<WoFPacificationNPC>().petrifyCount >= WoFPacificationNPC.MaxPetrify;
 
     public override void Load(Mod mod)
     {
@@ -36,6 +37,8 @@ internal class WoFHandler : PacifiedNPCHandler
         npc.SetAllPlayerInteraction();
         npc.NPCLoot();
         Pacifying = false;
+
+        PacificationTracker.AddBoss(NPCID.WallofFlesh, PacificationTracker.PacificationType.Boss);
 
         if (Main.netMode != NetmodeID.MultiplayerClient)
         {

@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics;
 using Terraria.Graphics.Renderers;
-using Terraria.ID;
 using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
@@ -81,47 +79,6 @@ internal class MoonLordPacificationTracker : ModSystem
                 MoonLordPacificationSubworld.DrawStatusText(false, adjTimer);
 
             Main.spriteBatch.End();
-        }
-    }
-
-    public override void PreUpdateEntities()
-    {
-        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
-            return;
-
-        bool valid = true;
-
-        for (int i = 0; i < Main.maxPlayers; ++i)
-        {
-            Player plr = Main.player[i];
-
-            if (!plr.active)
-                continue;
-            
-            ref int timer = ref PlayerReadyTimer[plr.whoAmI];
-
-            if (plr.Center.Y / 16 < MoonLordPacificationSubworld.StillnessLayer)
-                timer++;
-            else
-                timer = Math.Max(0, timer - 2);
-
-            if (timer <= 1200)
-                valid = false;
-        }
-
-        if (valid && Main.netMode != NetmodeID.MultiplayerClient && !SpawnedAlready)
-        {
-            SpawnedAlready = true;
-
-            Vector2 center = new(0, 60000);
-
-            foreach (Player plr in Main.ActivePlayers)
-            {
-                if (plr.Center.Y < center.Y)
-                    center = plr.Center;
-            }
-
-            NPC.NewNPC(new EntitySource_SpawnNPC(), (int)center.X, (int)center.Y - 1200, NPCID.MoonLordCore);
         }
     }
 

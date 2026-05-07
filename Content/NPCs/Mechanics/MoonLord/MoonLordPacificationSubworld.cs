@@ -25,12 +25,13 @@ internal class MoonLordPacificationSubworld : Subworld
     internal static int EmberLayer => Main.maxTilesY - 600;
     internal static int StillnessLayer => Main.maxTilesY - 1300;
 
-    private static ref UnifiedRandom Random => ref Main._rand;
-
     public override int Width => 1500;
     public override int Height => 1900;
 
+    internal bool HasSpawnedBoss = false;
+
     private static Dictionary<int, int> LowYByX = [];
+    private static ref UnifiedRandom Random => ref Main._rand;
 
     public override List<GenPass> Tasks => [new PassLegacy("Reset", ResetStep), new PassLegacy("Fallout", FalloutStep), new PassLegacy("Stillness", StillnessStep)];
 
@@ -61,6 +62,8 @@ internal class MoonLordPacificationSubworld : Subworld
     {
         const int StillnessHeight = 30;
 
+        HasSpawnedBoss = false;
+
         FastNoiseLite noise = new(Random.Next());
         noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
 
@@ -68,6 +71,8 @@ internal class MoonLordPacificationSubworld : Subworld
         oreNoise.SetFrequency(0.02f);
 
         FastNoiseLite oreNoiseType = new(Random.Next());
+
+        int lastFlowerX = 0;
 
         for (int i = 2; i < Main.maxTilesX - 2; ++i)
         {
@@ -90,10 +95,16 @@ internal class MoonLordPacificationSubworld : Subworld
                         < 0 => TileID.Iron,
                         < 0.5f => TileID.Lead,
                         _ => TileID.Tin
-                    }, 
+                    },
                     < 0.75f => TileID.Ash,
                     _ => TileID.ShimmerBlock
                 };
+
+                if (j == StillnessLayer && PacificationTracker.HasBoss(NPCID.CultistBoss) && Main.rand.NextBool(8) && i > lastFlowerX + 3)
+                {
+                    WorldGen.PlaceTile(i, j - 1, ModContent.TileType<CondolenceFlowers>(), true, style: Random.Next(3));
+                    lastFlowerX = i;
+                }
             }
         }
     }
@@ -260,12 +271,12 @@ internal class MoonLordPacificationSubworld : Subworld
 
                 float v = flameNoise.GetNoise(x, y);
 
-                if (v > 0)
+                if (v > -0.2f)
                 {
                     tile.WallType = (ushort)ModContent.WallType<EmberWall>();
                 }
 
-                if (v > 0.5f)
+                if (v > 0.3f)
                 {
                     tile.TileType = (ushort)tileId;
                     tile.HasTile = true;
@@ -322,7 +333,8 @@ internal class MoonLordPacificationSubworld : Subworld
                     else if (Random.NextBool(3) && !Main.tile[x, y - 1].HasTile)
                         WorldGen.PlaceObject(x, y - 1, Random.NextBool(3) ? ModContent.TileType<FlamegrassTall>() : ModContent.TileType<Flamegrass>(), true, Random.Next(6));
                 }
-                else if (tile.HasTile && !WorldGen.SolidTile(x, y + 1) && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>()))
+                else if (tile.HasTile && !WorldGen.SolidTile(x, y + 1) && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>()) &&
+                    PacificationTracker.HasBoss(NPCID.EyeofCthulhu))
                 {
                     WorldGen.PlaceTile(x, y - 1, ModContent.TileType<VolatileWatcher>());
 
@@ -622,6 +634,45 @@ internal class MoonLordPacificationSubworld : Subworld
         }
 
         TileEntity.UpdateEnd();
+
+        if (HasSpawnedBoss)
+            return;
+
+        bool valid = true;
+        int[] timers = MoonLordPacificationTracker.PlayerReadyTimer;
+
+        for (int i = 0; i < Main.maxPlayers; ++i)
+        {
+            Player plr = Main.player[i];
+
+            if (!plr.active)
+                continue;
+
+            ref int timer = ref timers[plr.whoAmI];
+
+            if (plr.Center.Y / 16 < StillnessLayer)
+                timer++;
+            else
+                timer = Math.Max(0, timer - 2);
+
+            if (timer <= 1200)
+                valid = false;
+        }
+
+        if (valid && Main.netMode != NetmodeID.MultiplayerClient)
+        {
+            HasSpawnedBoss = true;
+
+            Vector2 center = new(0, 60000);
+
+            foreach (Player plr in Main.ActivePlayers)
+            {
+                if (plr.Center.Y < center.Y)
+                    center = plr.Center;
+            }
+
+            NPC.NewNPC(new EntitySource_SpawnNPC(), (int)center.X, (int)center.Y - 1200, NPCID.MoonLordCore);
+        }
     }
 
     public override void DrawMenu(GameTime gameTime)

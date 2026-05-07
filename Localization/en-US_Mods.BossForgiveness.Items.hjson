@@ -80,6 +80,7 @@ GuidesLocket: {
 		Pacified leeches will return to the wall, petrifying some part of it
 		'It stirs with an idle power, yet is completely still.'
 		'''
+	HardmodeTooltip: "'Where once power stood, this locket is now empty'"
 }
 
 CobaltOrb: {
@@ -193,5 +194,15 @@ OffburnTileItem: {
 
 SunPlantItem: {
 	DisplayName: Chained Sun
-	Tooltip: "'Curious mix between deific and flora'"
+	Tooltip: "'Curious mix between deific object and flora'"
+}
+
+CondolenceFlowersItem: {
+	DisplayName: Condolence Flower
+	Tooltip: "'For my misguidings'"
+}
+
+EldritchFleshTileItem: {
+	DisplayName: Eldritch Flesh Tile Item
+	Tooltip: ""
 }

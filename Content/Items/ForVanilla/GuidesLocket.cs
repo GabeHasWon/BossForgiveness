@@ -1,19 +1,23 @@
-﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
-using BossForgiveness.Content.NPCs.Mechanics.WoF;
+﻿using BossForgiveness.Content.NPCs.Mechanics.WoF;
 using BossForgiveness.Content.Systems.Syncing;
-using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
+using Terraria.Localization;
 
 namespace BossForgiveness.Content.Items.ForVanilla;
 
+#nullable enable
+
 internal class GuidesLocket : ModItem
 {
-    public override void SetStaticDefaults() => Item.ResearchUnlockCount = 0;
+    private static LocalizedText? HardmodeTooltip = null!;
+
+    public override void SetStaticDefaults()
+    {
+        Item.ResearchUnlockCount = 0;
+
+        HardmodeTooltip = this.GetLocalization("HardmodeTooltip");
+    }
 
     public override void SetDefaults()
     {
@@ -28,20 +32,8 @@ internal class GuidesLocket : ModItem
 
     public override bool? UseItem(Player player)
     {
-        //int x = (int)(Main.MouseWorld.X / 16f);
-        //int y = (int)(Main.MouseWorld.Y / 16f);
-        //WorldGen.PlaceTile(x, y, ModContent.TileType<VolatileWatcher>());
-
-        //Tile watcher = Main.tile[x, y];
-
-        //if (watcher.HasTile && watcher.TileType == ModContent.TileType<VolatileWatcher>())
-        //{
-        //    PriorityQueue<VolatileWatcher.VolatileWatcherTE.Direction, float> queue = new();
-
-        //    MoonLordPacificationSubworld.SetWatcherValues(queue, x, y);
-        //}
-
-        //return true;
+        //if (Main.hardMode)
+        //    return false;
 
         if (NPC.AnyNPCs(NPCID.WallofFlesh) || !player.ZoneUnderworldHeight)
             return false;
@@ -74,4 +66,13 @@ internal class GuidesLocket : ModItem
     }
 
     public override void GrabRange(Player player, ref int grabRange) => grabRange += 400;
+
+    public override void ModifyTooltips(List<TooltipLine> tooltips)
+    {
+        if (Main.hardMode)
+        {
+            tooltips.RemoveAll(x => x.Name.StartsWith("Tooltip"));
+            tooltips.Add(new TooltipLine(Mod, "Tooltip0", HardmodeTooltip!.Value));
+        }
+    }
 }

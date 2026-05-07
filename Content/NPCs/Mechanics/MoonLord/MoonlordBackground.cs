@@ -9,7 +9,7 @@ internal class MoonlordBackground : ModSystem
 {
     public delegate bool PreDrawBackgroundElement(BackgroundElement element, ref Vector2 pos, ref Vector2 scale, ref Vector2 origin, ref Color color);
 
-    public class BackgroundElement(string texture, Vector2 pos, Vector2 scale, Color color, Rectangle? src, float parallaxLevel, PreDrawBackgroundElement onDraw)
+    public class BackgroundElement(string texture, Vector2 pos, Vector2 scale, Color color, Rectangle? src, float parallaxLevel, float rotation, PreDrawBackgroundElement onDraw)
     {
         public string Texture = texture;
         public Vector2 Position = pos;
@@ -19,6 +19,7 @@ internal class MoonlordBackground : ModSystem
         public float Parallax = parallaxLevel;
         public PreDrawBackgroundElement OnDraw = onDraw;
         public bool Flipped = Main.rand.NextBool(2);
+        public float Rotation = rotation;
     }
 
     public static Dictionary<string, Asset<Texture2D>> Textures = [];
@@ -80,7 +81,7 @@ internal class MoonlordBackground : ModSystem
             Vector2 origin = Vector2.Zero;
             Color color = element.Color;
             Texture2D texture = Textures[element.Texture].Value;
-            Rectangle box = new Rectangle((int)drawPosition.X - texture.Width * 2 + (int)Main.screenPosition.X, 
+            Rectangle box = new((int)drawPosition.X - texture.Width * 2 + (int)Main.screenPosition.X, 
                 (int)drawPosition.Y - texture.Width * 2 + (int)Main.screenPosition.Y, texture.Width * 4, texture.Width * 4);
 
             if (!area.Intersects(box))
@@ -89,7 +90,7 @@ internal class MoonlordBackground : ModSystem
             if (element.OnDraw?.Invoke(element, ref drawPosition, ref scale, ref origin, ref color) != false)
             {
                 SpriteEffects flip = element.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-                Main.spriteBatch.Draw(texture, drawPosition, element.Source, color, 0f, origin, scale, flip, 0);
+                Main.spriteBatch.Draw(texture, drawPosition, element.Source, color, element.Rotation, origin, scale, flip, 0);
             }
         }
     }
@@ -107,7 +108,7 @@ internal class MoonlordBackground : ModSystem
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
                 Rectangle src = new(0, 82 * Main.rand.Next(4), 100, 80);
-                AddElement(new BackgroundElement("Object0", pos, scale, Color.White, src, Main.rand.NextFloat(1f), PreDrawMiscObject));
+                AddElement(new BackgroundElement("Object0", pos, scale, Color.White, src, Main.rand.NextFloat(1f), Main.rand.NextFloat(-0.2f, 0.2f), PreDrawMiscObject));
             }
         }
 
@@ -123,8 +124,9 @@ internal class MoonlordBackground : ModSystem
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextFloat(0.8f, 2f));
 
                 Rectangle src = new(37 * Main.rand.Next(4), 37 * Main.rand.Next(4), 36, 36);
-                Color topRange = Color.Lerp(Color.White, Main.hslToRgb(new Vector3(Main.rand.NextFloat(1f), 1, 0.5f)), bossFactor);
-                AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.Lerp(topRange, Color.Gray * 0.5f, parallax), src, parallax, PreDrawMiscObject));
+                var topRange = Color.Lerp(Color.White, Main.hslToRgb(new Vector3(Main.rand.NextFloat(1f), 1, 0.5f)), bossFactor);
+                float rot = Main.rand.NextFloat(MathHelper.TwoPi);
+                AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.Lerp(topRange, Color.Gray * 0.5f, parallax), src, parallax, rot, PreDrawMiscObject));
             }
         }
     }

@@ -7,7 +7,7 @@ using Terraria.ObjectData;
 
 namespace BossForgiveness.Content.Tiles.Vanilla.MoonLord;
 
-internal class OddPlants : ModTile, IAutoloadTileItem
+internal class CondolenceFlowers : ModTile, IAutoloadTileItem
 {
     void IAutoloadTileItem.StaticItemDefaults(ModItem item) => RegisterItemDrop(item.Type);
 
@@ -32,9 +32,9 @@ internal class OddPlants : ModTile, IAutoloadTileItem
         TileObjectData.newTile.RandomStyleRange = 3;
         TileObjectData.addTile(Type);
 
-        AddMapEntry(new Color(43, 86, 196));
+        AddMapEntry(new Color(181, 255, 255));
         
-        DustType = DustID.Lead;
+        DustType = DustID.BlueCrystalShard;
     }
 
     public override void SetSpriteEffects(int i, int j, ref SpriteEffects spriteEffects) => spriteEffects = i % 2 == 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

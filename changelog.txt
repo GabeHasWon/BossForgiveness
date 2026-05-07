@@ -5,3 +5,5 @@ v1.1
 - Stopped King Slime from taking damage from his own projectiles
 - Significantly improved Brain of Cthulhu spikes mechanic
 - Fixed niche issue with EoC skipping pacification
+- Fixed WoF being "pacified" twice causing an error, despawning the boss and granting no loot
+- Made Guide's Locket unusable in hardmode to stop infinite respawns & ore gathering, alongside above issue
