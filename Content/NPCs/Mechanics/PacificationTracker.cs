@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.ID;
 using Terraria.ModLoader.IO;
@@ -28,7 +29,7 @@ public class PacificationTracker : ModSystem
     /// <summary>
     /// All current or former pacifications in the world.
     /// </summary>
-    internal Dictionary<int, PacificationType> PacifiedBosses = [];
+    internal Dictionary<int, PacificationType> PacifiedIDs = [];
 
     /// <summary>
     /// Unloaded modded pacifications, kept to not lose data.
@@ -38,15 +39,15 @@ public class PacificationTracker : ModSystem
     /// <summary>
     /// Adds the boss to the pacification tracker.
     /// </summary>
-    internal static bool AddBoss(int id, PacificationType pacification) => ModContent.GetInstance<PacificationTracker>().PacifiedBosses.TryAdd(id, pacification);
+    internal static bool AddBoss(int id, PacificationType pacification) => ModContent.GetInstance<PacificationTracker>().PacifiedIDs.TryAdd(id, pacification);
 
-    internal static bool HasBoss(int id) => ModContent.GetInstance<PacificationTracker>().PacifiedBosses.ContainsKey(id);
+    internal static bool HasBoss(int id) => ModContent.GetInstance<PacificationTracker>().PacifiedIDs.ContainsKey(id);
 
     internal static int Count(PacificationType type)
     {
         int count = 0;
 
-        foreach (var pair in ModContent.GetInstance<PacificationTracker>().PacifiedBosses)
+        foreach (var pair in ModContent.GetInstance<PacificationTracker>().PacifiedIDs)
             if (pair.Value.HasFlag(type))
                 count++;
 
@@ -55,7 +56,7 @@ public class PacificationTracker : ModSystem
 
     public override void SaveWorldData(TagCompound tag)
     {
-        List<(string name, byte type)> bossesAll = [.. PacifiedBosses.Select(x => (x.Key < NPCID.Count ? "Terraria/" + x.Key : ModContent.GetModNPC(x.Key).FullName, (byte)x.Value))];
+        List<(string name, byte type)> bossesAll = [.. PacifiedIDs.Select(x => (x.Key < NPCID.Count ? "Terraria/" + x.Key : ModContent.GetModNPC(x.Key).FullName, (byte)x.Value))];
         List<string> bosses = [.. bossesAll.Select(x => x.name)];
         List<byte> types = [.. bossesAll.Select(x => x.type)];
 
@@ -67,7 +68,7 @@ public class PacificationTracker : ModSystem
 
     public override void LoadWorldData(TagCompound tag)
     {
-        PacifiedBosses.Clear();
+        PacifiedIDs.Clear();
         string[] bosses = tag.Get<string[]>("bosses");
         byte[] types = tag.GetByteArray("types");
 
@@ -91,13 +92,33 @@ public class PacificationTracker : ModSystem
                 }
             }
 
-            PacifiedBosses.Add(id, type);
+            PacifiedIDs.Add(id, type);
         }
+    }
+
+    public override void NetSend(BinaryWriter writer)
+    {
+        writer.Write((short)PacifiedIDs.Count);
+
+        foreach (var pair in PacifiedIDs)
+        {
+            writer.Write((short)pair.Key);
+            writer.Write((byte)pair.Value);
+        }
+    }
+
+    public override void NetReceive(BinaryReader reader)
+    {
+        PacifiedIDs.Clear();
+        int count = reader.ReadInt16();
+
+        for (int i = 0; i < count; ++i)
+            PacifiedIDs.Add(reader.ReadInt16(), (PacificationType)reader.ReadByte());
     }
 
     public override void ClearWorld()
     {
-        PacifiedBosses.Clear();
+        PacifiedIDs.Clear();
         UnloadedPacifications.Clear();
     }
 }

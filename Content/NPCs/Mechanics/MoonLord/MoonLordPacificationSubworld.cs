@@ -39,7 +39,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
     public override void CopyMainWorldData()
     {
-        var bosses = ModContent.GetInstance<PacificationTracker>().PacifiedBosses;
+        var bosses = ModContent.GetInstance<PacificationTracker>().PacifiedIDs;
         int[] ids = [.. bosses.Select(x => x.Key)];
         byte[] types = [.. bosses.Select(x => (byte)x.Value)];
 
@@ -52,10 +52,10 @@ internal class MoonLordPacificationSubworld : Subworld
         int[] ids = SubworldSystem.ReadCopiedWorldData<int[]>("pacIDs");
         byte[] types = SubworldSystem.ReadCopiedWorldData<byte[]>("pacTypes");
 
-        ModContent.GetInstance<PacificationTracker>().PacifiedBosses.Clear();
+        ModContent.GetInstance<PacificationTracker>().PacifiedIDs.Clear();
         
         for (int i = 0; i < ids.Length; ++i)
-            ModContent.GetInstance<PacificationTracker>().PacifiedBosses.Add(ids[i], (PacificationTracker.PacificationType)types[i]);
+            ModContent.GetInstance<PacificationTracker>().PacifiedIDs.Add(ids[i], (PacificationTracker.PacificationType)types[i]);
     }
 
     private void StillnessStep(GenerationProgress progress, GameConfiguration configuration)

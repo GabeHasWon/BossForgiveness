@@ -1,12 +1,43 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Terraria.GameContent;
+using Terraria.Graphics;
+using Terraria.Graphics.Shaders;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 internal class MoonlordBackground : ModSystem
 {
+    [StructLayout(LayoutKind.Sequential, Size = 1)]
+    public readonly struct UnholyFlameDrawer
+    {
+        private static readonly VertexStrip _vertexStrip = new();
+
+        public readonly void Draw(MovingElement element)
+        {
+            MiscShaderData miscShaderData = GameShaders.Misc["MagicMissile"];
+            miscShaderData.UseSaturation(-2.8f);
+            miscShaderData.UseOpacity(2f);
+            miscShaderData.Apply();
+            Vector2 drawPos = -Main.screenPosition + Textures[element.Texture].Size() / 2f;
+            _vertexStrip.PrepareStripWithProceduralPadding([.. element.OldPositions], [.. element.OldRotations], StripColors, StripWidth, drawPos);
+            _vertexStrip.DrawTrail();
+            Main.pixelShader.CurrentTechnique.Passes[0].Apply();
+        }
+
+        private readonly Color StripColors(float progressOnStrip)
+        {
+            Color result = Color.Lerp(Color.White, Color.Gray, Utils.GetLerpValue(0f, 0.7f, progressOnStrip, true)) * (1f - Utils.GetLerpValue(0f, 0.98f, progressOnStrip));
+            result.A = (byte)(result.A * 0.7f);
+            return result;
+        }
+
+        private static float StripWidth(float progress) => MathHelper.Lerp(30, 42f, Utils.GetLerpValue(0f, 0.2f, progress, true)) * Utils.GetLerpValue(0f, 0.07f, progress, true);
+    }
+
     public delegate bool PreDrawBackgroundElement(BackgroundElement element, ref Vector2 pos, ref Vector2 scale, ref Vector2 origin, ref Color color);
 
     public class BackgroundElement(string texture, Vector2 pos, Vector2 scale, Color color, Rectangle? src, float parallaxLevel, float rotation, PreDrawBackgroundElement onDraw)
@@ -22,6 +53,29 @@ internal class MoonlordBackground : ModSystem
         public float Rotation = rotation;
     }
 
+    public class MovingElement(string texture, Vector2 pos, Vector2 scale, Color color, Rectangle? src, float para, float rotation, PreDrawBackgroundElement onDraw, int trailCount)
+        : BackgroundElement(texture, pos, scale, color, src, para, rotation, onDraw)
+    {
+        public List<Vector2> OldPositions = new(trailCount);
+        public List<float> OldRotations = new(trailCount);
+        public Vector2 Velocity = Vector2.Zero;
+
+        public void Update()
+        {
+            OldPositions.Add(Position);
+            OldRotations.Add(Rotation);
+
+            if (OldPositions.Count > trailCount)
+            {
+                OldPositions.RemoveAt(OldPositions.Count - 1);
+                OldRotations.RemoveAt(OldRotations.Count - 1);
+            }
+
+            Velocity = new Vector2(0, -0.5f);
+            Position += Velocity;
+        }
+    }
+
     public static Dictionary<string, Asset<Texture2D>> Textures = [];
     public static List<BackgroundElement> Elements = [];
     public static Dictionary<string, int> ElementCountsByName = [];
@@ -33,6 +87,7 @@ internal class MoonlordBackground : ModSystem
         Add("Shinespot");
         Add("Object0");
         Add("StillnessObject");
+        Add("DancingWyrms");
 
         static void Add(string tex) => Textures.Add(tex, Request(tex));
         static Asset<Texture2D> Request(string tex) => ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/MoonLord/" + tex);
@@ -53,6 +108,18 @@ internal class MoonlordBackground : ModSystem
             firstTileY = 4;
         if (lastTileY > Main.maxTilesY - 4)
             lastTileY = Main.maxTilesY - 4;
+    }
+
+    public override void PostUpdateDusts()
+    {
+        if (Main.dedServ)
+            return;
+
+        foreach (BackgroundElement element in Elements)
+        {
+            if (element is MovingElement moving)
+                moving.Update();
+        }
     }
 
     internal static void Draw()
@@ -129,6 +196,27 @@ internal class MoonlordBackground : ModSystem
                 AddElement(new BackgroundElement("StillnessObject", pos, scale, Color.Lerp(topRange, Color.Gray * 0.5f, parallax), src, parallax, rot, PreDrawMiscObject));
             }
         }
+
+        if (/*domainTimer % 30 == 0 && */!MaxedElements("DancingWyrms", 2500))
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.65f, Main.maxTilesY * 0.68f) * 16);
+                var scale = new Vector2(Main.rand.NextFloat(0.5f, 2f));
+
+                AddElement(new MovingElement("DancingWyrms", pos, scale, Color.Lerp(Color.White, Color.Gray * 0.5f, 0), null, 1f, 0f, PreDrawWyrm, Main.rand.Next(20, 80)));
+            }
+        }
+    }
+
+    private static bool PreDrawWyrm(BackgroundElement element, ref Vector2 pos, ref Vector2 scale, ref Vector2 origin, ref Color color)
+    {
+        PreDrawMiscObject(element, ref pos, ref scale, ref origin, ref color);
+
+        var self = (MovingElement)element;
+        new UnholyFlameDrawer().Draw(self);
+        self.Velocity.Y = -0.5f;
+        return true;
     }
 
     private static bool PreDrawMiscObject(BackgroundElement element, ref Vector2 pos, ref Vector2 scale, ref Vector2 origin, ref Color color)
