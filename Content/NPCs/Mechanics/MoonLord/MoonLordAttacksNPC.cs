@@ -51,7 +51,7 @@ internal class MoonLordAttacksNPC : GlobalNPC
 
     public override bool InstancePerEntity => true;
 
-    List<CustomAttack> applicableAttacks = [];
+    private readonly List<CustomAttack> applicableAttacks = [];
 
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.MoonLordCore;
 

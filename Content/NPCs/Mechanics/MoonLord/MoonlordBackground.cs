@@ -1,29 +1,32 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Humanizer;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Terraria.GameContent;
 using Terraria.Graphics;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 internal class MoonlordBackground : ModSystem
 {
     [StructLayout(LayoutKind.Sequential, Size = 1)]
-    public readonly struct UnholyFlameDrawer
+    public readonly struct TrailDrawer
     {
         private static readonly VertexStrip _vertexStrip = new();
 
-        public readonly void Draw(MovingElement element)
+        public readonly void Draw(Vector2 size, Vector2[] positions, float[] rotations)
         {
             MiscShaderData miscShaderData = GameShaders.Misc["MagicMissile"];
             miscShaderData.UseSaturation(-2.8f);
             miscShaderData.UseOpacity(2f);
             miscShaderData.Apply();
-            Vector2 drawPos = -Main.screenPosition + Textures[element.Texture].Size() / 2f;
-            _vertexStrip.PrepareStripWithProceduralPadding([.. element.OldPositions], [.. element.OldRotations], StripColors, StripWidth, drawPos);
+            Vector2 drawPos = -Main.screenPosition + size / 2f;
+            _vertexStrip.PrepareStripWithProceduralPadding(positions, rotations, StripColors, StripWidth, drawPos);
             _vertexStrip.DrawTrail();
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
         }
@@ -80,6 +83,8 @@ internal class MoonlordBackground : ModSystem
     public static List<BackgroundElement> Elements = [];
     public static Dictionary<string, int> ElementCountsByName = [];
 
+    private static EnlightenedMoonlordTarget EnlightenedTarget = null;
+
     public override void Load()
     {
         Textures.Clear();
@@ -88,6 +93,9 @@ internal class MoonlordBackground : ModSystem
         Add("Object0");
         Add("StillnessObject");
         Add("DancingWyrms");
+
+        EnlightenedTarget = new EnlightenedMoonlordTarget(-1);
+        Main.ContentThatNeedsRenderTargets.Add(EnlightenedTarget);
 
         static void Add(string tex) => Textures.Add(tex, Request(tex));
         static Asset<Texture2D> Request(string tex) => ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/MoonLord/" + tex);
@@ -126,6 +134,20 @@ internal class MoonlordBackground : ModSystem
     {
         PreDrawUpdate(Main.LocalPlayer, Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().DomainTimer);
         GetScreenDrawArea(Main.screenPosition, Vector2.Zero, out int left, out int right, out int top, out int bottom);
+
+        if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
+        {
+            EnlightenedTarget.NPC = NPC.FindFirstNPC(NPCID.MoonLordCore);
+
+            if (EnlightenedTarget.IsReady)
+                EnlightenedTarget.Reset();
+
+            EnlightenedTarget.Request();
+        }
+
+            // If the drawer isn't ready, wait until it is.
+        if (EnlightenedTarget.IsReady)
+            Main.spriteBatch.Draw(EnlightenedTarget.GetTarget(), Main.MouseScreen, Color.White);
 
         Rectangle area = new(left * 16, top * 16, (right - left) * 16, (bottom - top) * 16);
 
@@ -197,14 +219,17 @@ internal class MoonlordBackground : ModSystem
             }
         }
 
-        if (/*domainTimer % 30 == 0 && */!MaxedElements("DancingWyrms", 2500))
+        if (domainTimer % 30 == 0 && !MaxedElements("DancingWyrms", 2500))
         {
             for (int i = 0; i < 10; ++i)
             {
                 var pos = new Vector2(Main.rand.NextFloat(300, Main.maxTilesX * 8 - 300), Main.rand.NextFloat(Main.maxTilesY * 0.65f, Main.maxTilesY * 0.68f) * 16);
                 var scale = new Vector2(Main.rand.NextFloat(0.5f, 2f));
 
-                AddElement(new MovingElement("DancingWyrms", pos, scale, Color.Lerp(Color.White, Color.Gray * 0.5f, 0), null, 1f, 0f, PreDrawWyrm, Main.rand.Next(20, 80)));
+                AddElement(new MovingElement("DancingWyrms", pos, scale, Color.Lerp(Color.White, Color.Gray * 0.5f, 0), null, 1f, 0f, PreDrawWyrm, Main.rand.Next(20, 80))
+                {
+                    Velocity = new Vector2(0, -2f)
+                });
             }
         }
     }
@@ -214,7 +239,7 @@ internal class MoonlordBackground : ModSystem
         PreDrawMiscObject(element, ref pos, ref scale, ref origin, ref color);
 
         var self = (MovingElement)element;
-        new UnholyFlameDrawer().Draw(self);
+        new TrailDrawer().Draw(Textures[self.Texture].Size(), [.. self.OldPositions], [.. self.OldRotations]);
         self.Velocity.Y = -0.5f;
         return true;
     }
