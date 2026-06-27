@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using SubworldLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +84,9 @@ internal class MoonlordBackground : ModSystem
     public static List<BackgroundElement> Elements = [];
     public static Dictionary<string, int> ElementCountsByName = [];
 
-    private static EnlightenedMoonlordTarget EnlightenedTarget = null;
+    private static EnlightenedMoonlordTarget NPCTarget = null;
+    private static EnlightenedMoonlordTarget DustTarget = null;
+    private static EnlightenedMoonlordTarget ProjectileTarget = null;
 
     public override void Load()
     {
@@ -94,11 +97,60 @@ internal class MoonlordBackground : ModSystem
         Add("StillnessObject");
         Add("DancingWyrms");
 
-        EnlightenedTarget = new EnlightenedMoonlordTarget(-1);
-        Main.ContentThatNeedsRenderTargets.Add(EnlightenedTarget);
+        SetTarget(TargetType.NPCs, ref NPCTarget);
+        SetTarget(TargetType.Dusts, ref DustTarget);
+        SetTarget(TargetType.Projectiles, ref ProjectileTarget);
+
+        On_Main.DoDraw_DrawNPCsBehindTiles += DrawOverMoonLord;
+
+        ModContent.Request<Effect>("BossForgiveness/Assets/Effects/MirageEffect");
 
         static void Add(string tex) => Textures.Add(tex, Request(tex));
         static Asset<Texture2D> Request(string tex) => ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/MoonLord/" + tex);
+
+        static void SetTarget(TargetType type, ref EnlightenedMoonlordTarget target)
+        {
+            target = new EnlightenedMoonlordTarget(type);
+            Main.ContentThatNeedsRenderTargets.Add(target);
+        }
+    }
+
+    private void DrawOverMoonLord(On_Main.orig_DoDraw_DrawNPCsBehindTiles orig, Main self)
+    {
+        orig(self);
+
+        // If the drawer isn't ready, wait until it is.
+        if (SubworldSystem.Current is MoonLordPacificationSubworld)
+        {
+            GraphicsDevice device = Main.instance.GraphicsDevice;
+            Effect effect = ModContent.Request<Effect>("BossForgiveness/Assets/Effects/MirageEffect").Value;
+
+            float str = Main.LocalPlayer.selectedItem / 9f;// PacificationTracker.MoonLordBeatFactor;
+
+            DrawTarget(device, effect, str, NPCTarget, Color.White);
+            DrawTarget(device, effect, str, DustTarget, Color.Pink);
+            DrawTarget(device, effect, str, ProjectileTarget, new Color(255, 100, 100));
+        }
+
+        DustTarget.Request();
+        NPCTarget.Request();
+        ProjectileTarget.Request();
+    }
+
+    private static void DrawTarget(GraphicsDevice device, Effect effect, float str, EnlightenedMoonlordTarget target, Color color)
+    {
+        effect.Parameters["effectStrength"].SetValue(MathF.Min(1.5f - str, 1));
+        effect.Parameters["strength"].SetValue(1 - str + 0.001f);
+        effect.Parameters["resolution"].SetValue(new Vector2(device.Viewport.Width, device.Viewport.Height));
+        effect.Parameters["timer"].SetValue((float)(Main.timeForVisualEffects * 0.06f));
+        effect.Parameters["white"].SetValue(str);
+        effect.Parameters["fadeColor"].SetValue(color.ToVector3());
+        effect.Parameters["bleedEffect"].SetValue(0.5f);
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.Default, Main.Rasterizer, effect);
+
+        Main.spriteBatch.Draw(target.GetTarget(), Vector2.Zero, Color.White);
+
+        Main.spriteBatch.End();
     }
 
     private static void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
@@ -134,20 +186,6 @@ internal class MoonlordBackground : ModSystem
     {
         PreDrawUpdate(Main.LocalPlayer, Main.LocalPlayer.GetModPlayer<MoonlordDomainPlayer>().DomainTimer);
         GetScreenDrawArea(Main.screenPosition, Vector2.Zero, out int left, out int right, out int top, out int bottom);
-
-        if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
-        {
-            EnlightenedTarget.NPC = NPC.FindFirstNPC(NPCID.MoonLordCore);
-
-            if (EnlightenedTarget.IsReady)
-                EnlightenedTarget.Reset();
-
-            EnlightenedTarget.Request();
-        }
-
-            // If the drawer isn't ready, wait until it is.
-        if (EnlightenedTarget.IsReady)
-            Main.spriteBatch.Draw(EnlightenedTarget.GetTarget(), Main.MouseScreen, Color.White);
 
         Rectangle area = new(left * 16, top * 16, (right - left) * 16, (bottom - top) * 16);
 

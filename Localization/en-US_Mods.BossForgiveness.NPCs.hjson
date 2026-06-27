@@ -1,17 +1,69 @@
-KingSlimePacified.DisplayName: "{$NPCName.KingSlime}"
-EyePacified.DisplayName: "{$NPCName.EyeofCthulhu}"
-BoCPacified.DisplayName: "{$NPCName.BrainofCthulhu}"
-PacifiedEoW.DisplayName: "{$NPCName.EaterofWorldsTail}"
-PacifiedQueenBee.DisplayName: "{$NPCName.QueenBee}"
-SkeletronPacified.DisplayName: "{$NPCName.SkeletronHead}"
-PacifiedDeerclops.DisplayName: "{$NPCName.Deerclops}"
-QueenSlimePacified.DisplayName: "{$NPCName.QueenSlimeBoss}"
-SkelePrimePacified.DisplayName: "{$NPCName.SkeletronPrime}"
-DestroyerPacified.DisplayName: "{$NPCName.TheDestroyer}"
-SpazmatismPacified.DisplayName: "{$NPCName.Spazmatism}"
+KingSlimePacified: {
+	DisplayName: "{$NPCName.KingSlime}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+EyePacified: {
+	DisplayName: "{$NPCName.EyeofCthulhu}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+BoCPacified: {
+	DisplayName: "{$NPCName.BrainofCthulhu}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+PacifiedEoW: {
+	DisplayName: "{$NPCName.EaterofWorldsTail}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+PacifiedQueenBee: {
+	DisplayName: "{$NPCName.QueenBee}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+SkeletronPacified: {
+	DisplayName: "{$NPCName.SkeletronHead}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+PacifiedDeerclops: {
+	DisplayName: "{$NPCName.Deerclops}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+QueenSlimePacified: {
+	DisplayName: "{$NPCName.QueenSlimeBoss}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+SkelePrimePacified: {
+	DisplayName: "{$NPCName.SkeletronPrime}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+DestroyerPacified: {
+	DisplayName: "{$NPCName.TheDestroyer}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+SpazmatismPacified: {
+	DisplayName: "{$NPCName.Spazmatism}"
+	Census.SpawnCondition: Conditions unknown
+}
+
 RetinazerPacified.DisplayName: "{$NPCName.Retinazer}"
-PlanteraPacified.DisplayName: "{$NPCName.Plantera}"
-GolemHeadPacified.DisplayName: "{$NPCName.Golem}"
+
+PlanteraPacified: {
+	DisplayName: "{$NPCName.Plantera}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+GolemHeadPacified: {
+	DisplayName: "{$NPCName.Golem}"
+	Census.SpawnCondition: Conditions unknown
+}
 
 TruffleLeechNPC: {
 	DisplayName: Truffle Leech
@@ -23,8 +75,16 @@ Omnileech: {
 	Entry: A legendary, massive truffle worm that can no longer move due to its size. Prized by Fishrons across the universe.
 }
 
-DukePacified.DisplayName: "{$NPCName.DukeFishron}"
-CultistPacified.DisplayName: "{$NPCName.CultistBoss}"
+DukePacified: {
+	DisplayName: "{$NPCName.DukeFishron}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+CultistPacified: {
+	DisplayName: "{$NPCName.CultistBoss}"
+	Census.SpawnCondition: Conditions unknown
+}
+
 EoLPacified.DisplayName: "{$NPCName.HallowBoss}"
 
 SpiritLeech: {
@@ -32,11 +92,39 @@ SpiritLeech: {
 	Entry: An odd variant of the Leech that explodes after a short time. Sometimes, they appear as ghosts. It is unclear what this means.
 }
 
-PinkyPacified.DisplayName: "{$NPCName.Pinky}"
-LostGirlPacified.DisplayName: "{$NPCName.LostGirl}"
-TimPacified.DisplayName: "{$NPCName.Tim}"
-SkeleMinerPacified.DisplayName: "{$NPCName.UndeadMiner}"
-EmpressPacified.DisplayName: "{$NPCName.HallowBoss}"
-MimicPacified.DisplayName: "{$NPCName.Mimic}"
-RainbowSlimePacified.DisplayName: "{$NPCName.RainbowSlime}"
+PinkyPacified: {
+	DisplayName: "{$NPCName.Pinky}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+LostGirlPacified: {
+	DisplayName: "{$NPCName.LostGirl}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+TimPacified: {
+	DisplayName: "{$NPCName.Tim}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+SkeleMinerPacified: {
+	DisplayName: "{$NPCName.UndeadMiner}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+EmpressPacified: {
+	DisplayName: "{$NPCName.HallowBoss}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+MimicPacified: {
+	DisplayName: "{$NPCName.Mimic}"
+	Census.SpawnCondition: Conditions unknown
+}
+
+RainbowSlimePacified: {
+	DisplayName: "{$NPCName.RainbowSlime}"
+	Census.SpawnCondition: Conditions unknown
+}
+
 Vortoid.DisplayName: Vortoid

@@ -1,4 +1,5 @@
-﻿using SubworldLibrary;
+﻿using Microsoft.Xna.Framework.Graphics;
+using SubworldLibrary;
 using System.Collections.Generic;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -73,5 +74,40 @@ internal class MoonLordAttacksNPC : GlobalNPC
     {
          foreach (var attack in applicableAttacks)
             attack.Update(npc);
+    }
+}
+
+internal class MoonLordDisablingNPC : GlobalNPC
+{
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type is NPCID.MoonLordCore or NPCID.MoonLordHand or NPCID.MoonLordHead or NPCID.MoonLordFreeEye;
+
+    public override bool PreAI(NPC npc)
+    {
+        if (false)
+        {
+            bool isHeadOrHand = npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
+
+            if (isHeadOrHand)
+            {
+                npc.ai[0] = 0;
+                npc.ai[1] = 0;
+            }
+            else
+            {
+                npc.velocity *= 0.9f;
+            }
+
+            return npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
+        }
+
+        return true;
+    }
+
+    public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (EnlightenedMoonlordTarget.DrawingSpecialML)
+            return true;
+
+        return false;
     }
 }

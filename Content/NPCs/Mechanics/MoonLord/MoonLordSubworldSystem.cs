@@ -28,7 +28,6 @@ internal class MoonLordSubworldSystem : ModSystem
         On_Lighting.AddLight_int_int_int_float += BlockLight_Torch;
         On_Player.QuickMount += HijackQuickMount;
         On_Main.DrawBG += DrawBG;
-        On_Main.DrawStarsInBackground += On_Main_DrawStarsInBackground;
         On_DrawData.Draw_SpriteDrawBuffer += DrawSilhouette;
         On_TileDrawing.Draw += AddCheck;
         On_TileDrawing.PostDrawTiles += AddCheck;
@@ -84,17 +83,6 @@ internal class MoonLordSubworldSystem : ModSystem
             color = Fade(color);
 
         orig(spriteBatch, texture, sourceX, sourceY, sourceW, sourceH, destinationX, destinationY, destinationW, destinationH, color, originX, originY, rotationSin, rotationCos, depth, effects);
-    }
-
-    private void On_Main_DrawStarsInBackground(On_Main.orig_DrawStarsInBackground orig, Main self, Main.SceneArea sceneArea, bool artificial)
-    {
-        orig(self, sceneArea, artificial);
-
-        if (InSubworld && false)
-        {
-            MoonlordBackground.Draw();
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(-20, -20, Main.screenWidth + 40, Main.screenHeight + 40), Color.White * PlayerFadeEffect);
-        }
     }
 
     private void DrawSilhouette(On_DrawData.orig_Draw_SpriteDrawBuffer orig, ref DrawData self, SpriteDrawBuffer sb)
