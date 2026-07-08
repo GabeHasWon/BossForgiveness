@@ -74,7 +74,7 @@ internal class HideProjectiles : GlobalProjectile
 
     private void StopDrawDust(On_Main.orig_DrawDust orig, Main self)
     {
-        if (SubworldSystem.Current is MoonLordPacificationSubworld && EnlightenedMoonlordTarget.DrawingSpecialML)
+        if (SubworldSystem.Current is MoonLordPacificationSubworld && (!NPC.AnyNPCs(NPCID.MoonLordCore) || EnlightenedMoonlordTarget.DrawingSpecialML))
             orig(self);
         else if (SubworldSystem.Current is not MoonLordPacificationSubworld)
             orig(self);
