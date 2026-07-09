@@ -138,25 +138,24 @@ internal class MoonlordBackground : ModSystem
     private static void DrawTarget(GraphicsDevice device, Effect effect, float str, EnlightenedMoonlordTarget target, Color color, float alphaMod)
     {
         effect.Parameters["noise"].SetValue(ModContent.Request<Texture2D>("BossForgiveness/Assets/Effects/CosmicNoise", AssetRequestMode.ImmediateLoad).Value);
+        effect.Parameters["skyNoise"].SetValue(ModContent.Request<Texture2D>("BossForgiveness/Assets/Effects/Skynoise", AssetRequestMode.ImmediateLoad).Value);
 
-        effect.Parameters["effectStrength"].SetValue(MathF.Min(3.5f - str, 1));
+        effect.Parameters["effectStrength"].SetValue(MathF.Min(1 - str, 1));
         effect.Parameters["strength"].SetValue(1 - str + 0.001f);
         effect.Parameters["resolution"].SetValue(new Vector2(device.Viewport.Width, device.Viewport.Height));
         effect.Parameters["timer"].SetValue((float)(Main.timeForVisualEffects * 0.06f));
         effect.Parameters["white"].SetValue(str);
         effect.Parameters["fadeColor"].SetValue(color.ToVector3());
-        effect.Parameters["bleedEffect"].SetValue(0.5f);
-        effect.Parameters["sineStrength"].SetValue(str * 0.2f);
-        effect.Parameters["sineStrengthTotal"].SetValue(0.02f * str);
+        effect.Parameters["bleedEffect"].SetValue(0.01f);
         effect.Parameters["alphaStrength"].SetValue(0.8f * alphaMod);
         effect.Parameters["alphaSize"].SetValue(0.01f);
-        effect.Parameters["noiseMod"].SetValue(new Vector2(0.001f, 0.0018f));
+        effect.Parameters["noiseMod"].SetValue(Vector2.One);
         effect.Parameters["noiseSpeed"].SetValue(new Vector2(0.05f, 0.04f));
-        effect.Parameters["noiseZoom"].SetValue(new Vector2(0.1f, 0.1f));
+        effect.Parameters["noiseZoom"].SetValue(new Vector2(0.01f, 0.01f));
         Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, effect);
 
         Main.spriteBatch.Draw(target.GetTarget(), Vector2.Zero, Color.White);
-
+        
         Main.spriteBatch.End();
     }
 
