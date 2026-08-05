@@ -20,8 +20,17 @@ internal class BossMemories : ModSystem
         {
             int npcType = NormalBosses[i];
             Main.instance.LoadNPC(npcType);
-            Texture2D tex = TextureAssets.Npc[npcType].Value;
-            MemoryColorInfo info = new(tex);
+
+            MemoryColorInfo info;
+
+            if (!Main.dedServ)
+            {
+                Texture2D tex = TextureAssets.Npc[npcType].Value;
+                info = new(tex, npcType);
+            }
+            else
+                info = MemoryColorInfo.FromEmptySize(ContentSamples.NpcsByNetId[npcType]);
+
             InfoByType.Add(npcType, info);
         }
     });
@@ -32,7 +41,7 @@ internal class BossMemories : ModSystem
             mem.Update();
 
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
-            Memories.Add(new Memory(NPCID.EyeofCthulhu, Main.MouseWorld, MemoryAnimations.EoCAnimation));
+            Memories.Add(new Memory(NPCID.EyeofCthulhu, Main.MouseWorld, MemoryDelegates.EoCUpdate));
     }
 
     public override void PostDrawTiles()
