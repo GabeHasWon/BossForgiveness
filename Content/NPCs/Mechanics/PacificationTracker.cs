@@ -21,10 +21,12 @@ public class PacificationTracker : ModSystem
         Other = 1 << 7
     }
 
+    public const int VanillaBossesForMoonLord = 16;
+
     /// <summary>
     /// % of bosses pacified out of the vanilla 17 (non-event, non-Moon Lord, and BoC/Eow combined into one) bosses.
     /// </summary>
-    public static float MoonLordBeatFactor => Count(PacificationType.Boss) / 16f;
+    public static float MoonLordBeatFactor => Count(PacificationType.Boss) / (float)VanillaBossesForMoonLord;
 
     /// <summary>
     /// All current or former pacifications in the world.

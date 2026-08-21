@@ -120,6 +120,9 @@ internal class HideProjectiles : GlobalProjectile
 
     public override bool PreDraw(Projectile projectile, ref Color lightColor)
     {
+        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
+            return true;
+
         if (EnlightenedMoonlordTarget.MoonLordProjTypes.Contains(projectile.type))
             return EnlightenedMoonlordTarget.DrawingSpecialML;
 
@@ -128,6 +131,9 @@ internal class HideProjectiles : GlobalProjectile
 
     public override bool PreDrawExtras(Projectile projectile)
     {
+        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
+            return true;
+
         if (EnlightenedMoonlordTarget.MoonLordProjTypes.Contains(projectile.type))
             return EnlightenedMoonlordTarget.DrawingSpecialML;
 

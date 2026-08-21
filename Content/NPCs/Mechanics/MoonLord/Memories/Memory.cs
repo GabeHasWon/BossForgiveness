@@ -6,7 +6,7 @@ using Terraria.GameContent;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
-public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = null)
+public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = null, float particleRatio = 0.002f)
 {
     public struct MemoryParticle
     {
@@ -50,7 +50,6 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public delegate void UpdateDelegate(Memory self, float bossProgression);
 
     public readonly MemoryColorInfo Colors = BossMemories.InfoByType[npc];
-    public readonly List<MemoryParticle> Particles = [];
     public readonly Texture2D Texture = TextureAssets.Npc[npc].Value;
     public readonly int NpcType = npc;
     public readonly UpdateDelegate Updating = update ?? MemoryDelegates.DefaultAnimation;
@@ -58,12 +57,17 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public Vector2 Size => new(Colors.Width, Colors.FrameHeight);
     public Vector2 Center => Position + Size / 2f;
     
+    public List<MemoryParticle> Particles = [];
     public Vector2 Position = position;
     public Vector2 Velocity = Vector2.Zero;
     public Rectangle Frame = Rectangle.Empty;
     public float Rotation = 0;
     public float LastRotation = 0;
     public int LifeTime = 0;
+    public int DespawnTime = 0;
+    public bool Collected = false;
+    public float ParticleRatio = particleRatio;
+    public object AddedInfo = new();
 
     public void Update()
     {
@@ -71,7 +75,31 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         LifeTime++;
 
         LastRotation = Rotation;
-        Updating.Invoke(this, 1);
+
+        if (!Collected)
+            Updating.Invoke(this, 1);
+        else
+        {
+            Velocity.X *= 0.95f;
+            Velocity.Y = MathHelper.Lerp(Velocity.Y, -12, 0.03f);
+        }
+
+        if (!Collected)
+        {
+            Rectangle bounds = new((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
+
+            foreach (Player player in Main.ActivePlayers)
+            {
+                if (player.Hitbox.Intersects(bounds))
+                {
+                    Collected = true;
+                    var npc = MoonLordPacificationNPC.GetPacificationNPC();
+                    npc?.PacifiedBosses.Add(NpcType);
+
+                    break;
+                }
+            }
+        }
 
         foreach (ref MemoryParticle particle in CollectionsMarshal.AsSpan(Particles))
         {
@@ -87,7 +115,10 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         foreach (ref MemoryParticle particle in CollectionsMarshal.AsSpan(Particles))
             particle.Draw();
 
-        float cap = Texture.Width * Texture.Height * 0.002f;
+        if (Frame == Rectangle.Empty || Collected)
+            return;
+
+        float cap = Texture.Width * Texture.Height * ParticleRatio;
 
         while (Particles.Count < cap)
         {
@@ -98,5 +129,12 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
 
             Particles.Add(particle);
         }
+    }
+
+    public Memory Clone()
+    {
+        var clone = (Memory)MemberwiseClone();
+        clone.Particles = [];
+        return clone;
     }
 }

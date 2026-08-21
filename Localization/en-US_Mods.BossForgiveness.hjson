@@ -29,6 +29,7 @@ Projectiles: {
 	ShimmerPortal.DisplayName: Shimmer Portal
 	VolatileWatcherExplosion.DisplayName: Watcher Explosion
 	DelayedTileProj.DisplayName: Delayed Tile Proj
+	VoidPortal.DisplayName: Void Portal
 }
 
 TimLaserHurtReason: "{0} couldn't dodge the magic lasers."

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using SubworldLibrary;
+using System;
 using System.Collections.Generic;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -77,12 +78,38 @@ internal class MoonLordAttacksNPC : GlobalNPC
     }
 }
 
-internal class MoonLordDisablingNPC : GlobalNPC
+internal class MoonLordPacificationNPC : GlobalNPC
 {
+    public override bool InstancePerEntity => true;
+
+    public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaBossesForMoonLord;
+
+    public readonly HashSet<int> PacifiedBosses = [];
+
+    public static MoonLordPacificationNPC GetPacificationNPC()
+    {
+        foreach (NPC npc in Main.ActiveNPCs)
+        {
+            if (npc.type == NPCID.MoonLordCore)
+                return npc.GetGlobalNPC<MoonLordPacificationNPC>();
+        }
+
+        return null;
+    }
+
     public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type is NPCID.MoonLordCore or NPCID.MoonLordHand or NPCID.MoonLordHead or NPCID.MoonLordFreeEye;
 
     public override bool PreAI(NPC npc)
     {
+        if (npc.life < npc.lifeMax || AnyHandHurt())
+        {
+            if (SubworldSystem.Current is MoonLordPacificationSubworld)
+            {
+                npc.active = false;
+                return false;
+            }
+        }
+
         if (false)
         {
             bool isHeadOrHand = npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
@@ -101,6 +128,20 @@ internal class MoonLordDisablingNPC : GlobalNPC
         }
 
         return true;
+    }
+
+    private bool AnyHandHurt()
+    {
+        foreach (NPC npc in Main.ActiveNPCs)
+        {
+            if (npc.type != NPCID.MoonLordHand)
+                continue;
+
+            if (npc.life != npc.lifeMax)
+                return true;
+        }
+
+        return false;
     }
 
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

@@ -123,7 +123,7 @@ internal class MoonlordBackground : ModSystem
             GraphicsDevice device = Main.instance.GraphicsDevice;
             Effect effect = ModContent.Request<Effect>("BossForgiveness/Assets/Effects/MirageEffect").Value;
 
-            float str = Main.LocalPlayer.selectedItem / 9f;// PacificationTracker.MoonLordBeatFactor;
+            float str = MoonLordPacificationNPC.GetPacificationNPC().Progress;
 
             DrawTarget(device, effect, str, NPCTarget, Color.White, 1);
             DrawTarget(device, effect, str, DustTarget, Color.Pink, 0.8f);

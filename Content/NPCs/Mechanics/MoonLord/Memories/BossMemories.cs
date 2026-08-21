@@ -14,6 +14,8 @@ internal class BossMemories : ModSystem
 
     public List<Memory> Memories = [];
 
+    public static Dictionary<int, Memory> BossMemoryTemplates;
+
     public override void Load() => Main.RunOnMainThread(() =>
     {
         for (int i = 0; i < NormalBosses.Length; ++i)
@@ -33,6 +35,14 @@ internal class BossMemories : ModSystem
 
             InfoByType.Add(npcType, info);
         }
+
+        BossMemoryTemplates = new()
+        {
+            { NPCID.EyeofCthulhu, new Memory(NPCID.EyeofCthulhu, Vector2.Zero, MemoryDelegates.EoCUpdate) },
+            { NPCID.KingSlime, new Memory(NPCID.KingSlime, Vector2.Zero, MemoryDelegates.KingSlimeUpdate) },
+            { NPCID.SkeletronHead, new Memory(NPCID.SkeletronHead, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.015f) },
+            { NPCID.CultistBoss, new Memory(NPCID.CultistBoss, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.02f) },
+        };
     });
 
     public override void PostUpdateDusts()
@@ -40,8 +50,18 @@ internal class BossMemories : ModSystem
         foreach (Memory mem in Memories)
             mem.Update();
 
+        if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
+            Memories.Clear();
+
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
-            Memories.Add(new Memory(NPCID.EyeofCthulhu, Main.MouseWorld, MemoryDelegates.EoCUpdate));
+            CreateMemory(NPCID.SkeletronHead, Main.MouseWorld);
+    }
+
+    public void CreateMemory(int npc, Vector2 pos)
+    {
+        Memory item = BossMemoryTemplates[npc].Clone();
+        item.Position = pos;
+        Memories.Add(item);
     }
 
     public override void PostDrawTiles()
