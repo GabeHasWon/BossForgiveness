@@ -14,11 +14,13 @@ internal class VoidPortal : ModProjectile
         Projectile.timeLeft = 400;
         Projectile.aiStyle = -1;
         Projectile.width = Projectile.height = 72;
+        Projectile.tileCollide = false;
     }
 
     public override void AI()
     {
         Timer++;
+        Projectile.velocity *= 0.9f;
 
         if (Projectile.timeLeft < 100)
             Projectile.Opacity = Projectile.timeLeft / 100f;
@@ -29,7 +31,7 @@ internal class VoidPortal : ModProjectile
 
             if (dist < 500)
             {
-                player.position += player.DirectionTo(Projectile.Center) * (500 - dist) / 40f * Utils.GetLerpValue(0, 80, dist, true);
+                player.position += player.DirectionTo(Projectile.Center) * (500 - dist) / 45f * Utils.GetLerpValue(0, 80, dist, true);
                 Dust dust = SpawnDust(player.position, player.width, player.height);
                 dust.velocity = player.DirectionTo(Projectile.Center) * 16;
             }
@@ -40,7 +42,7 @@ internal class VoidPortal : ModProjectile
         newDust.velocity = newPos.DirectionTo(Projectile.Center) * 9;
     }
 
-    private Dust SpawnDust(Vector2 pos, int width, int height)
+    internal static Dust SpawnDust(Vector2 pos, int width, int height)
     {
         int dust = Dust.NewDust(pos, width, height, DustID.WhiteTorch, newColor: Color.Black, Scale: 2);
         Main.dust[dust].noGravity = true;

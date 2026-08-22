@@ -41,7 +41,8 @@ internal class BossMemories : ModSystem
             { NPCID.EyeofCthulhu, new Memory(NPCID.EyeofCthulhu, Vector2.Zero, MemoryDelegates.EoCUpdate) },
             { NPCID.KingSlime, new Memory(NPCID.KingSlime, Vector2.Zero, MemoryDelegates.KingSlimeUpdate) },
             { NPCID.SkeletronHead, new Memory(NPCID.SkeletronHead, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.015f) },
-            { NPCID.CultistBoss, new Memory(NPCID.CultistBoss, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.02f) },
+            { NPCID.QueenBee, new Memory(NPCID.QueenBee, Vector2.Zero, MemoryDelegates.QueenBeeUpdate) },
+            { NPCID.CultistBoss, new Memory(NPCID.CultistBoss, Vector2.Zero, MemoryDelegates.CultistUpdate, 0.005f) },
         };
     });
 
@@ -50,11 +51,26 @@ internal class BossMemories : ModSystem
         foreach (Memory mem in Memories)
             mem.Update();
 
+        Memories.RemoveAll(x => x.Collected && x.Particles.Count == 0);
+
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
             Memories.Clear();
 
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
-            CreateMemory(NPCID.SkeletronHead, Main.MouseWorld);
+        {
+            List<int> unpac = MoonLordPacificationNPC.GetUnpacifiedBosses();
+
+            if (unpac.Count > 0)
+            {
+                int npc;
+
+                do
+                    npc = Main.rand.Next(unpac);
+                while (!BossMemoryTemplates.ContainsKey(npc));
+
+                CreateMemory(npc, Main.MouseWorld);
+            }
+        }
     }
 
     public void CreateMemory(int npc, Vector2 pos)

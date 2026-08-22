@@ -28,14 +28,21 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
             Parent = parent;
             Rectangle src = parent.Frame;
 
-            while (Color.A == 0)
+            int x;
+            int y;
+
+            do
             {
-                int x = Main.rand.Next(src.Width);
-                int y = src.Y + Main.rand.Next(src.Height);
+                x = Main.rand.Next(src.Width);
+                y = src.Y + Main.rand.Next(src.Height);
 
                 Color = info.Pixels[x, y];
-                Offset = new Vector2(x % src.Width, y % src.Height);
-            }
+            } while (Color.A == 0);
+
+            if (parent.SpriteEffect == SpriteEffects.FlipHorizontally)
+                x = src.Width - x;
+
+            Offset = new Vector2(x % src.Width, y % src.Height);
         }
 
         public readonly void Draw()
@@ -68,6 +75,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public bool Collected = false;
     public float ParticleRatio = particleRatio;
     public object AddedInfo = new();
+    public SpriteEffects SpriteEffect = SpriteEffects.None;
 
     public void Update()
     {

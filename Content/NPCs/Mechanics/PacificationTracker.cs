@@ -23,6 +23,10 @@ public class PacificationTracker : ModSystem
 
     public const int VanillaBossesForMoonLord = 16;
 
+    public readonly static HashSet<int> VanillaIdsForMoonLord = [NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.KingSlime, NPCID.BrainofCthulhu, NPCID.Deerclops, NPCID.QueenBee, 
+        NPCID.SkeletronHead, NPCID.WallofFlesh, NPCID.QueenSlimeBoss, NPCID.SkeletronPrime, NPCID.TheDestroyer, NPCID.Retinazer, NPCID.Golem, NPCID.Plantera, NPCID.HallowBoss, 
+        NPCID.DukeFishron];
+
     /// <summary>
     /// % of bosses pacified out of the vanilla 17 (non-event, non-Moon Lord, and BoC/Eow combined into one) bosses.
     /// </summary>

@@ -86,6 +86,18 @@ internal class MoonLordPacificationNPC : GlobalNPC
 
     public readonly HashSet<int> PacifiedBosses = [];
 
+    private static List<int> UnpacifiedBosses = [];
+
+    public static List<int> GetUnpacifiedBosses()
+    {
+        UnpacifiedBosses.Clear();
+
+        foreach (int id in PacificationTracker.VanillaIdsForMoonLord)
+            UnpacifiedBosses.Add(id);
+
+        return UnpacifiedBosses;
+    }
+
     public static MoonLordPacificationNPC GetPacificationNPC()
     {
         foreach (NPC npc in Main.ActiveNPCs)

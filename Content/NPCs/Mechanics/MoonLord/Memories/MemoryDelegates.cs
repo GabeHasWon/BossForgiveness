@@ -1,5 +1,8 @@
-﻿using System;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Attacks;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
+using Terraria.ID;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
@@ -125,6 +128,46 @@ internal class MemoryDelegates
             memory.Collected = true;
     }
 
+    public static void QueenBeeUpdate(Memory memory, float bossProgression)
+    {
+        Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
+        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frame = (int)(memory.LifeTime / 10f) % 8 + 4;
+        bool returning = memory.LifeTime % 400 > 200;
+
+        if (!returning)
+            frame = (int)(memory.LifeTime / 10f) % 4;
+
+        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        memory.Frame = src;
+
+        if (!player.active || player.dead)
+        {
+            memory.Velocity *= 0.9f;
+            memory.DespawnTime++;
+        }
+        else
+        {
+            if (player.DistanceSQ(memory.Center) > 1500 * 1500)
+                memory.DespawnTime++;
+            else
+                memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
+
+            if (returning)
+                memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionTo(player.Center) * 3, 0.1f);
+            else
+            {
+                memory.Velocity.Y *= 0.8f;
+                memory.Velocity.X = Math.Sign(memory.Center.X - player.Center.X) * 10;
+            }
+
+            memory.SpriteEffect = Math.Sign(memory.Velocity.X) == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        }
+
+        if (memory.DespawnTime > 600)
+            memory.Collected = true;
+    }
+
     public static void CultistUpdate(Memory memory, float bossProgression)
     {
         int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
@@ -144,14 +187,33 @@ internal class MemoryDelegates
             else
                 memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
 
-            int time = memory.LifeTime % 600;
+            int time = memory.LifeTime % 800;
+            int moveTime = memory.LifeTime % 300;
 
-            if (time == 5)
-                memory.AddedInfo = (memory.Center, memory.Center + player.DirectionTo(memory.Center) * 400);
-
-            if (time > 5 && time < 50)
+            if (moveTime == 5)
             {
+                Vector2 nextPos = memory.Position + player.DirectionTo(memory.Position) * 700;
+                memory.AddedInfo = new Tuple<Vector2, Vector2>(memory.Position, nextPos);
+                memory.SpriteEffect = MathF.Sign(nextPos.X - memory.Position.X) == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            }
 
+            if (moveTime > 5 && moveTime < 15)
+            {
+                var posInfo = (Tuple<Vector2, Vector2>)memory.AddedInfo;
+                memory.Position = Vector2.Lerp(posInfo.Item1, posInfo.Item2, Utils.GetLerpValue(5, 15, moveTime));
+            }
+
+            if (time > 100 && time < 150)
+            {
+                Vector2 newPos = memory.Center + new Vector2(Main.rand.NextFloat(500), 0).RotatedByRandom(MathHelper.Pi);
+                Dust newDust = VoidPortal.SpawnDust(newPos, 1, 1);
+                newDust.velocity = newPos.DirectionTo(memory.Center) * 9;
+            }
+            
+            if (time == 175 && Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                Vector2 velocity = memory.Center.DirectionTo(player.Center) * 20;
+                Projectile.NewProjectile(new EntitySource_Memory(memory), memory.Center, velocity, ModContent.ProjectileType<VoidPortal>(), 0, 0);
             }
         }
 
