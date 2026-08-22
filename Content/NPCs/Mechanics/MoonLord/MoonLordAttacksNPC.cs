@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
+using Microsoft.Xna.Framework.Graphics;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
@@ -88,12 +89,16 @@ internal class MoonLordPacificationNPC : GlobalNPC
 
     private static List<int> UnpacifiedBosses = [];
 
+    private int _time = 0;
+
     public static List<int> GetUnpacifiedBosses()
     {
         UnpacifiedBosses.Clear();
+        MoonLordPacificationNPC npc = GetPacificationNPC();
 
         foreach (int id in PacificationTracker.VanillaIdsForMoonLord)
-            UnpacifiedBosses.Add(id);
+            if (!npc.PacifiedBosses.Contains(id))
+                UnpacifiedBosses.Add(id);
 
         return UnpacifiedBosses;
     }
@@ -119,6 +124,25 @@ internal class MoonLordPacificationNPC : GlobalNPC
             {
                 npc.active = false;
                 return false;
+            }
+        }
+
+        _time++;
+
+        if (_time % 480 == 0 && npc.type == NPCID.MoonLordCore)
+        {
+            // TODO: Multiplayer
+            List<int> unpac = GetUnpacifiedBosses();
+
+            if (unpac.Count > 0)
+            {
+                int type;
+
+                do
+                    type = Main.rand.Next(unpac);
+                while (!BossMemories.BossMemoryTemplates.ContainsKey(type));
+
+                ModContent.GetInstance<BossMemories>().CreateMemory(type, npc.Center - new Vector2(0, 400));
             }
         }
 

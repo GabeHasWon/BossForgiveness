@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.UI;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
@@ -42,6 +43,10 @@ internal class BossMemories : ModSystem
             { NPCID.KingSlime, new Memory(NPCID.KingSlime, Vector2.Zero, MemoryDelegates.KingSlimeUpdate) },
             { NPCID.SkeletronHead, new Memory(NPCID.SkeletronHead, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.015f) },
             { NPCID.QueenBee, new Memory(NPCID.QueenBee, Vector2.Zero, MemoryDelegates.QueenBeeUpdate) },
+            //{ NPCID.WallofFlesh, new Memory(NPCID.WallofFlesh, Vector2.Zero, MemoryDelegates.QueenBeeUpdate) },
+            //{ NPCID.WallofFleshEye, new Memory(NPCID.WallofFleshEye, Vector2.Zero, MemoryDelegates.DefaultAnimation) },
+            { NPCID.SkeletronPrime, new Memory(NPCID.SkeletronPrime, Vector2.Zero, MemoryDelegates.SkeletronPrimeUpdate) },
+            { NPCID.Plantera, new Memory(NPCID.Plantera, Vector2.Zero, MemoryDelegates.PlanteraUpdate) },
             { NPCID.CultistBoss, new Memory(NPCID.CultistBoss, Vector2.Zero, MemoryDelegates.CultistUpdate, 0.005f) },
         };
     });
@@ -58,18 +63,23 @@ internal class BossMemories : ModSystem
 
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
         {
-            List<int> unpac = MoonLordPacificationNPC.GetUnpacifiedBosses();
-
-            if (unpac.Count > 0)
+            if (ItemSlot.ShiftInUse)
             {
-                int npc;
+                List<int> unpac = MoonLordPacificationNPC.GetUnpacifiedBosses();
 
-                do
-                    npc = Main.rand.Next(unpac);
-                while (!BossMemoryTemplates.ContainsKey(npc));
+                if (unpac.Count > 0)
+                {
+                    int npc;
 
-                CreateMemory(npc, Main.MouseWorld);
+                    do
+                        npc = Main.rand.Next(unpac);
+                    while (!BossMemoryTemplates.ContainsKey(npc));
+
+                    CreateMemory(npc, Main.MouseWorld);
+                }
             }
+            else
+                CreateMemory(NPCID.Plantera, Main.MouseWorld);
         }
     }
 

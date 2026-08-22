@@ -168,6 +168,83 @@ internal class MemoryDelegates
             memory.Collected = true;
     }
 
+    public static void SkeletronPrimeUpdate(Memory memory, float bossProgression)
+    {
+        Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
+        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frame = (int)(memory.LifeTime / 10f) % 2;
+        bool spinning = memory.LifeTime % 800 > 500;
+
+        if (spinning)
+            frame = 2;
+
+        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        memory.Frame = src;
+
+        if (!player.active || player.dead)
+        {
+            memory.Velocity *= 0.9f;
+            memory.DespawnTime++;
+        }
+        else
+        {
+            if (player.DistanceSQ(memory.Center) > 1500 * 1500)
+                memory.DespawnTime++;
+            else
+                memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
+
+            if (memory.LifeTime % 500 < 200)
+                memory.Velocity *= 0.94f;
+            else if (!spinning)
+            {
+                memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionFrom(player.Center) * 12, 0.05f);
+                memory.Rotation = Utils.AngleLerp(memory.Rotation, 0, 0.1f);
+            }
+            else
+            {
+                memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionTo(player.Center).RotatedBy(MathHelper.PiOver2) * 12, 0.1f);
+                memory.Rotation -= 0.2f;
+            }
+
+            memory.SpriteEffect = Math.Sign(memory.Velocity.X) == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        }
+
+        if (memory.DespawnTime > 600)
+            memory.Collected = true;
+    }
+
+    public static void PlanteraUpdate(Memory memory, float bossProgression)
+    {
+        Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
+        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frame = (int)(memory.LifeTime / 10f) % 4;
+
+        if (bossProgression > 0.5f)
+            frame += 4;
+
+        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        memory.Frame = src;
+
+        if (!player.active || player.dead)
+        {
+            memory.Velocity *= 0.9f;
+            memory.DespawnTime++;
+        }
+        else
+        {
+            if (player.DistanceSQ(memory.Center) > 1500 * 1500)
+                memory.DespawnTime++;
+            else
+                memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
+
+            memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionFrom(player.Center) * (MathF.Sin(memory.LifeTime * 0.02f) * 2 + 4), 0.1f);
+            memory.Rotation = memory.Velocity.ToRotation() + MathHelper.PiOver2;
+        }
+
+        if (memory.DespawnTime > 600)
+            memory.Collected = true;
+    }
+
     public static void CultistUpdate(Memory memory, float bossProgression)
     {
         int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];

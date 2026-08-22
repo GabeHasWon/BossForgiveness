@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Terraria.GameContent;
 
@@ -36,7 +37,14 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
                 x = Main.rand.Next(src.Width);
                 y = src.Y + Main.rand.Next(src.Height);
 
-                Color = info.Pixels[x, y];
+                try
+                {
+                    Color = info.Pixels[x, y];
+                }
+                catch
+                {
+                    Debugger.Break();
+                }
             } while (Color.A == 0);
 
             if (parent.SpriteEffect == SpriteEffects.FlipHorizontally)
@@ -60,7 +68,8 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public readonly Texture2D Texture = TextureAssets.Npc[npc].Value;
     public readonly int NpcType = npc;
     public readonly UpdateDelegate Updating = update ?? MemoryDelegates.DefaultAnimation;
-    
+    public readonly List<Memory> Children = [];
+
     public Vector2 Size => new(Colors.Width, Colors.FrameHeight);
     public Vector2 Center => Position + Size / 2f;
     
@@ -90,6 +99,14 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         {
             Velocity.X *= 0.95f;
             Velocity.Y = MathHelper.Lerp(Velocity.Y, -12, 0.03f);
+        }
+
+        foreach (Memory child in Children)
+        {
+            child.Update();
+
+            if (child.Collected)
+                Collected = true;
         }
 
         if (!Collected)
@@ -122,6 +139,9 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     {
         foreach (ref MemoryParticle particle in CollectionsMarshal.AsSpan(Particles))
             particle.Draw();
+
+        foreach (Memory child in Children)
+            child.Draw();
 
         if (Frame == Rectangle.Empty || Collected)
             return;

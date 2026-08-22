@@ -302,7 +302,7 @@ internal class MoonLordPacificationSubworld : Subworld
                 if (tile.HasTile && !WorldGen.SolidTile(x, y - 1) 
                     && (tile.TileType == ModContent.TileType<EmberTile>() || tile.TileType == ModContent.TileType<CooledEmberTile>() || SkewTreeTop(tile)))
                 {
-                    if (Random.NextBool(120))
+                    if (Random.NextBool(PacificationTracker.HasBoss(NPCID.Plantera) ? 80 : 120))
                     {
                         WorldGen.PlaceTile(x, y - 1, ModContent.TileType<SunPlant>());
 
