@@ -36,6 +36,7 @@ public class SkeleMinerPacified : ModNPC
         NPC.friendly = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.dontTakeDamageFromHostiles = true;
 
         Music = -1;
         AnimationType = NPCID.Steampunker;

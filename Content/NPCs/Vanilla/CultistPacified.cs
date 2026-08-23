@@ -45,6 +45,7 @@ public class CultistPacified : ModNPC
         NPC.friendly = true;
         NPC.homeless = true;
         NPC.Opacity = 1f;
+        NPC.defense = 400;
 
         Music = -1;
         AnimationType = -1;

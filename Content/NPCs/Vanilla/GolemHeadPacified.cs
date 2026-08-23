@@ -33,6 +33,7 @@ public class GolemHeadPacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.defense = 800;
 
         Music = -1;
         AnimationType = -1;

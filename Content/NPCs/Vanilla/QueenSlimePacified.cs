@@ -37,6 +37,7 @@ public class QueenSlimePacified : ModNPC
         NPC.friendly = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.defense = 200;
 
         Music = -1;
         AnimationType = -1;

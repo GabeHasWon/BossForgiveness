@@ -1,9 +1,7 @@
-﻿using BossForgiveness.Content.NPCs.Vanilla;
+﻿using BossForgiveness.Common;
+using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
-using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
@@ -61,7 +59,8 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
                         {
                             var dir = npc.DirectionTo(Main.player[npc.target].Center).RotatedByRandom(0.2f) * WorldGen.genRand.NextFloat(10, 16f);
                             var pos = npc.Center + new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-40, 40));
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), pos, dir, ModContent.ProjectileType<SlimePellet>(), npc.damage / 4, 2f, Main.myPlayer);
+                            int damage = ModeUtils.ProjectileDamage(25, 35, 45, 80);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), pos, dir, ModContent.ProjectileType<SlimePellet>(), damage, 2f, Main.myPlayer);
                         }
                     }
                     else
@@ -69,7 +68,8 @@ internal class KingSlimePacificationNPC : GlobalNPC, ICustomBarNPC
                         for (int i = 0; i < 4; ++i)
                         {
                             var dir = new Vector2(0, -Main.rand.NextFloat(4f, 10f)).RotatedBy(Main.rand.NextFloat(-0.8f, 0.8f));
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), npc.damage / 5, 2f, Main.myPlayer);
+                            int damage = ModeUtils.ProjectileDamage(20, 30, 40, 60);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, dir, ModContent.ProjectileType<SlimeSpikeball>(), damage, 2f, Main.myPlayer);
                         }
                     }
                 }

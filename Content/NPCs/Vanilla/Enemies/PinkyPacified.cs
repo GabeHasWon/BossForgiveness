@@ -32,6 +32,7 @@ public class PinkyPacified : ModNPC
         NPC.friendly = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.dontTakeDamageFromHostiles = true;
 
         Music = -1;
         AnimationType = -1;

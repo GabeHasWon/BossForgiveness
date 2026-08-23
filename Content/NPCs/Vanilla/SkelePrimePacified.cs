@@ -38,6 +38,7 @@ public class SkelePrimePacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.defense = 600;
 
         Music = -1;
         AnimationType = -1;

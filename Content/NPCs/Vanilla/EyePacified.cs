@@ -49,6 +49,7 @@ public class EyePacified : ModNPC
         NPC.noTileCollide = false;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.defense = 80;
 
         IsLassoed = false;
         RiderWhoAmI = -1;
@@ -80,6 +81,10 @@ public class EyePacified : ModNPC
         {
             NPC.noTileCollide = false;
             flyTime--;
+
+            if (RiderWhoAmI != -1 && Main.player[RiderWhoAmI].empressBrooch)
+                flyTime++;
+
             return false;
         }
 

@@ -33,6 +33,7 @@ public class DukePacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.defense = 400;
 
         Music = -1;
         AnimationType = -1;

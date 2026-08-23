@@ -83,6 +83,7 @@ public class BoCPacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.defense = 100;
 
         Music = -1;
         AnimationType = -1;

@@ -142,7 +142,6 @@ internal class EoCLeash : ModItem
                     return;
                 }
 
-
                 if (Steed.Right.Y > (Main.maxTilesY - Main.offLimitBorderTiles - 8) * 16)
                     eoCVelocity.Y -= 1.2f;
 

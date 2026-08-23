@@ -41,6 +41,7 @@ public class SkeletronPacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.defense = 150;
 
         Music = -1;
         AnimationType = -1;

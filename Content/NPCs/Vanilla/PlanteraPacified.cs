@@ -151,6 +151,7 @@ public class PlanteraPacified : ModNPC
         NPC.noTileCollide = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.defense = 700;
 
         Music = -1;
         AnimationType = -1;

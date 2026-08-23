@@ -44,6 +44,7 @@ public class EmpressPacified : ModNPC
         NPC.friendly = true;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.defense = 500;
 
         Music = -1;
         AnimationType = NPCID.HallowBoss;

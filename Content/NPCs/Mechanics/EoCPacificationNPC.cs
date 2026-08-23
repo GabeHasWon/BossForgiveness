@@ -1,12 +1,9 @@
 ﻿using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics;
 
@@ -54,6 +51,9 @@ internal class EoCPacificationNPC : GlobalNPC, ICustomBarNPC
 
     public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        if (_canPacify is false)
+            return;
+
         _angerMarkOpacity = MathHelper.Lerp(_angerMarkOpacity, npc.life < npc.lifeMax ? 0 : _discontentness / 5f, 0.05f);
 
         if (_angerMarkOpacity == 0)

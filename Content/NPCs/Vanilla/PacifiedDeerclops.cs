@@ -37,6 +37,7 @@ public class PacifiedDeerclops : ModNPC
         NPC.noGravity = false;
         NPC.netAlways = true;
         NPC.homeless = true;
+        NPC.defense = 120;
 
         Music = -1;
         AnimationType = -1;

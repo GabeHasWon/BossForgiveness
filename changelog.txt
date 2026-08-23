@@ -1,9 +1,19 @@
-v1.1
-- Added pacification method for all lunar pillars
-- Added subworld for Moon Lord's pacification
+v1.1 - Moon Lord
+--- ADDITIONS ---
+- Added pacification method for all of the Pillars, Moon Lord
+- Added proper pacification tracker system
+- Added new subworld for Moon Lord's mechanics
+- Added a ton of decor content for the subworld
+
+--- CHANGES / BUGFIXES ---
 - Improved a lot of the backend, minor optimizations
 - Stopped King Slime from taking damage from his own projectiles
 - Significantly improved Brain of Cthulhu spikes mechanic
 - Fixed niche issue with EoC skipping pacification
-- Fixed WoF being "pacified" twice causing an error, despawning the boss and granting no loot
+- Fixed Wall of Flesh being "pacified" twice causing an error, despawning the boss and granting no loot
 - Made Guide's Locket unusable in hardmode to stop infinite respawns & ore gathering, alongside above issue
+- Hid the Eye of Cthulhu's anger mark when it cannot be pacified (so when another pacified eye exists already, or it's hit)
+- Massively reduced the damage that the King Slime's new projectiles deal
+- Made all of the pacifiable enemies (Lost Girl, Mimic, Pinky, Rainbow Slime, Skeleton Miner and Tim) immune to hostile damage
+- Allowed the Soaring Insignia to grant infinite flight to the Eye of Cthulhu's flight
+- Massively boosted the defense of every pacified boss

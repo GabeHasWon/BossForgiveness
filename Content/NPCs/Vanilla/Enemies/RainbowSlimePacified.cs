@@ -28,6 +28,7 @@ public class RainbowSlimePacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
+        NPC.dontTakeDamageFromHostiles = true;
 
         Music = -1;
         AnimationType = NPCID.RainbowSlime;

@@ -1,8 +1,6 @@
-﻿using Terraria;
-using Terraria.GameContent;
+﻿using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Vanilla.Enemies;
 
@@ -24,7 +22,8 @@ public class LostGirlPacified : ModNPC
         NPC.townNPC = true;
         NPC.friendly = true;
         NPC.homeless = true;
-        NPC.Size = new Microsoft.Xna.Framework.Vector2(20, 44);
+        NPC.Size = new Vector2(20, 44);
+        NPC.dontTakeDamageFromHostiles = true;
 
         Music = -1;
         AnimationType = NPCID.Steampunker;
