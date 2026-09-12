@@ -11,7 +11,7 @@ internal class BossMemories : ModSystem
     public static readonly Dictionary<int, MemoryColorInfo> InfoByType = [];
 
     public static readonly int[] NormalBosses = [NPCID.EyeofCthulhu, NPCID.KingSlime, NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.CultistBoss, NPCID.QueenSlimeBoss,
-        NPCID.SkeletronPrime, NPCID.Spazmatism, NPCID.Retinazer, NPCID.Plantera, NPCID.Golem, NPCID.DukeFishron, NPCID.HallowBoss];
+        NPCID.SkeletronPrime, NPCID.Spazmatism, NPCID.Retinazer, NPCID.Plantera, NPCID.Golem, NPCID.DukeFishron, NPCID.HallowBoss, NPCID.WallofFlesh, NPCID.WallofFleshEye];
 
     public List<Memory> Memories = [];
 
@@ -43,8 +43,8 @@ internal class BossMemories : ModSystem
             { NPCID.KingSlime, new Memory(NPCID.KingSlime, Vector2.Zero, MemoryDelegates.KingSlimeUpdate) },
             { NPCID.SkeletronHead, new Memory(NPCID.SkeletronHead, Vector2.Zero, MemoryDelegates.SkeletronUpdate, 0.015f) },
             { NPCID.QueenBee, new Memory(NPCID.QueenBee, Vector2.Zero, MemoryDelegates.QueenBeeUpdate) },
-            //{ NPCID.WallofFlesh, new Memory(NPCID.WallofFlesh, Vector2.Zero, MemoryDelegates.QueenBeeUpdate) },
-            //{ NPCID.WallofFleshEye, new Memory(NPCID.WallofFleshEye, Vector2.Zero, MemoryDelegates.DefaultAnimation) },
+            { NPCID.WallofFlesh, new Memory(NPCID.WallofFlesh, Vector2.Zero, MemoryDelegates.WallOfFleshUpdate, 0.01f) },
+            { NPCID.WallofFleshEye, new Memory(NPCID.WallofFleshEye, Vector2.Zero, MemoryDelegates.WallOfFleshUpdate, 0.01f) },
             { NPCID.SkeletronPrime, new Memory(NPCID.SkeletronPrime, Vector2.Zero, MemoryDelegates.SkeletronPrimeUpdate) },
             { NPCID.Plantera, new Memory(NPCID.Plantera, Vector2.Zero, MemoryDelegates.PlanteraUpdate) },
             { NPCID.CultistBoss, new Memory(NPCID.CultistBoss, Vector2.Zero, MemoryDelegates.CultistUpdate, 0.005f) },
@@ -58,6 +58,7 @@ internal class BossMemories : ModSystem
 
         Memories.RemoveAll(x => x.Collected && x.Particles.Count == 0);
 
+#if DEBUG
         if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
             Memories.Clear();
 
@@ -79,7 +80,8 @@ internal class BossMemories : ModSystem
                 }
             }
             else
-                CreateMemory(NPCID.Plantera, Main.MouseWorld);
+                CreateMemory(NPCID.WallofFlesh, Main.MouseWorld);
+#endif
         }
     }
 

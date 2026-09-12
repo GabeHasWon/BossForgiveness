@@ -69,6 +69,8 @@ internal class WallOfFleshAttack : MoonLordAttacksNPC.CustomAttack
     private readonly int[] _kitingTimes = new int[Main.maxPlayers];
     private readonly float?[] _trackingAngles = new float?[Main.maxPlayers];
 
+    public override bool IsLoadingEnabled(Mod mod) => false;
+
     public override void Update(NPC npc)
     {
         foreach (Player player in Main.ActivePlayers)

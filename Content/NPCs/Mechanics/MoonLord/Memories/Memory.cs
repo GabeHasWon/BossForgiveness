@@ -7,6 +7,8 @@ using Terraria.GameContent;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
+#nullable enable
+
 public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = null, float particleRatio = 0.002f)
 {
     public struct MemoryParticle
@@ -17,7 +19,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         public readonly Color Color = Color.Transparent;
         public readonly Vector2 Offset;
         public readonly byte Frame = (byte)Main.rand.Next(5);
-        public readonly float Speed = Main.rand.NextFloat(0.7f, 1.2f);
+        public readonly float Speed = Main.rand.NextFloat(0.7f, 1.05f);
         public readonly float DecayStrength = Main.rand.NextFloat(0.1f, 0.4f);
         public readonly bool DecayForward = Main.rand.NextBool();
 
@@ -68,12 +70,13 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public readonly Texture2D Texture = TextureAssets.Npc[npc].Value;
     public readonly int NpcType = npc;
     public readonly UpdateDelegate Updating = update ?? MemoryDelegates.DefaultAnimation;
-    public readonly List<Memory> Children = [];
 
     public Vector2 Size => new(Colors.Width, Colors.FrameHeight);
     public Vector2 Center => Position + Size / 2f;
     
+    public List<Memory> Children = [];
     public List<MemoryParticle> Particles = [];
+    public Memory? Parent = null;
     public Vector2 Position = position;
     public Vector2 Velocity = Vector2.Zero;
     public Rectangle Frame = Rectangle.Empty;
@@ -85,11 +88,13 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public float ParticleRatio = particleRatio;
     public object AddedInfo = new();
     public SpriteEffects SpriteEffect = SpriteEffects.None;
+    public float TimeSpeed = 2f;
 
     public void Update()
     {
-        Position += Velocity;
+        Position += Velocity * (1 + TimeSpeed);
         LifeTime++;
+        TimeSpeed *= 0.8f;
 
         LastRotation = Rotation;
 
@@ -109,7 +114,10 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
                 Collected = true;
         }
 
-        if (!Collected)
+        if (Parent is not null)
+            Collected = Parent.Collected;
+
+        if (!Collected && Parent is null && TimeSpeed < 0.01f)
         {
             Rectangle bounds = new((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
 
@@ -159,10 +167,17 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         }
     }
 
+    public void AddChild(Memory child)
+    {
+        child.Parent = this;
+        Children.Add(child);
+    }
+
     public Memory Clone()
     {
         var clone = (Memory)MemberwiseClone();
         clone.Particles = [];
+        clone.Children = [];
         return clone;
     }
 }

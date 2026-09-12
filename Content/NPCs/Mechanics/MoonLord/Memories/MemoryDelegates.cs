@@ -168,6 +168,41 @@ internal class MemoryDelegates
             memory.Collected = true;
     }
 
+    public static void WallOfFleshUpdate(Memory memory, float bossProgression)
+    {
+        Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
+        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frame = (int)(memory.LifeTime / 10f) % 2;
+
+        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        memory.Frame = src;
+
+        if (memory.LifeTime == 1 && memory.NpcType != NPCID.WallofFleshEye)
+        {
+            Memory eye = BossMemories.BossMemoryTemplates[NPCID.WallofFleshEye].Clone();
+            eye.Position = memory.Position + new Vector2(0, 400);
+            memory.AddChild(eye);
+            
+            eye = BossMemories.BossMemoryTemplates[NPCID.WallofFleshEye].Clone();
+            eye.Position = memory.Position - new Vector2(0, 400);
+            memory.AddChild(eye);
+        }
+
+        if (memory.Center.X < 0 || memory.Center.X > Main.maxTilesX * 16)
+        {
+            memory.Velocity *= 0.9f;
+            memory.DespawnTime++;
+        }
+        else
+        {
+            memory.Velocity.X = -2;
+            memory.SpriteEffect = Math.Sign(memory.Velocity.X) == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+        }
+
+        if (memory.DespawnTime > 600)
+            memory.Collected = true;
+    }
+
     public static void SkeletronPrimeUpdate(Memory memory, float bossProgression)
     {
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
@@ -237,7 +272,7 @@ internal class MemoryDelegates
             else
                 memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
 
-            memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionFrom(player.Center) * (MathF.Sin(memory.LifeTime * 0.02f) * 2 + 4), 0.1f);
+            memory.Velocity = Vector2.Lerp(memory.Velocity, memory.Center.DirectionFrom(player.Center) * (MathF.Sin(memory.LifeTime * 0.02f) * 3 + 8), 0.1f);
             memory.Rotation = memory.Velocity.ToRotation() + MathHelper.PiOver2;
         }
 

@@ -19,7 +19,7 @@ internal class MemoryMapLayer : ModMapLayer
             if (index == -1)
                 continue;
 
-            var pos = mem.Center.ToTileCoordinates().ToVector2();
+            var pos = mem.Center / 16f;
             var result = context.Draw(TextureAssets.NpcHeadBoss[index].Value, pos, Color.White * 0.5f, new SpriteFrame(1, 1), 1, 1, Alignment.Center, SpriteEffects.None);
 
             if (result.IsMouseOver)
