@@ -100,6 +100,9 @@ internal class BossUILayer : ModSystem
 
         foreach (var pair in sorted)
         {
+            if (!PacificationTracker.VanillaIdsForMoonLord.Contains(pair.Key))
+                continue;
+
             bool hasPac = PacificationTracker.HasBoss(pair.Key);
 
             if (pair.Value.CanDisplay is not null && !pair.Value.CanDisplay.Invoke(ref hasPac))

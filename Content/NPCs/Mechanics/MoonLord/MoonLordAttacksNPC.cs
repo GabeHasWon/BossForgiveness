@@ -83,7 +83,7 @@ internal class MoonLordPacificationNPC : GlobalNPC
 {
     public override bool InstancePerEntity => true;
 
-    public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaBossesForMoonLord;
+    public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaIdsForMoonLord.Count;
 
     public readonly HashSet<int> PacifiedBosses = [];
 

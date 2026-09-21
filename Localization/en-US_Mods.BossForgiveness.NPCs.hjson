@@ -128,3 +128,8 @@ RainbowSlimePacified: {
 }
 
 Vortoid.DisplayName: Vortoid
+
+ShimmerHungry: {
+	DisplayName: Shimmer Hungry
+	Entry: ""
+}
