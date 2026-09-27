@@ -82,6 +82,9 @@ public class DukePacified : ModNPC
                 else
                     NPC.velocity.Y -= 0.2f;
 
+                NPC.TargetClosest();
+                NPC.direction = NPC.spriteDirection = Math.Sign(NPC.Center.X - Main.player[NPC.target].Center.X);
+
                 NPC.rotation = Utils.AngleLerp(NPC.rotation, 0, 0.05f);
             }
             else

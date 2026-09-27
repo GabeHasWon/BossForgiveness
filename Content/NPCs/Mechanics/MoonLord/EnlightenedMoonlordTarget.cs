@@ -110,6 +110,9 @@ internal class HideProjectiles : GlobalProjectile
 
     private void StopDrawDust(On_Main.orig_DrawDust orig, Main self)
     {
+        orig(self);
+        return;
+
         if (SubworldSystem.Current is MoonLordPacificationSubworld && (!NPC.AnyNPCs(NPCID.MoonLordCore) || EnlightenedMoonlordTarget.DrawingSpecialML))
             orig(self);
         else if (SubworldSystem.Current is not MoonLordPacificationSubworld)
@@ -120,6 +123,7 @@ internal class HideProjectiles : GlobalProjectile
 
     public override bool PreDraw(Projectile projectile, ref Color lightColor)
     {
+        return true;
         if (SubworldSystem.Current is not MoonLordPacificationSubworld)
             return true;
 

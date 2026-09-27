@@ -85,6 +85,10 @@ internal class MoonLordPacificationNPC : GlobalNPC
 
     public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaIdsForMoonLord.Count;
 
+    public float VisualProgress = 0f;
+    public float FadeAway = 0;
+    public float FadeAwayAlpha = 0;
+
     public readonly HashSet<int> PacifiedBosses = [];
 
     private static List<int> UnpacifiedBosses = [];
@@ -127,6 +131,8 @@ internal class MoonLordPacificationNPC : GlobalNPC
             }
         }
 
+        VisualProgress = MathHelper.Lerp(VisualProgress, Progress, 0.1f);
+
         _time++;
 
         if (_time % 480 == 0 && npc.type == NPCID.MoonLordCore)
@@ -140,14 +146,16 @@ internal class MoonLordPacificationNPC : GlobalNPC
 
                 do
                     type = Main.rand.Next(unpac);
-                while (!BossMemories.BossMemoryTemplates.ContainsKey(type));
+                while (!BossMemories.BossMemoryTemplates.ContainsKey(type) || !PacificationTracker.HasBoss(type));
 
                 ModContent.GetInstance<BossMemories>().CreateMemory(type, npc.Center - new Vector2(0, 400));
             }
         }
 
-        if (false)
+        if (GetPacificationNPC().Progress == 1)
         {
+            FadeAway = MathHelper.Clamp(FadeAway + 0.01f, 0, 1);
+            FadeAwayAlpha = MathF.Sqrt(1 - FadeAway);
             bool isHeadOrHand = npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
 
             if (isHeadOrHand)

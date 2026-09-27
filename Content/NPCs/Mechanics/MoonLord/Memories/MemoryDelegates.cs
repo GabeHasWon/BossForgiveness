@@ -41,7 +41,7 @@ internal class MemoryDelegates
                 memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
 
             if (memory.LifeTime % 96 == 0)
-                memory.Velocity = memory.Center.DirectionFrom(player.Center) * 22;
+                memory.Velocity = memory.Center.DirectionFrom(player.Center) * (Main.expertMode ? 18 : 21);
             else
                 memory.Velocity *= 0.97f;
 
