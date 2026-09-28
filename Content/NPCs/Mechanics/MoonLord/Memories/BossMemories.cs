@@ -59,30 +59,30 @@ internal class BossMemories : ModSystem
         Memories.RemoveAll(x => x.Collected && x.Particles.Count == 0);
 
 #if DEBUG
-        if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
-            Memories.Clear();
+        //if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Y) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Y))
+        //    Memories.Clear();
 
-        if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
-        {
-            if (ItemSlot.ShiftInUse)
-            {
-                List<int> unpac = MoonLordPacificationNPC.GetUnpacifiedBosses();
+        //if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.U) && Main.oldKeyState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.U))
+        //{
+        //    if (ItemSlot.ShiftInUse)
+        //    {
+        //        List<int> unpac = MoonLordPacificationNPC.GetUnpacifiedBosses();
 
-                if (unpac.Count > 0)
-                {
-                    int npc;
+        //        if (unpac.Count > 0)
+        //        {
+        //            int npc;
 
-                    do
-                        npc = Main.rand.Next(unpac);
-                    while (!BossMemoryTemplates.ContainsKey(npc));
+        //            do
+        //                npc = Main.rand.Next(unpac);
+        //            while (!BossMemoryTemplates.ContainsKey(npc));
 
-                    CreateMemory(npc, Main.MouseWorld);
-                }
-            }
-            else
-                CreateMemory(NPCID.WallofFlesh, Main.MouseWorld);
+        //            CreateMemory(npc, Main.MouseWorld);
+        //        }
+        //    }
+        //    else
+        //        CreateMemory(NPCID.WallofFlesh, Main.MouseWorld);
+        //}
 #endif
-        }
     }
 
     public void CreateMemory(int npc, Vector2 pos)

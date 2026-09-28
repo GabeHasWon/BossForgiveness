@@ -18,10 +18,12 @@ internal class MoonLordPacificationTracker : ModSystem
     public static int[] PlayerReadyTimer = new int[Main.maxPlayers];
 
     internal static bool SpawnedAlready = false;
+    internal static int BlackoutTime = 0;
 
     public override void Load()
     {
         On_LegacyPlayerRenderer.DrawPlayerFull += DrawPlayerFullMod;
+        On_Main.Draw += DrawBlackout;
         On_Main.Draw += DrawWhiteout;
         On_Main.Update += Timer;
     }
@@ -78,6 +80,20 @@ internal class MoonLordPacificationTracker : ModSystem
             if (SubworldSystem.Current is MoonLordPacificationSubworld)
                 MoonLordPacificationSubworld.DrawStatusText(false, adjTimer);
 
+            Main.spriteBatch.End();
+        }
+    }
+
+    private void DrawBlackout(On_Main.orig_Draw orig, Main self, GameTime gameTime)
+    {
+        orig(self, gameTime);
+
+        if (BlackoutTime > 0 && !Main.gameMenu)
+        {
+            BlackoutTime--;
+
+            Main.spriteBatch.Begin();
+            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(-10), new Rectangle(0, 0, 10000, 10000), Color.Black * Math.Clamp(BlackoutTime / 30f, 0, 1));
             Main.spriteBatch.End();
         }
     }

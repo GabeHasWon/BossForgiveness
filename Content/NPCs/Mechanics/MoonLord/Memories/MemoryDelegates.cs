@@ -1,4 +1,5 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Attacks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
@@ -40,7 +41,7 @@ internal class MemoryDelegates
             else
                 memory.DespawnTime = Math.Max(memory.DespawnTime - 1, 0);
 
-            if (memory.LifeTime % 96 == 0)
+            if (memory.LifeTime % 100 == 0)
                 memory.Velocity = memory.Center.DirectionFrom(player.Center) * (Main.expertMode ? 18 : 21);
             else
                 memory.Velocity *= 0.97f;
@@ -170,21 +171,25 @@ internal class MemoryDelegates
 
     public static void WallOfFleshUpdate(Memory memory, float bossProgression)
     {
-        Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
         int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
         int frame = (int)(memory.LifeTime / 10f) % 2;
 
         Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
         memory.Frame = src;
 
+        if (memory.AddedInfo is not int)
+            memory.AddedInfo = Main.rand.Next(1, 3);
+
         if (memory.LifeTime == 1 && memory.NpcType != NPCID.WallofFleshEye)
         {
             Memory eye = BossMemories.BossMemoryTemplates[NPCID.WallofFleshEye].Clone();
             eye.Position = memory.Position + new Vector2(0, 400);
+            eye.AddedInfo = (int)memory.AddedInfo;
             memory.AddChild(eye);
-            
+
             eye = BossMemories.BossMemoryTemplates[NPCID.WallofFleshEye].Clone();
             eye.Position = memory.Position - new Vector2(0, 400);
+            eye.AddedInfo = (int)memory.AddedInfo;
             memory.AddChild(eye);
         }
 
@@ -195,7 +200,7 @@ internal class MemoryDelegates
         }
         else
         {
-            memory.Velocity.X = -2;
+            memory.Velocity.X = -3 * ((int)memory.AddedInfo == 1 ? -1 : 1);
             memory.SpriteEffect = Math.Sign(memory.Velocity.X) == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
         }
 

@@ -83,11 +83,13 @@ internal class MoonLordPacificationNPC : GlobalNPC
 {
     public override bool InstancePerEntity => true;
 
-    public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaIdsForMoonLord.Count;
+    public bool IsComplete => UnpacifiedBosses.Count == 0;
+    public float Progress => PacifiedBosses.Count / (float)PacificationTracker.VanillaIdsForMoonLord.Count * PacificationTracker.MoonLordBeatFactor;
 
     public float VisualProgress = 0f;
     public float FadeAway = 0;
     public float FadeAwayAlpha = 0;
+    public float WaitTimer = 0;
 
     public readonly HashSet<int> PacifiedBosses = [];
 
@@ -122,23 +124,43 @@ internal class MoonLordPacificationNPC : GlobalNPC
 
     public override bool PreAI(NPC npc)
     {
-        if (npc.life < npc.lifeMax || AnyHandHurt())
+        if (npc.life < npc.lifeMax || AnyHandHurt() || GetPacificationNPC() is null)
         {
             if (SubworldSystem.Current is MoonLordPacificationSubworld)
             {
+                MoonLordPacificationTracker.BlackoutTime = 120;
                 npc.active = false;
+
+                foreach (Projectile projectile in Main.ActiveProjectiles)
+                {
+                    if (projectile.hostile)
+                        projectile.active = false;
+                }
+
                 return false;
             }
         }
 
-        VisualProgress = MathHelper.Lerp(VisualProgress, Progress, 0.1f);
+        VisualProgress = MathHelper.Lerp(VisualProgress, Progress, 0.05f);
 
         _time++;
 
-        if (_time % 480 == 0 && npc.type == NPCID.MoonLordCore)
+        if (_time == 1)
+            GetUnpacifiedBosses();
+
+        if (_time % 1200 == 0 && npc.type == NPCID.MoonLordCore)
         {
             // TODO: Multiplayer
             List<int> unpac = GetUnpacifiedBosses();
+
+            for (int i = 0; i < unpac.Count; ++i)
+            {
+                if (!PacificationTracker.HasBoss(unpac[i]))
+                {
+                    unpac.RemoveAt(i);
+                    i--;
+                }
+            }
 
             if (unpac.Count > 0)
             {
@@ -152,10 +174,15 @@ internal class MoonLordPacificationNPC : GlobalNPC
             }
         }
 
-        if (GetPacificationNPC().Progress == 1)
+        FadeAwayAlpha = MathF.Sqrt(1 - FadeAway);
+
+        if (IsComplete)
         {
-            FadeAway = MathHelper.Clamp(FadeAway + 0.01f, 0, 1);
-            FadeAwayAlpha = MathF.Sqrt(1 - FadeAway);
+            WaitTimer++;
+
+            if (WaitTimer > 300)
+                FadeAway = MathHelper.Clamp(FadeAway + 0.01f, 0, 1);
+
             bool isHeadOrHand = npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
 
             if (isHeadOrHand)

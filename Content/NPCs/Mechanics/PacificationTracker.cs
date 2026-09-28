@@ -21,7 +21,15 @@ public class PacificationTracker : ModSystem
         Other = 1 << 7
     }
 
+    /// <summary>
+    /// Total number of bosses for Moon Lord - NOT the actual number!
+    /// </summary>
     public const int VanillaBossesForMoonLord = 16;
+
+    /// <summary>
+    /// Total number of bosses for Moon Lord's temporary pacification - NOT the full number!
+    /// </summary>
+    public const int VanillaBossesForMoonLordSmall = 5;
 
     public readonly static HashSet<int> VanillaIdsForMoonLord = [NPCID.KingSlime, NPCID.EyeofCthulhu, NPCID.WallofFlesh, NPCID.SkeletronPrime, NPCID.CultistBoss];
 
@@ -32,7 +40,7 @@ public class PacificationTracker : ModSystem
     /// <summary>
     /// % of bosses pacified out of the vanilla 17 (non-event, non-Moon Lord, and BoC/Eow combined into one) bosses.
     /// </summary>
-    public static float MoonLordBeatFactor => Count(PacificationType.Boss) / (float)VanillaBossesForMoonLord;
+    public static float MoonLordBeatFactor => Count(VanillaIdsForMoonLord) / (float)VanillaBossesForMoonLordSmall;
 
     /// <summary>
     /// All current or former pacifications in the world.
@@ -58,6 +66,20 @@ public class PacificationTracker : ModSystem
         foreach (var pair in ModContent.GetInstance<PacificationTracker>().PacifiedIDs)
             if (pair.Value.HasFlag(type))
                 count++;
+
+        return count;
+    }
+
+    internal static int Count(ICollection<int> ids)
+    {
+        int count = 0;
+        Dictionary<int, PacificationType> pacifiedIDs = ModContent.GetInstance<PacificationTracker>().PacifiedIDs;
+
+        foreach (int id in ids)
+        {
+            if (pacifiedIDs.ContainsKey(id))
+                count++;
+        }
 
         return count;
     }

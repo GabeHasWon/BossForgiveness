@@ -56,7 +56,18 @@ internal class VoidPortal : ModProjectile
         for (int i = 12; i >= 1; --i)
         {
             Color color = Color.Lerp(Color.DarkBlue, Color.Black, i / 6f) * (1 - i / 12f) * Projectile.Opacity;
-            Main.spriteBatch.Draw(tex, Projectile.position - Main.screenPosition + new Vector2(i, 0).RotatedBy(Timer * 0.8f / i), color);
+            Vector2 offset = new Vector2(i, 0).RotatedBy(Timer * 0.8f / i);
+
+            if (i >= 11)
+            {
+                color = (i == 12 ? Color.Blue * 0.2f : Color.Blue * 0.5f) * (Projectile.Opacity * Projectile.Opacity);
+                offset = Projectile.Size / 2f;
+
+                Main.spriteBatch.Draw(tex, Projectile.position - Main.screenPosition + offset, null, color, Timer * 0.02f, offset, 1.1f, SpriteEffects.None, 0);
+                continue;
+            }
+
+            Main.spriteBatch.Draw(tex, Projectile.position - Main.screenPosition + offset, null, color, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
         }
 
         Main.spriteBatch.Draw(tex, Projectile.position - Main.screenPosition, Color.Black * Projectile.Opacity);
