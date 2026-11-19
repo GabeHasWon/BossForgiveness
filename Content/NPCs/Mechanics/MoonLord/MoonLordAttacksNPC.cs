@@ -1,8 +1,13 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
+using BossForgiveness.Content.NPCs.Vanilla;
+using BossForgiveness.Content.Systems.PacifySystem;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework.Graphics;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Terraria.DataStructures;
 using Terraria.ID;
 
@@ -79,7 +84,7 @@ internal class MoonLordAttacksNPC : GlobalNPC
     }
 }
 
-internal class MoonLordPacificationNPC : GlobalNPC
+internal class MoonLordPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public override bool InstancePerEntity => true;
 
@@ -180,8 +185,28 @@ internal class MoonLordPacificationNPC : GlobalNPC
         {
             WaitTimer++;
 
-            if (WaitTimer > 300)
+            if (WaitTimer > 60)
                 FadeAway = MathHelper.Clamp(FadeAway + 0.01f, 0, 1);
+
+            if (WaitTimer > 1200)
+            {
+                PacifiedNPCHandler.TransformingNPC = true;
+                PacificationTracker.AddBoss(npc.type, PacificationTracker.PacificationType.Boss);
+
+                npc.SetAllPlayerInteraction();
+                npc.NPCLoot();
+                npc.active = false;
+
+                PacifiedNPCHandler.TransformingNPC = false;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Task.Run(() =>
+                    {
+                        PacificationGeneration.Generation(PacificationTracker.MoonLordBeatFactor);
+                    });
+                }
+            }
 
             bool isHeadOrHand = npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
 
@@ -221,5 +246,12 @@ internal class MoonLordPacificationNPC : GlobalNPC
             return true;
 
         return false;
+    }
+
+    public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = Progress;
+        barMax = PacificationTracker.VanillaIdsForMoonLord.Count;
+        return true;
     }
 }

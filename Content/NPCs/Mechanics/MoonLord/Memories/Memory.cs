@@ -67,7 +67,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
     public delegate void UpdateDelegate(Memory self, float bossProgression);
 
     public readonly MemoryColorInfo Colors = BossMemories.InfoByType[npc];
-    public readonly Texture2D Texture = TextureAssets.Npc[npc].Value;
+    public readonly Texture2D? Texture = Main.dedServ ? null : TextureAssets.Npc[npc].Value;
     public readonly int NpcType = npc;
     public readonly UpdateDelegate Updating = update ?? MemoryDelegates.DefaultAnimation;
 
@@ -154,7 +154,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
         if (Frame == Rectangle.Empty || Collected)
             return;
 
-        float cap = Texture.Width * Texture.Height * ParticleRatio;
+        float cap = Texture!.Width * Texture.Height * ParticleRatio;
 
         while (Particles.Count < cap)
         {

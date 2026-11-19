@@ -109,6 +109,7 @@ internal class SunPlant : ModTile, IAutoloadTileItem
         {
             tag.Add("segments", (byte[])[.. Segments.Select(x => (byte)x.segmentType)]);
             tag.Add("lengths", (float[])[.. Segments.Select(x => x.length)]);
+            tag.Add("friendly", Friendly);
         }
 
         public override void LoadData(TagCompound tag)
@@ -117,6 +118,7 @@ internal class SunPlant : ModTile, IAutoloadTileItem
 
             byte[] segments = tag.GetByteArray("segments");
             float[] lengths = tag.Get<float[]>("lengths");
+            Friendly = tag.GetBool("friendly");
 
             for (int i = 0; i < segments.Length; ++i)
             {
@@ -126,6 +128,7 @@ internal class SunPlant : ModTile, IAutoloadTileItem
 
         public override void NetSend(BinaryWriter writer)
         {
+            writer.Write(Friendly);
             writer.Write((byte)Segments.Count);
             
             foreach ((SunPlantSegment type, float length) in Segments)
@@ -137,6 +140,8 @@ internal class SunPlant : ModTile, IAutoloadTileItem
 
         public override void NetReceive(BinaryReader reader)
         {
+            Friendly = reader.ReadBoolean();
+
             Segments.Clear();
             int count = reader.ReadByte();
 

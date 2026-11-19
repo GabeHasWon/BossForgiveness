@@ -206,3 +206,8 @@ EldritchFleshTileItem: {
 	DisplayName: Eldritch Flesh Tile Item
 	Tooltip: ""
 }
+
+CreationShard: {
+	DisplayName: Creation Shard
+	Tooltip: ""
+}

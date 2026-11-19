@@ -22,12 +22,11 @@ internal class BossMemories : ModSystem
         for (int i = 0; i < NormalBosses.Length; ++i)
         {
             int npcType = NormalBosses[i];
-            Main.instance.LoadNPC(npcType);
-
             MemoryColorInfo info;
 
             if (!Main.dedServ)
             {
+                Main.instance.LoadNPC(npcType);
                 Texture2D tex = TextureAssets.Npc[npcType].Value;
                 info = new(tex, npcType);
             }

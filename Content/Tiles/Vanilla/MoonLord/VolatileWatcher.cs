@@ -184,6 +184,8 @@ internal class VolatileWatcher : ModTile
         DustType = DustID.Lead;
     }
 
+    public override void KillMultiTile(int i, int j, int frameX, int frameY) => ModContent.GetInstance<VolatileWatcherTE>().Kill(i, j);
+
     public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
     {
         if (TileEntity.ByPosition[new Point16(i, j)] is VolatileWatcherTE te)

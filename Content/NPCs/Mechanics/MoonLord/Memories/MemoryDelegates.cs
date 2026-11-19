@@ -1,30 +1,40 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Attacks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Terraria;
+using System.Runtime.CompilerServices;
 using Terraria.ID;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
+#nullable enable
+
 internal class MemoryDelegates
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int FrameCount(int type) => Main.dedServ ? 1 : Main.npcFrameCount[type];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int TextureWidth(Texture2D? tex) => Main.dedServ || tex is null ? 1 : tex.Width;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int TextureHeight(Texture2D? tex) => Main.dedServ || tex is null ? 1 : tex.Height;
+
     public static void DefaultAnimation(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
-        Rectangle src = new(0, 0, memory.Texture.Width, frameHeight);
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
+        Rectangle src = new(0, 0, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
     }
 
     public static void EoCUpdate(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime * 0.2f) % 3;
 
         if (bossProgression > 0.5f)
             frame += 3;
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
@@ -55,11 +65,11 @@ internal class MemoryDelegates
 
     public static void KingSlimeUpdate(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime * 0.2f) % 3;
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)
@@ -95,10 +105,10 @@ internal class MemoryDelegates
 
     public static void SkeletronUpdate(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
 
-        Rectangle src = new(0, 0, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, 0, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)
@@ -132,14 +142,14 @@ internal class MemoryDelegates
     public static void QueenBeeUpdate(Memory memory, float bossProgression)
     {
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime / 10f) % 8 + 4;
         bool returning = memory.LifeTime % 400 > 200;
 
         if (!returning)
             frame = (int)(memory.LifeTime / 10f) % 4;
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)
@@ -171,10 +181,10 @@ internal class MemoryDelegates
 
     public static void WallOfFleshUpdate(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime / 10f) % 2;
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (memory.AddedInfo is not int)
@@ -211,14 +221,14 @@ internal class MemoryDelegates
     public static void SkeletronPrimeUpdate(Memory memory, float bossProgression)
     {
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime / 10f) % 2;
         bool spinning = memory.LifeTime % 800 > 500;
 
         if (spinning)
             frame = 2;
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)
@@ -256,13 +266,13 @@ internal class MemoryDelegates
     public static void PlanteraUpdate(Memory memory, float bossProgression)
     {
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         int frame = (int)(memory.LifeTime / 10f) % 4;
 
         if (bossProgression > 0.5f)
             frame += 4;
 
-        Rectangle src = new(0, frameHeight * frame, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, frameHeight * frame, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)
@@ -287,9 +297,9 @@ internal class MemoryDelegates
 
     public static void CultistUpdate(Memory memory, float bossProgression)
     {
-        int frameHeight = memory.Texture.Height / Main.npcFrameCount[memory.NpcType];
+        int frameHeight = TextureHeight(memory.Texture) / FrameCount(memory.NpcType);
         Player player = Main.player[Player.FindClosest(memory.Position, memory.Colors.Width, memory.Colors.Height)];
-        Rectangle src = new(0, 0, memory.Texture.Width, frameHeight);
+        Rectangle src = new(0, 0, TextureWidth(memory.Texture), frameHeight);
         memory.Frame = src;
 
         if (!player.active || player.dead)

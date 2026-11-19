@@ -635,7 +635,7 @@ internal class MoonLordPacificationSubworld : Subworld
 
         TileEntity.UpdateEnd();
 
-        if (HasSpawnedBoss)
+        if (HasSpawnedBoss || Main.CurrentFrameFlags.ActivePlayersCount <= 0)
             return;
 
         bool valid = true;
