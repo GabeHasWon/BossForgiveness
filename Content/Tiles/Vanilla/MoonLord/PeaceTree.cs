@@ -37,20 +37,20 @@ internal class PeaceTree : ModTile
         int style = frameY / 146;
         int spam = style switch
         {
-            0 => 2,
-            1 => 5,
-            _ => 10,
+            0 => 1,
+            1 => 3,
+            _ => 6,
         };
 
         Range stack = style switch
         {
-            0 => 1..2,
-            1 => 1..3,
-            _ => 2..5,
+            0 => 1..1,
+            1 => 1..2,
+            _ => 2..3,
         };
 
-        int adjI = i - (frameX % 72) / 18;
-        int adjJ = j - (frameY % 146) / 18;
+        int adjI = i - frameX % 72 / 18;
+        int adjJ = j - frameY % 146 / 18;
 
         for (int k = 0; k < spam; ++k) 
         {

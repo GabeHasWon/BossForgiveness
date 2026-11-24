@@ -1,17 +1,26 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
-using BossForgiveness.Content.NPCs.Vanilla;
 using BossForgiveness.Content.Systems.PacifySystem;
 using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework.Graphics;
+using NetEasy;
 using SubworldLibrary;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.ID;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord;
+
+[Serializable]
+public class SpawnMemoryModule(int id, Vector2 pos) : Module
+{
+    public int NpcId = id;
+    public Vector2 Position = pos;
+
+    protected override void Receive() => ModContent.GetInstance<BossMemories>().CreateMemory(NpcId, Position);
+}
 
 internal class MoonLordAttacksNPC : GlobalNPC
 {
@@ -175,7 +184,16 @@ internal class MoonLordPacificationNPC : GlobalNPC, ICustomBarNPC
                     type = Main.rand.Next(unpac);
                 while (!BossMemories.BossMemoryTemplates.ContainsKey(type) || !PacificationTracker.HasBoss(type));
 
-                ModContent.GetInstance<BossMemories>().CreateMemory(type, npc.Center - new Vector2(0, 400));
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    ModContent.GetInstance<BossMemories>().CreateMemory(type, npc.Center - new Vector2(0, 400));
+
+                    if (Main.dedServ)
+                        new SpawnMemoryModule(type, npc.Center - new Vector2(0, 400)).Send();
+                }
+
+                if (Main.dedServ)
+                    ChatHelper.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral($"Super awesome! Server sent this. {unpac.Count}"), Color.Wheat);
             }
         }
 
@@ -201,10 +219,10 @@ internal class MoonLordPacificationNPC : GlobalNPC, ICustomBarNPC
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Task.Run(() =>
-                    {
+                    if (Main.dedServ)
                         PacificationGeneration.Generation(PacificationTracker.MoonLordBeatFactor);
-                    });
+                    else
+                        Task.Run(() => PacificationGeneration.Generation(PacificationTracker.MoonLordBeatFactor));
                 }
             }
 
@@ -216,9 +234,7 @@ internal class MoonLordPacificationNPC : GlobalNPC, ICustomBarNPC
                 npc.ai[1] = 0;
             }
             else
-            {
                 npc.velocity *= 0.9f;
-            }
 
             return npc.type is NPCID.MoonLordHead or NPCID.MoonLordHand;
         }

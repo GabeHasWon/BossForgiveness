@@ -194,7 +194,7 @@ OffburnTileItem: {
 
 SunPlantItem: {
 	DisplayName: Chained Sun
-	Tooltip: "'Curious mix between deific object and flora'"
+	Tooltip: "'Curious mix between deific idol and flora'"
 }
 
 CondolenceFlowersItem: {
@@ -203,11 +203,11 @@ CondolenceFlowersItem: {
 }
 
 EldritchFleshTileItem: {
-	DisplayName: Eldritch Flesh Tile Item
+	DisplayName: Eldritch Flesh
 	Tooltip: ""
 }
 
 CreationShard: {
 	DisplayName: Creation Shard
-	Tooltip: ""
+	Tooltip: "'...but a small fragment of true creation'"
 }

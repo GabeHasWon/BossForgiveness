@@ -1,15 +1,34 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using NetEasy;
 using ReLogic.Content;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Terraria.GameContent;
+using Terraria.ID;
+using System;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.MoonLord.Memories;
 
 #nullable enable
 
-public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = null, float particleRatio = 0.002f)
+[Serializable]
+public class MoonLordCatchMemoryModule(int typeBeat, int who) : Module
+{
+    public int TypeBeat = typeBeat;
+    public int FromWho = who;
+
+    protected override void Receive()
+    {
+        var npc = MoonLordPacificationNPC.GetPacificationNPC();
+        npc?.PacifiedBosses.Add(TypeBeat);
+
+        if (Main.dedServ)
+            new MoonLordCatchMemoryModule(TypeBeat, FromWho).Send(-1, FromWho, false);
+    }
+}
+
+public class Memory(int npc, Vector2 position, Memory.UpdateDelegate? update = null, float particleRatio = 0.002f)
 {
     public struct MemoryParticle
     {
@@ -128,6 +147,9 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate update = nu
                     Collected = true;
                     var npc = MoonLordPacificationNPC.GetPacificationNPC();
                     npc?.PacifiedBosses.Add(NpcType);
+
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        new MoonLordCatchMemoryModule(NpcType, Main.myPlayer).Send();
 
                     break;
                 }
