@@ -129,11 +129,11 @@ internal class MoonlordBackground : ModSystem
             DrawTarget(device, effect, str, NPCTarget, Color.White * pacNpc.FadeAwayAlpha, 1f);
             //DrawTarget(device, effect, str, DustTarget, Color.Pink, 0.8f);
             //DrawTarget(device, effect, str, ProjectileTarget, new Color(255, 100, 100), 0);
-        }
 
-        DustTarget.Request();
-        NPCTarget.Request();
-        ProjectileTarget.Request();
+            NPCTarget.Request();
+            //DustTarget.Request();
+            //ProjectileTarget.Request();
+        }
     }
 
     private static void DrawTarget(GraphicsDevice device, Effect effect, float str, EnlightenedMoonlordTarget target, Color color, float alphaMod)

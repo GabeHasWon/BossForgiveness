@@ -117,12 +117,8 @@ public class MoonLordEmptyPlayer : ModPlayer
             Player.velocity = Vector2.Zero;
 
         if (MoonLordPacificationTracker.TeleportTimer >= MoonLordPacificationTracker.MaxTeleportTimer && SubworldSystem.Current is null)
-        {
             SubworldSystem.Enter<MoonLordPacificationSubworld>();
-        }
         else if (SubworldSystem.Current is MoonLordPacificationSubworld)
-        {
             MoonLordPacificationTracker.TeleportTimer -= 8;
-        }
     }
 }

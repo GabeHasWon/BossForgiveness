@@ -5,9 +5,11 @@ using SubworldLibrary;
 using System;
 using System.Collections.Generic;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.UI;
+using Terraria.UI.Chat;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar;
 
@@ -40,14 +42,19 @@ internal class PortalAccessLayer : ModSystem
         int y = 270;
 
         bool click = Main.mouseLeft && !_lastMouse;
+        bool hover = new Rectangle(x, y, PortalTex.Width(), PortalTex.Height()).Contains(Main.MouseScreen.ToPoint());
         _lastMouse = Main.mouseLeft;
 
-        Color color = Color.Lerp(Color.White, Color.White * 0.5f, MathF.Sin((float)Main.timeForVisualEffects * 0.02f) * 0.5f + 0.5f);
+        Color baseColor = hover ? new Color(200, 200, 200) : Color.White;
+        Color color = Color.Lerp(baseColor, baseColor * 0.5f, MathF.Sin((float)Main.timeForVisualEffects * 0.02f) * 0.5f + 0.5f);
         Main.spriteBatch.Draw(PortalTex.Value, new Vector2(x, y), null, color);
 
-        if (new Rectangle(x, y, PortalTex.Width(), PortalTex.Height()).Contains(Main.MouseScreen.ToPoint()))
+        if (hover)
         {
             Main.LocalPlayer.mouseInterface = true;
+
+            ReLogic.Graphics.DynamicSpriteFont font = FontAssets.ItemStack.Value;
+            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, font, "Flee", Main.MouseScreen + new Vector2(0, 30), Color.White, 0, Vector2.Zero, Vector2.One);
 
             if (click)
             {

@@ -261,7 +261,7 @@ internal class MoonLordPacificationNPC : GlobalNPC, ICustomBarNPC
         if (EnlightenedMoonlordTarget.DrawingSpecialML)
             return true;
 
-        return false;
+        return SubworldSystem.Current is not MoonLordPacificationSubworld;
     }
 
     public bool ShowOverlay(NPC npc, out float barProgress, out float barMax)
