@@ -140,10 +140,16 @@ internal class SolarPlayer : ModPlayer
             Dust.NewDust(npc.position, npc.width, npc.height, type, npc.velocity.X * 0.33f, npc.velocity.Y * 0.33f - Main.rand.NextFloat(6, 9));
         }
 
-        if (Main.netMode == NetmodeID.MultiplayerClient && !fromNet)
-            new SyncSolarPacifyModule((byte)npc.whoAmI, false).Send(runLocally: false);
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+        {
+            if (!fromNet)
+                new SyncSolarPacifyModule((byte)npc.whoAmI, false).Send(runLocally: false);
+        }
         else
         {
+            if (npc.type == NPCID.LunarTowerSolar)
+                LunarPillarCommon.SpamFragments(npc.GetSource_Death(), npc.Hitbox, ItemID.FragmentSolar);
+
             npc.active = false;
             npc.netUpdate = true;
 
@@ -216,13 +222,6 @@ public class SolarShieldLayer : PlayerDrawLayer
         float rotation = shieldInfo.Offset.X < 0 ? shieldInfo.Rotation + MathHelper.Pi : shieldInfo.Rotation;
         var data = new DrawData(Shield.Value, position, src, Color.White * opacity, shieldInfo.FlatState ? 0 : rotation, src.Size() / 2f, 1f, effect);
         drawInfo.DrawDataCache.Add(data);
-
-#if DEBUG
-        Rectangle hitbox = shieldInfo.GetHitbox(drawInfo.Center);
-        hitbox.X -= (int)Main.screenPosition.X;
-        hitbox.Y -= (int)Main.screenPosition.Y;
-        drawInfo.DrawDataCache.Add(new DrawData(TextureAssets.MagicPixel.Value, hitbox, Color.Red * 0.6f));
-#endif
     }
 
     private static Rectangle GetAngledShape(SolarPlayer.SolarShieldDrawInfo shieldInfo) => shieldInfo.MidFrame ? new(54, 0, 26, 38) : new(0, 0, 14, 38);

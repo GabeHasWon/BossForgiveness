@@ -179,7 +179,7 @@ internal class MoonlordBackground : ModSystem
 
     public override void PostUpdateDusts()
     {
-        if (Main.dedServ)
+        if (Main.dedServ && SubworldSystem.Current is MoonLordPacificationSubworld)
             return;
 
         foreach (BackgroundElement element in Elements)

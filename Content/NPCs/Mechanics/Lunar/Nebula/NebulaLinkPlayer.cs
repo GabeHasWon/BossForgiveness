@@ -1,17 +1,13 @@
-﻿using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
-using BossForgiveness.Content.Systems.Syncing;
-using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.Syncing;
 using System;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Nebula;
 
 internal class NebulaLinkPlayer : ModPlayer
 {
-    public const int LinkDistance = 600;
+    public const int LinkDistance = 400;
     public const int MaxTimer = 60 * 30;
 
     private readonly HashSet<short> _connections = [];
@@ -55,37 +51,28 @@ internal class NebulaLinkPlayer : ModPlayer
         _lastMouseLeft = _mouseLeft;
         _mouseLeft = Main.mouseLeft;
 
+        if (_hasPillar.HasValue)
+        {
+            NPC pillar = Main.npc[_hasPillar.Value];
+            NebulaLinkNPC pillarLink = pillar.GetGlobalNPC<NebulaLinkNPC>();
+            pillarLink.pacTime += _connections.Count / 300f;
+
+            foreach (short connection in _connections)
+            {
+                NPC conn = Main.npc[connection];
+
+                if (conn.type == NPCID.LunarTowerNebula)
+                    continue;
+
+                NebulaLinkNPC link = conn.GetGlobalNPC<NebulaLinkNPC>();
+                link.pacTime++;
+            }
+        }
+
         if (LinkCount >= 5)
         {
-            _timeLeft++;
-
             if (Main.rand.NextFloat() < _timeLeft / (float)MaxTimer)
-            {
                 SpawnDust(Player);
-            }
-
-            if (_timeLeft > MaxTimer)
-            {
-                NPC pillar = Main.npc[_hasPillar.Value];
-                pillar.active = false;
-                pillar.netUpdate = true;
-
-                MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerNebula);
-
-                foreach (var other in Main.ActiveNPCs)
-                {
-                    if (other.type is NPCID.NebulaBeast or NPCID.NebulaBrain or NPCID.NebulaHeadcrab or NPCID.NebulaSoldier)
-                    {
-                        other.active = false;
-                        other.netUpdate = true;
-
-                        for (int i = 0; i < 12; ++i)
-                        {
-                            SpawnDust(other);
-                        }
-                    }
-                }
-            }
         }
         else
         {
@@ -122,7 +109,7 @@ internal class NebulaLinkPlayer : ModPlayer
         }
     }
 
-    private static void SpawnDust(Entity entity)
+    internal static void SpawnDust(Entity entity)
     {
         Vector2 pos = entity.position + new Vector2(Main.rand.NextFloat(entity.width), Main.rand.NextFloat(entity.height));
         Dust.NewDustPerfect(pos, DustID.PurpleTorch, Main.rand.NextVector2Circular(6, 6), Scale: Main.rand.NextFloat(1, 3)).noGravity = true;
@@ -147,13 +134,16 @@ internal class NebulaLinkPlayer : ModPlayer
         {
             bool clicked = _mouseLeft && !_lastMouseLeft;
 
+            if (Main.mouseRight)
+                UpdateDead();
+
             foreach (NPC npc in Main.ActiveNPCs)
             {
                 if (_connections.Contains((short)npc.whoAmI))
                     continue;
 
                 Rectangle hitbox = npc.Hitbox;
-                hitbox.Inflate(30, 30);
+                hitbox.Inflate(80, 80);
 
                 bool inHitbox = hitbox.Contains(Main.MouseWorld.ToPoint());
                 bool isPillar = npc.type == NPCID.LunarTowerNebula;

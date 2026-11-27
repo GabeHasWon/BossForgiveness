@@ -162,8 +162,12 @@ Telelink: {
 	DisplayName: Telelink
 	Tooltip:
 		'''
-		Allows you to communicate with the Nebula
+		Allows you to communicate with all Nebula creatures
 		You must link to the Pillar in order to link with other creatures
+		Linking to the pillar will reduce how much you can move to a small radius around the pillar
+		Left click a creature to link to it
+		Right click while holding this to sever the link
+		'It garbles and fuzzes the thoughts in your head'
 		'''
 }
 

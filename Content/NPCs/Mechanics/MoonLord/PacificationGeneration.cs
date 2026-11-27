@@ -1,5 +1,4 @@
 ﻿using BossForgiveness.Content.Tiles.Vanilla.MoonLord;
-using Terraria.Chat;
 using Terraria.ID;
 using Terraria.ObjectData;
 
@@ -9,8 +8,6 @@ internal class PacificationGeneration
 {
     public static void Generation(float progress)
     {
-        ChatHelper.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral("im runnig"), Color.White);
-
         for (int i = 10; i < Main.maxTilesX - 10; ++i)
         {
             for (int j = MoonLordPacificationSubworld.StillnessLayer - 20; j < MoonLordPacificationSubworld.StillnessLayer + 20; ++j)
@@ -32,8 +29,6 @@ internal class PacificationGeneration
                     PlaceObject(i, j, ModContent.TileType<PeaceTallgrass>(), true, Main.rand.Next(5));
             }
         }
-
-        ChatHelper.BroadcastChatMessage(Terraria.Localization.NetworkText.FromLiteral("im doen"), Color.White);
     }
 
     public static void PlaceObject(int x, int y, int type, bool mute = false, int style = 0, int alternate = 0, int random = -1, int direction = -1)

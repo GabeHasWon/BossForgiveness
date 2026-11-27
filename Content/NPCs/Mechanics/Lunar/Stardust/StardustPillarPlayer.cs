@@ -86,8 +86,6 @@ internal class StardustPillarPlayer : ModPlayer
                     }
                 }
             }
-
-            Projectile.NewProjectile(npc.GetSource_Death(), npc.Center, Vector2.Zero, ModContent.ProjectileType<StardustPortal>(), 0, 0, Main.myPlayer);
         }
     }
 }

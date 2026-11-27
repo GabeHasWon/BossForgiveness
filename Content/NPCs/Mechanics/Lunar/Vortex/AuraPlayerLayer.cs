@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria;
 using Terraria.DataStructures;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Vortex;
 
@@ -14,9 +11,7 @@ internal class AuraPlayerLayer : PlayerDrawLayer
     protected override void Draw(ref PlayerDrawSet drawInfo)
     {
         if (!drawInfo.drawPlayer.GetModPlayer<VortexModPlayer>().Dummy)
-        {
             return;
-        }
 
         Asset<Texture2D> tex = VortexPillarPacificationNPC.Aura;
 

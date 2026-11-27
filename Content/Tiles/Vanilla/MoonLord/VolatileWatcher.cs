@@ -113,10 +113,11 @@ internal class VolatileWatcher : ModTile
             for (int i = 0; i < 20; ++i)
                 SpawnDust(area);
 
+            Kill(Position.X, Position.Y);
+
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
-            Kill(Position.X, Position.Y);
             WorldGen.KillTile(Position.X, Position.Y, false, false, true);
 
             if (Main.dedServ)
@@ -188,7 +189,7 @@ internal class VolatileWatcher : ModTile
 
     public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
     {
-        if (TileEntity.ByPosition[new Point16(i, j)] is VolatileWatcherTE te)
+        if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity tileEntity) && tileEntity is VolatileWatcherTE te)
         {
             Texture2D tex = TextureAssets.Tile[Type].Value;
             float rotation = te.Dir switch

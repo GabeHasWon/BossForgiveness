@@ -1,11 +1,9 @@
 ﻿using BossForgiveness.Common;
 using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
-using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Vortex;
 
@@ -45,6 +43,7 @@ internal class Vortoid : ModNPC
     public override bool? CanBeHitByItem(Player player, Item item) => false;
     public override bool CanBeHitByNPC(NPC attacker) => false;
     public override bool? CanBeHitByProjectile(Projectile projectile) => false;
+    public override bool CheckActive() => false;
 
     public override void AI()
     {
@@ -68,8 +67,18 @@ internal class Vortoid : ModNPC
                 if (Timer > 90)
                 {
                     NPC.active = false;
-                    PillarNPC.active = false;
+                    
+                    LunarPillarCommon.SpamFragments(NPC.GetSource_Death(), PillarNPC.Hitbox, ItemID.FragmentVortex);
+                    ClearNpc(PillarNPC);
                     PillarNPC.netUpdate = true;
+
+                    HashSet<int> ids = [NPCID.VortexHornet, NPCID.VortexHornetQueen, NPCID.VortexLarva, NPCID.VortexRifleman, NPCID.VortexSoldier];
+
+                    foreach (NPC npc in Main.ActiveNPCs)
+                    {
+                        if (ids.Contains(npc.type))
+                            ClearNpc(npc);
+                    }
 
                     MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerVortex);
 
@@ -108,6 +117,18 @@ internal class Vortoid : ModNPC
 
         TargetFactor += 0.006f;
         NPC.Center = Vector2.Lerp(lastTarget, Target, EaseFunction.EaseCubicInOut.Ease(TargetFactor));
+    }
+
+    private static void ClearNpc(NPC npc)
+    {
+        npc.active = false;
+        npc.netUpdate = true;
+
+        for (int i = 0; i < 12; ++i)
+        {
+            Vector2 off = Main.rand.NextVector2Circular(npc.width / 2, npc.height / 2);
+            Dust.NewDustPerfect(npc.Center + off, DustID.Vortex, Vector2.Normalize(off) * off.Length() * 0.1f, 0).noGravity = true;
+        }
     }
 
     private static void SpawnGoreForNPC(NPC npc)

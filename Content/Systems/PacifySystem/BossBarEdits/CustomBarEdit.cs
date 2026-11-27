@@ -24,14 +24,32 @@ internal class CustomBarEdit : ILoadable
         On_BigProgressBarHelper.DrawFancyBar_SpriteBatch_float_float_Texture2D_Rectangle += HijackBar;
         On_BrainOfCthuluBigProgressBar.Draw += DrawBarBoC;
         On_DeerclopsBigProgressBar.Draw += DrawBarDeerclops;
-        On_GolemHeadProgressBar.Draw += On_GolemHeadProgressBar_Draw;
-        On_EaterOfWorldsProgressBar.Draw += On_EaterOfWorldsProgressBar_Draw;
+        On_GolemHeadProgressBar.Draw += DrawGolem;
+        On_EaterOfWorldsProgressBar.Draw += DrawEoW;
         On_TwinsBigProgressBar.Draw += DrawBarTwins;
+        On_LunarPillarBigProgessBar.Draw += DrawLunarPillarBar;
 
         PacificationSymbol = mod.Assets.Request<Texture2D>("Content/Systems/PacifySystem/BossBarEdits/PacificationSymbol");
     }
 
-    private void On_EaterOfWorldsProgressBar_Draw(On_EaterOfWorldsProgressBar.orig_Draw orig, EaterOfWorldsProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    private void DrawLunarPillarBar(On_LunarPillarBigProgessBar.orig_Draw orig, LunarPillarBigProgessBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    {
+        NPC npc = Main.npc[info.npcIndexToAimAt];
+
+        CurrentBarNPC = npc.whoAmI;
+
+        if (CurrentBarNPC != -1)
+            PreDrawHijack(spriteBatch);
+
+        orig(self, ref info, spriteBatch);
+
+        if (CurrentBarNPC != -1)
+            PostDrawHijack();
+
+        CurrentBarNPC = -1;
+    }
+
+    private void DrawEoW(On_EaterOfWorldsProgressBar.orig_Draw orig, EaterOfWorldsProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
     {
         NPC npc = Main.npc[info.npcIndexToAimAt];
 
@@ -40,7 +58,7 @@ internal class CustomBarEdit : ILoadable
         CurrentBarNPC = -1;
     }
 
-    private void On_GolemHeadProgressBar_Draw(On_GolemHeadProgressBar.orig_Draw orig, GolemHeadProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
+    private void DrawGolem(On_GolemHeadProgressBar.orig_Draw orig, GolemHeadProgressBar self, ref BigProgressBarInfo info, SpriteBatch spriteBatch)
     {
         int freeHead = NPC.FindFirstNPC(NPCID.GolemHead);
 
@@ -96,29 +114,35 @@ internal class CustomBarEdit : ILoadable
         Texture2D barIconTexture, Rectangle barIconFrame)
     {
         if (CurrentBarNPC != -1)
-        {
-            NPC npc = Main.npc[CurrentBarNPC];
-
-            foreach (var gNPC in npc.Globals)
-            {
-                if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out _, out _))
-                {
-                    Vector2 barCenter = Main.ScreenSize.ToVector2() * new Vector2(0.5f, 1f) + new Vector2(-1f, -90f);
-                    spriteBatch.Draw(PacificationSymbol.Value, barCenter, null, Color.White, 0f, PacificationSymbol.Size() / 2f, 1f, SpriteEffects.None, 0);
-                }
-            }
-        }
+            PreDrawHijack(spriteBatch);
 
         orig(spriteBatch, lifeAmount, lifeMax, barIconTexture, barIconFrame);
 
         if (CurrentBarNPC != -1)
-        {
-            NPC npc = Main.npc[CurrentBarNPC];
+            PostDrawHijack();
+    }
 
-            foreach (var gNPC in npc.Globals)
+    private static void PostDrawHijack()
+    {
+        NPC npc = Main.npc[CurrentBarNPC];
+
+        foreach (var gNPC in npc.Globals)
+        {
+            if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out float prog, out float max))
+                DrawOverlay(prog, max);
+        }
+    }
+
+    private static void PreDrawHijack(SpriteBatch spriteBatch)
+    {
+        NPC npc = Main.npc[CurrentBarNPC];
+
+        foreach (var gNPC in npc.Globals)
+        {
+            if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out _, out _))
             {
-                if (gNPC is ICustomBarNPC barNPC && barNPC.ShowOverlay(npc, out float prog, out float max))
-                    DrawOverlay(prog, max);
+                Vector2 barCenter = Main.ScreenSize.ToVector2() * new Vector2(0.5f, 1f) + new Vector2(-1f, -90f);
+                spriteBatch.Draw(PacificationSymbol.Value, barCenter, null, Color.White, 0f, PacificationSymbol.Size() / 2f, 1f, SpriteEffects.None, 0);
             }
         }
     }

@@ -70,7 +70,7 @@ internal class MoonLordAttacksNPC : GlobalNPC
 
     private readonly List<CustomAttack> applicableAttacks = [];
 
-    public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.MoonLordCore;
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation) => entity.type == NPCID.MoonLordCore && SubworldSystem.Current is MoonLordPacificationSubworld;
 
     public override void OnSpawn(NPC npc, IEntitySource source)
     {

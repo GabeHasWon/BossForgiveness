@@ -27,6 +27,9 @@ internal class EnlightenedMoonlordTarget(TargetType type) : ARenderTargetContent
 
     protected override void HandleUseReqest(GraphicsDevice device, SpriteBatch spriteBatch)
     {
+        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
+            return;
+
         Vector2 size = new(device.Viewport.Width, device.Viewport.Height);
         PrepareARenderTarget_WithoutListeningToEvents(ref _target, Main.instance.GraphicsDevice, (int)size.X, (int)size.Y, RenderTargetUsage.PreserveContents);
 
@@ -102,37 +105,6 @@ internal class EnlightenedMoonlordTarget(TargetType type) : ARenderTargetContent
 
 internal class HideProjectiles : GlobalProjectile
 {
-    public override void Load()
-    {
-        On_Main.DrawCachedProjs += StopCachedDraws;
-        On_Main.DrawDust += StopDrawDust;
-    }
-
-    private void StopDrawDust(On_Main.orig_DrawDust orig, Main self)
-    {
-        orig(self);
-        return;
-
-        if (SubworldSystem.Current is MoonLordPacificationSubworld && (!NPC.AnyNPCs(NPCID.MoonLordCore) || EnlightenedMoonlordTarget.DrawingSpecialML))
-            orig(self);
-        else if (SubworldSystem.Current is not MoonLordPacificationSubworld)
-            orig(self);
-    }
-
-    private void StopCachedDraws(On_Main.orig_DrawCachedProjs orig, Main self, List<int> projCache, bool startSpriteBatch) => orig(self, projCache, startSpriteBatch);
-
-    public override bool PreDraw(Projectile projectile, ref Color lightColor)
-    {
-        return true;
-        if (SubworldSystem.Current is not MoonLordPacificationSubworld)
-            return true;
-
-        if (EnlightenedMoonlordTarget.MoonLordProjTypes.Contains(projectile.type))
-            return EnlightenedMoonlordTarget.DrawingSpecialML;
-
-        return false;
-    }
-
     public override bool PreDrawExtras(Projectile projectile)
     {
         if (SubworldSystem.Current is not MoonLordPacificationSubworld)

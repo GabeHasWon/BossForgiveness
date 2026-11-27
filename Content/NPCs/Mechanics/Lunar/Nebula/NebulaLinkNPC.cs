@@ -1,21 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
-using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.Graphics;
 using Terraria.ID;
-using Terraria.ModLoader;
-using System.Runtime.CompilerServices;
 using Terraria.ModLoader.IO;
 using System.IO;
+using Microsoft.Xna.Framework.Graphics;
 using BossForgiveness.Content.Items.ForVanilla;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using BossForgiveness.Content.NPCs.Mechanics.MoonLord;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Nebula;
 
-internal class NebulaLinkNPC : GlobalNPC
+internal class NebulaLinkNPC : GlobalNPC, ICustomBarNPC
 {
+    public const int PILLAR_PAC_TIME = 60 * 30;
+    public const int NPC_PAC_TIME = 60 * 6;
+
     public override bool InstancePerEntity => true;
 
     private Player Link => Main.player[linkedTo.Value];
@@ -29,6 +30,11 @@ internal class NebulaLinkNPC : GlobalNPC
     public int heldItem = -1;
 
     private int _timer = 0;
+
+    /// <summary>
+    /// Pacification time for this pillar or NPC.
+    /// </summary>
+    public float pacTime = 0;
 
     /// <summary>
     /// For Brain Sucklers.
@@ -128,18 +134,36 @@ internal class NebulaLinkNPC : GlobalNPC
         }
         else if (npc.type == NPCID.LunarTowerNebula)
         {
+            if (pacTime > PILLAR_PAC_TIME)
+            {
+                LunarPillarCommon.SpamFragments(npc.GetSource_Death(), npc.Hitbox, ItemID.FragmentNebula);
+
+                npc.active = false;
+                npc.netUpdate = true;
+
+                MoonLordPacificationTracker.LunarTowersPacified.Add(NPCID.LunarTowerNebula);
+
+                foreach (var other in Main.ActiveNPCs)
+                {
+                    if (other.type is NPCID.NebulaBeast or NPCID.NebulaBrain or NPCID.NebulaHeadcrab or NPCID.NebulaSoldier)
+                    {
+                        other.active = false;
+                        other.netUpdate = true;
+
+                        for (int i = 0; i < 12; ++i)
+                            NebulaLinkPlayer.SpawnDust(other);
+                    }
+                }
+            }
+
             foreach (NPC other in Main.ActiveNPCs)
             {
                 if (other.type is NPCID.NebulaBeast or NPCID.NebulaBrain or NPCID.NebulaHeadcrab or NPCID.NebulaSoldier)
                 {
                     if (other.life < other.lifeMax * 0.3f)
-                    {
                         invalid = true;
-                    }
                     else if (other.life < other.lifeMax)
-                    {
                         other.life++;
-                    }
                 }
             }
 
@@ -206,6 +230,13 @@ internal class NebulaLinkNPC : GlobalNPC
             LinkPrimDrawer.Draw(npc, Link, _timer, npc.Distance(Link.Center), npc.type == NPCID.LunarTowerNebula);
 
         return true;
+    }
+
+    bool ICustomBarNPC.ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = pacTime / 60f;
+        barMax = PILLAR_PAC_TIME / 60f;
+        return !invalid;
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 1)]

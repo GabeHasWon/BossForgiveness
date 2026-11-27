@@ -58,14 +58,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate? update = n
                 x = Main.rand.Next(src.Width);
                 y = src.Y + Main.rand.Next(src.Height);
 
-                try
-                {
-                    Color = info.Pixels[x, y];
-                }
-                catch
-                {
-                    Debugger.Break();
-                }
+                Color = info.Pixels[x, y];
             } while (Color.A == 0);
 
             if (parent.SpriteEffect == SpriteEffects.FlipHorizontally)
@@ -136,7 +129,7 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate? update = n
         if (Parent is not null)
             Collected = Parent.Collected;
 
-        if (!Collected && Parent is null && TimeSpeed < 0.01f)
+        if (!Collected && TimeSpeed < 0.01f && AllChildrenCollected())
         {
             Rectangle bounds = new((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
 
@@ -163,6 +156,17 @@ public class Memory(int npc, Vector2 position, Memory.UpdateDelegate? update = n
         }
 
         Particles.RemoveAll(x => x.Timer > 49);
+    }
+
+    private bool AllChildrenCollected()
+    {
+        foreach (Memory mem in Children)
+        {
+            if (!mem.Collected)
+                return false;
+        }
+
+        return true;
     }
 
     public void Draw()

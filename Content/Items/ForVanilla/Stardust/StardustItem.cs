@@ -1,13 +1,10 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
 using BossForgiveness.Content.Systems.Syncing;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
-using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace BossForgiveness.Content.Items.ForVanilla.Stardust;
 

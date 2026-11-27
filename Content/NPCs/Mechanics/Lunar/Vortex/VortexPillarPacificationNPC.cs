@@ -1,21 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Vortex;
 
 internal readonly record struct CachedDummyData(Vector2 Center, Vector2 Velocity, int Direction);
 
-internal class VortexPillarPacificationNPC : GlobalNPC
+internal class VortexPillarPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     private class VortexPlayer
     {
@@ -33,6 +31,7 @@ internal class VortexPillarPacificationNPC : GlobalNPC
     private readonly Dictionary<int, int> playerTimers = [];
 
     private int _vortoid = -1;
+    private bool _invalid = false;
 
     public override void Load() => Aura = ModContent.Request<Texture2D>("BossForgiveness/Content/NPCs/Mechanics/Lunar/Vortex/Aura");
 
@@ -42,17 +41,34 @@ internal class VortexPillarPacificationNPC : GlobalNPC
 
     public override bool PreAI(NPC npc)
     {
+        if (_invalid)
+            return true;
+
         if (Main.netMode != NetmodeID.MultiplayerClient)
         {
             if (_vortoid == -1)
                 SetVortoid(npc);
 
             NPC vort = Main.npc[_vortoid];
-            bool validVortoid = !vort.active || vort.type != ModContent.NPCType<Vortoid>();
+            bool invalidVortoid = !vort.active || vort.type != ModContent.NPCType<Vortoid>();
 
-            if (validVortoid)
+            if (invalidVortoid)
                 SetVortoid(npc);
         }
+
+        return true;
+
+        foreach (NPC np in Main.ActiveNPCs)
+        {
+            if (np.type is NPCID.VortexHornet or NPCID.VortexHornetQueen or NPCID.VortexLarva or NPCID.VortexRifleman or NPCID.VortexSoldier && npc.life < npc.lifeMax)
+            {
+                _invalid = true;
+
+                Main.npc[_vortoid].active = false;
+                break;
+            }
+        }
+
 
         List<Vector2> clonePositions = [];
 
@@ -209,5 +225,13 @@ internal class VortexPillarPacificationNPC : GlobalNPC
 
         Main.PlayerRenderer.DrawPlayers(Main.Camera, plr);
         Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, Main.Rasterizer, null, Main.GameViewMatrix.ZoomMatrix);
+    }
+
+    bool ICustomBarNPC.ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        NPC vort = Main.npc[_vortoid];
+        barProgress = vort.life;
+        barMax = vort.lifeMax;
+        return _invalid;
     }
 }

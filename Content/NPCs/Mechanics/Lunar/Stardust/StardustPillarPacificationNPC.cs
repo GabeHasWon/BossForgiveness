@@ -1,19 +1,16 @@
-﻿using BossForgiveness.Content.Items.ForVanilla.Stardust;
-using BossForgiveness.Content.Tiles.Vanilla;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using rail;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.Utilities;
+using Terraria.GameContent;
+using Terraria.ModLoader.IO;
+using Terraria.DataStructures;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using BossForgiveness.Content.Tiles.Vanilla;
+using BossForgiveness.Content.Items.ForVanilla.Stardust;
+using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Stardust;
 
@@ -56,9 +53,9 @@ public class Component(Point16 Position, CompRotation Rotation, int Style, bool 
     }
 }
 
-internal class StardustPillarPacificationNPC : GlobalNPC
+internal class StardustPillarPacificationNPC : GlobalNPC, ICustomBarNPC
 {
-    const int ComponentCount = 12;
+    const int ComponentCount = 8;
 
     public override bool InstancePerEntity => true;
 
@@ -101,13 +98,9 @@ internal class StardustPillarPacificationNPC : GlobalNPC
                 or NPCID.StardustSpiderBig or NPCID.StardustSpiderSmall or NPCID.StardustWormHead or NPCID.StardustWormBody or NPCID.StardustWormTail)
             {
                 if (other.life < other.lifeMax * 0.3f)
-                {
                     invalid = true;
-                }
                 else if (other.life < other.lifeMax)
-                {
                     npc.life++;
-                }
             }
         }
 
@@ -136,8 +129,8 @@ internal class StardustPillarPacificationNPC : GlobalNPC
         }
 
         timer++;
-        
-        if (timer % 480 == 0 && Main.netMode != NetmodeID.MultiplayerClient && !won && !components.Any(x => x.Value.Placed))
+
+        if (timer % 480 == 0 && Main.netMode != NetmodeID.MultiplayerClient && !won && !components.All(x => x.Value.Placed))
         {
             Vector2 position = npc.Center + new Vector2(0, Main.rand.NextFloat(-600, -250)).RotatedByRandom(MathHelper.PiOver2);
             int id;
@@ -258,7 +251,7 @@ internal class StardustPillarPacificationNPC : GlobalNPC
 
             foreach (var comp in pacNPC.components.Values)
             {
-                Vector2 position = StardustPillarPacificationNPC.GetComponentPosition(Main.npc[pillar], comp);
+                Vector2 position = GetComponentPosition(Main.npc[pillar], comp);
                 Rectangle bounds = new((int)position.X - 16, (int)position.Y - 16, 32, 34);
 
                 if (bounds.Contains(Main.MouseWorld.ToPoint()))
@@ -267,5 +260,16 @@ internal class StardustPillarPacificationNPC : GlobalNPC
         }
 
         return false;
+    }
+
+    bool ICustomBarNPC.ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = 0f;
+
+        foreach (Component comp in components.Values)
+            barProgress += comp.Finished ? 1 : 0;
+
+        barMax = ComponentCount;
+        return !invalid;
     }
 }

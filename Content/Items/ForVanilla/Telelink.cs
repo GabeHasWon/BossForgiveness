@@ -1,12 +1,10 @@
 ﻿using BossForgiveness.Content.NPCs.Mechanics.Lunar.Nebula;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
-using Terraria;
+using Terraria.GameContent.Items;
 using Terraria.GameInput;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.UI.Gamepad;
 
 namespace BossForgiveness.Content.Items.ForVanilla;
@@ -30,7 +28,7 @@ internal class Telelink : ModItem
             return;
 
         NebulaLinkPlayer linkPlayer = Main.LocalPlayer.GetModPlayer<NebulaLinkPlayer>();
-        bool flag = UILinkPointNavigator.Available && !PlayerInput.InBuildingMode;
+        bool linking = UILinkPointNavigator.Available && !PlayerInput.InBuildingMode;
 
         if (linkPlayer.lastCanLink && linkPlayer.hovering)
         {
@@ -59,7 +57,7 @@ internal class Telelink : ModItem
                 Main.spriteBatch.Draw(Icon.Value, smartPointerPos + bonus, null, color, rotation, Icon.Size() / 2f, Main.cursorScale, SpriteEffects.None, 0f);
             }
 
-            if (smart && !flag)
+            if (smart && !linking)
             {
                 Color color = Color.White * Main.GamepadCursorAlpha * adjTransparency;
                 Main.spriteBatch.Draw(Icon.Value, t + bonus, null, color, 0f, Icon.Size() / 2f, Main.cursorScale, SpriteEffects.None, 0f);
@@ -80,10 +78,7 @@ internal class Telelink : ModItem
         Item.rare = ItemRarityID.Lime;
     }
 
-    public override void HoldItem(Player player)
-    {
-        player.GetModPlayer<NebulaLinkPlayer>().canLink = true;
-    }
+    public override void HoldItem(Player player) => player.GetModPlayer<NebulaLinkPlayer>().canLink = true;
 
     public override void UpdateInventory(Player player)
     {
@@ -91,6 +86,14 @@ internal class Telelink : ModItem
 
         if (tower == -1 || Main.npc[tower].GetGlobalNPC<NebulaLinkNPC>().invalid)
             Item.TurnToAir();
+    }
+
+    public override void Update(ref float gravity, ref float maxFallSpeed)
+    {
+        int tower = NPC.FindFirstNPC(NPCID.LunarTowerNebula);
+
+        if (tower == -1 || Main.npc[tower].GetGlobalNPC<NebulaLinkNPC>().invalid)
+            Item.active = false;
     }
 
     public override bool CanPickup(Player player) => !player.HasItem(Type) && player.trashItem.type != Type;

@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using BossForgiveness.Content.Systems.PacifySystem.BossBarEdits;
+using System.IO;
+using System.Threading;
 using Terraria.ID;
 using Terraria.ModLoader.IO;
 
 namespace BossForgiveness.Content.NPCs.Mechanics.Lunar.Solar;
 
-internal class SolarPillarPacificationNPC : GlobalNPC
+internal class SolarPillarPacificationNPC : GlobalNPC, ICustomBarNPC
 {
     public const int MaxPacification = 15;
 
@@ -37,5 +39,12 @@ internal class SolarPillarPacificationNPC : GlobalNPC
     {
         Invalid = bitReader.ReadBit();
         Count = binaryReader.ReadByte();
+    }
+
+    bool ICustomBarNPC.ShowOverlay(NPC npc, out float barProgress, out float barMax)
+    {
+        barProgress = Count;
+        barMax = MaxPacification;
+        return !Invalid;
     }
 }
